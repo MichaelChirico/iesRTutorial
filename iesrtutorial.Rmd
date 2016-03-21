@@ -1,0 +1,73 @@
+---
+title: "IES R Tutorial"
+author: "Michael Chirico"
+date: "Compiled `r format(Sys.time(), '%B %d, %Y at %R')`"
+output: 
+  rmarkdown::html_document:
+    toc: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Overview
+
+# R Basics
+
+## Assignment
+
+## Types
+
+## Extraction/Indexing
+
+## Vectorization
+
+## Toolkit
+
+# Data Basics
+
+## Reading .csv Files
+
+### `fread`/`data.table`
+
+## Regressions
+
+## Reshaping
+
+## Merging
+
+## String Data
+
+## Non-.csv Data
+
+### SAS
+
+### Excel
+
+### Fixed-width
+
+# Plotting / Tables
+
+## Descriptive Tables
+
+## Regression Tables
+
+## `base` Plots
+
+## `ggplot`
+
+# Geospatial Tools
+
+# Automatic Presentations/Papers: `knitr`
+
+# Dynamic/Interactive Output: `shiny`
+
+# Appendix
+
+## Source Code
+
+## Package development
+
+## Advanced types
