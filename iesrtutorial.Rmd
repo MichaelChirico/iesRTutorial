@@ -64,6 +64,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## `ggplot`
 
+# Web Scraping: `rvest`
+
 # Geospatial Tools
 
 # Automatic Presentations/Papers: `knitr`
