@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Overview
 
-# R Basics
+# R Basics (8 AM - 9 AM)
 
 ## Assignment
 
@@ -28,7 +28,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Toolkit
 
-# Data Basics
+# Data Basics (9 AM - 11 AM)
 
 ## Reading .csv Files
 
@@ -54,7 +54,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Fixed-width
 
-# Plotting / Tables
+# Plotting / Tables (11 AM - 12 PM)
 
 ## Descriptive Tables
 
@@ -64,13 +64,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## `ggplot`
 
-# Web Scraping: `rvest`
+# Web Scraping: `rvest` (1:30 PM - 2:30 PM)
 
-# Geospatial Tools
+# Geospatial Tools (2:30 PM - 3:30 PM)
 
-# Automatic Presentations/Papers: `knitr`
+# Automatic Presentations/Papers: `knitr` (3:30 PM - 4:30 PM)
 
-# Dynamic/Interactive Output: `shiny`
+# Dynamic/Interactive Output: `shiny` (4:30 PM - 5:30 PM)
 
 # Appendix
 
