@@ -110,14 +110,14 @@ $(document).ready(function () {
 
 <h1 class="title">IES R Tutorial</h1>
 <h4 class="author"><em>Michael Chirico</em></h4>
-<h4 class="date"><em>Compiled March 30, 2016 at 18:48</em></h4>
+<h4 class="date"><em>Compiled March 31, 2016 at 18:38</em></h4>
 
 </div>
 
 <div id="TOC">
 <ul>
 <li><a href="#overview"><span class="toc-section-number">1</span> Overview</a></li>
-<li><a href="#r-basics"><span class="toc-section-number">2</span> R Basics</a><ul>
+<li><a href="#r-basics-8-am---9-am"><span class="toc-section-number">2</span> R Basics (8 AM - 9 AM)</a><ul>
 <li><a href="#assignment"><span class="toc-section-number">2.1</span> Assignment</a></li>
 <li><a href="#types"><span class="toc-section-number">2.2</span> Types</a></li>
 <li><a href="#extractionindexing"><span class="toc-section-number">2.3</span> Extraction/Indexing</a></li>
@@ -125,7 +125,7 @@ $(document).ready(function () {
 <li><a href="#vectorization"><span class="toc-section-number">2.5</span> Vectorization</a></li>
 <li><a href="#toolkit"><span class="toc-section-number">2.6</span> Toolkit</a></li>
 </ul></li>
-<li><a href="#data-basics"><span class="toc-section-number">3</span> Data Basics</a><ul>
+<li><a href="#data-basics-9-am---11-am"><span class="toc-section-number">3</span> Data Basics (9 AM - 11 AM)</a><ul>
 <li><a href="#reading-.csv-files"><span class="toc-section-number">3.1</span> Reading .csv Files</a><ul>
 <li><a href="#freaddata.table"><span class="toc-section-number">3.1.1</span> <code>fread</code>/<code>data.table</code></a></li>
 </ul></li>
@@ -142,16 +142,16 @@ $(document).ready(function () {
 <li><a href="#fixed-width"><span class="toc-section-number">3.6.3</span> Fixed-width</a></li>
 </ul></li>
 </ul></li>
-<li><a href="#plotting-tables"><span class="toc-section-number">4</span> Plotting / Tables</a><ul>
+<li><a href="#plotting-tables-11-am---12-pm"><span class="toc-section-number">4</span> Plotting / Tables (11 AM - 12 PM)</a><ul>
 <li><a href="#descriptive-tables"><span class="toc-section-number">4.1</span> Descriptive Tables</a></li>
 <li><a href="#regression-tables"><span class="toc-section-number">4.2</span> Regression Tables</a></li>
 <li><a href="#base-plots"><span class="toc-section-number">4.3</span> <code>base</code> Plots</a></li>
 <li><a href="#ggplot"><span class="toc-section-number">4.4</span> <code>ggplot</code></a></li>
 </ul></li>
-<li><a href="#web-scraping-rvest"><span class="toc-section-number">5</span> Web Scraping: <code>rvest</code></a></li>
-<li><a href="#geospatial-tools"><span class="toc-section-number">6</span> Geospatial Tools</a></li>
-<li><a href="#automatic-presentationspapers-knitr"><span class="toc-section-number">7</span> Automatic Presentations/Papers: <code>knitr</code></a></li>
-<li><a href="#dynamicinteractive-output-shiny"><span class="toc-section-number">8</span> Dynamic/Interactive Output: <code>shiny</code></a></li>
+<li><a href="#web-scraping-rvest-130-pm---230-pm"><span class="toc-section-number">5</span> Web Scraping: <code>rvest</code> (1:30 PM - 2:30 PM)</a></li>
+<li><a href="#geospatial-tools-230-pm---330-pm"><span class="toc-section-number">6</span> Geospatial Tools (2:30 PM - 3:30 PM)</a></li>
+<li><a href="#automatic-presentationspapers-knitr-330-pm---430-pm"><span class="toc-section-number">7</span> Automatic Presentations/Papers: <code>knitr</code> (3:30 PM - 4:30 PM)</a></li>
+<li><a href="#dynamicinteractive-output-shiny-430-pm---530-pm"><span class="toc-section-number">8</span> Dynamic/Interactive Output: <code>shiny</code> (4:30 PM - 5:30 PM)</a></li>
 <li><a href="#appendix"><span class="toc-section-number">9</span> Appendix</a><ul>
 <li><a href="#data-cleaning"><span class="toc-section-number">9.1</span> Data Cleaning</a></li>
 <li><a href="#source-code"><span class="toc-section-number">9.2</span> Source Code</a></li>
@@ -164,8 +164,8 @@ $(document).ready(function () {
 <div id="overview" class="section level1">
 <h1><span class="header-section-number">1</span> Overview</h1>
 </div>
-<div id="r-basics" class="section level1">
-<h1><span class="header-section-number">2</span> R Basics</h1>
+<div id="r-basics-8-am---9-am" class="section level1">
+<h1><span class="header-section-number">2</span> R Basics (8 AM - 9 AM)</h1>
 <div id="assignment" class="section level2">
 <h2><span class="header-section-number">2.1</span> Assignment</h2>
 </div>
@@ -185,8 +185,8 @@ $(document).ready(function () {
 <h2><span class="header-section-number">2.6</span> Toolkit</h2>
 </div>
 </div>
-<div id="data-basics" class="section level1">
-<h1><span class="header-section-number">3</span> Data Basics</h1>
+<div id="data-basics-9-am---11-am" class="section level1">
+<h1><span class="header-section-number">3</span> Data Basics (9 AM - 11 AM)</h1>
 <div id="reading-.csv-files" class="section level2">
 <h2><span class="header-section-number">3.1</span> Reading .csv Files</h2>
 <div id="freaddata.table" class="section level3">
@@ -224,8 +224,8 @@ $(document).ready(function () {
 </div>
 </div>
 </div>
-<div id="plotting-tables" class="section level1">
-<h1><span class="header-section-number">4</span> Plotting / Tables</h1>
+<div id="plotting-tables-11-am---12-pm" class="section level1">
+<h1><span class="header-section-number">4</span> Plotting / Tables (11 AM - 12 PM)</h1>
 <div id="descriptive-tables" class="section level2">
 <h2><span class="header-section-number">4.1</span> Descriptive Tables</h2>
 </div>
@@ -239,17 +239,17 @@ $(document).ready(function () {
 <h2><span class="header-section-number">4.4</span> <code>ggplot</code></h2>
 </div>
 </div>
-<div id="web-scraping-rvest" class="section level1">
-<h1><span class="header-section-number">5</span> Web Scraping: <code>rvest</code></h1>
+<div id="web-scraping-rvest-130-pm---230-pm" class="section level1">
+<h1><span class="header-section-number">5</span> Web Scraping: <code>rvest</code> (1:30 PM - 2:30 PM)</h1>
 </div>
-<div id="geospatial-tools" class="section level1">
-<h1><span class="header-section-number">6</span> Geospatial Tools</h1>
+<div id="geospatial-tools-230-pm---330-pm" class="section level1">
+<h1><span class="header-section-number">6</span> Geospatial Tools (2:30 PM - 3:30 PM)</h1>
 </div>
-<div id="automatic-presentationspapers-knitr" class="section level1">
-<h1><span class="header-section-number">7</span> Automatic Presentations/Papers: <code>knitr</code></h1>
+<div id="automatic-presentationspapers-knitr-330-pm---430-pm" class="section level1">
+<h1><span class="header-section-number">7</span> Automatic Presentations/Papers: <code>knitr</code> (3:30 PM - 4:30 PM)</h1>
 </div>
-<div id="dynamicinteractive-output-shiny" class="section level1">
-<h1><span class="header-section-number">8</span> Dynamic/Interactive Output: <code>shiny</code></h1>
+<div id="dynamicinteractive-output-shiny-430-pm---530-pm" class="section level1">
+<h1><span class="header-section-number">8</span> Dynamic/Interactive Output: <code>shiny</code> (4:30 PM - 5:30 PM)</h1>
 </div>
 <div id="appendix" class="section level1">
 <h1><span class="header-section-number">9</span> Appendix</h1>
