@@ -14,9 +14,32 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Overview
 
+First and foremost is to install R (following instructions [here](http://lib.stat.cmu.edu/R/CRAN/)) so that your computer knows how to interpret R code. Then, I highly recommend you install RStudio (following instructions [here](https://www.rstudio.com/products/rstudio/download/)), which is a powerful program for organizing your interaction with the R language (a subtle distinction, and you wouldn't really be ill-served by considering RStudio and R to be the same thing); for the jargon-hungry, RStudio is an Integrated Development Environment (IDE) for the R language.
+
 # R Basics (8 AM - 9 AM)
 
+Before we get to the fun stuff (statistical analysis), it's important that we gain some facility with doing basic things in R first -- adding numbers, creating objects, and tools for exploring/understanding new objects as we come across them, including understanding and overcoming common errors that can creep into our code.
+
+First things first, let's follow the time-honored tradition of making R say "Hello World".
+
+Make sure you're in the console (the cursor in front of the right angle bracket (`>`) should be blinking) and type (or copy-paste) the following:
+
+```{r}
+print("Hello World")
+```
+
+
+Easy-peasy. The console is a great place to do what I call sandboxing -- running small commands to test whether they run as expected and produce the right output in the right format, etc. But it would be very cumbersome to use the console to do everything. There's a distinct lack of permanency to anything we do in the console.
+
+More common is to run code from an R script. You can create an R script in RStudio by clicking the plus-page icon (![New R script](http://imgur.com/eCEtq9e.png "plus-page icon")) and hitting "R Script" or by using the keyboard shortcut `Ctrl`+`Shift`+`N`. Try printing "Hello World" again by adding `print("Hello World")` to your new script and pressing `Ctrl`+`Enter` on this line. `Ctrl`+`Enter` is the shortcut for running the selected line, or for running a highlighted section of code.
+
+Once we save our R script, we can easily share it with coauthors or the general public (or even ourselves, on a different computer), who can simply run the code again on their machine to reproduce your analysis. 
+
+`paste0`
+
 ## Assignment
+
+
 
 ## Types
 
@@ -24,9 +47,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Random Numbers
 
-## Vectorization
+## Vectorization / `*apply`
 
-## Toolkit
+## Toolkit: `dput`/`str`/`class`
 
 # Data Basics (9 AM - 11 AM)
 
@@ -36,7 +59,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Regressions
 
-### OLS (`lm`)
+### OLS (`lm`) / `predict`/`coeftest`/`summary`
 
 ### Probit/Logit (`glm`)
 
@@ -44,35 +67,47 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Merging
 
-## String Data
+## String Data / regex
 
 ## Non-.csv Data
 
-### SAS
+### SAS: `read_sas`
 
-### Excel
+### Excel: `readxl` / `xlsx`
 
-### Fixed-width
+### Fixed-width `read_fwf`
 
 # Plotting / Tables (11 AM - 12 PM)
 
 ## Descriptive Tables
 
-## Regression Tables
+## Regression Tables: `texreg`/`xtable`
 
 ## `base` Plots
+
+`axes`/`matplot`
 
 ## `ggplot`
 
 # Web Scraping: `rvest` (1:30 PM - 2:30 PM)
 
+`xpath`
+
 # Geospatial Tools (2:30 PM - 3:30 PM)
+
+`S4` methods/`@`slots, `CRS`
 
 # Automatic Presentations/Papers: `knitr` (3:30 PM - 4:30 PM)
 
 # Dynamic/Interactive Output: `shiny` (4:30 PM - 5:30 PM)
 
 # Appendix
+
+`vapply`
+
+`CJ`
+
+`setkey`
 
 ## Data Cleaning
 

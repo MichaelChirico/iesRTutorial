@@ -110,7 +110,7 @@ $(document).ready(function () {
 
 <h1 class="title">IES R Tutorial</h1>
 <h4 class="author"><em>Michael Chirico</em></h4>
-<h4 class="date"><em>Compiled March 31, 2016 at 18:38</em></h4>
+<h4 class="date"><em>Compiled April 15, 2016 at 15:55</em></h4>
 
 </div>
 
@@ -122,29 +122,29 @@ $(document).ready(function () {
 <li><a href="#types"><span class="toc-section-number">2.2</span> Types</a></li>
 <li><a href="#extractionindexing"><span class="toc-section-number">2.3</span> Extraction/Indexing</a></li>
 <li><a href="#random-numbers"><span class="toc-section-number">2.4</span> Random Numbers</a></li>
-<li><a href="#vectorization"><span class="toc-section-number">2.5</span> Vectorization</a></li>
-<li><a href="#toolkit"><span class="toc-section-number">2.6</span> Toolkit</a></li>
+<li><a href="#vectorization-apply"><span class="toc-section-number">2.5</span> Vectorization / <code>*apply</code></a></li>
+<li><a href="#toolkit-dputstrclass"><span class="toc-section-number">2.6</span> Toolkit: <code>dput</code>/<code>str</code>/<code>class</code></a></li>
 </ul></li>
 <li><a href="#data-basics-9-am---11-am"><span class="toc-section-number">3</span> Data Basics (9 AM - 11 AM)</a><ul>
 <li><a href="#reading-.csv-files"><span class="toc-section-number">3.1</span> Reading .csv Files</a><ul>
 <li><a href="#freaddata.table"><span class="toc-section-number">3.1.1</span> <code>fread</code>/<code>data.table</code></a></li>
 </ul></li>
 <li><a href="#regressions"><span class="toc-section-number">3.2</span> Regressions</a><ul>
-<li><a href="#ols-lm"><span class="toc-section-number">3.2.1</span> OLS (<code>lm</code>)</a></li>
+<li><a href="#ols-lm-predictcoeftestsummary"><span class="toc-section-number">3.2.1</span> OLS (<code>lm</code>) / <code>predict</code>/<code>coeftest</code>/<code>summary</code></a></li>
 <li><a href="#probitlogit-glm"><span class="toc-section-number">3.2.2</span> Probit/Logit (<code>glm</code>)</a></li>
 </ul></li>
 <li><a href="#reshaping"><span class="toc-section-number">3.3</span> Reshaping</a></li>
 <li><a href="#merging"><span class="toc-section-number">3.4</span> Merging</a></li>
-<li><a href="#string-data"><span class="toc-section-number">3.5</span> String Data</a></li>
+<li><a href="#string-data-regex"><span class="toc-section-number">3.5</span> String Data / regex</a></li>
 <li><a href="#non-.csv-data"><span class="toc-section-number">3.6</span> Non-.csv Data</a><ul>
-<li><a href="#sas"><span class="toc-section-number">3.6.1</span> SAS</a></li>
-<li><a href="#excel"><span class="toc-section-number">3.6.2</span> Excel</a></li>
-<li><a href="#fixed-width"><span class="toc-section-number">3.6.3</span> Fixed-width</a></li>
+<li><a href="#sas-read_sas"><span class="toc-section-number">3.6.1</span> SAS: <code>read_sas</code></a></li>
+<li><a href="#excel-readxl-xlsx"><span class="toc-section-number">3.6.2</span> Excel: <code>readxl</code> / <code>xlsx</code></a></li>
+<li><a href="#fixed-width-read_fwf"><span class="toc-section-number">3.6.3</span> Fixed-width <code>read_fwf</code></a></li>
 </ul></li>
 </ul></li>
 <li><a href="#plotting-tables-11-am---12-pm"><span class="toc-section-number">4</span> Plotting / Tables (11 AM - 12 PM)</a><ul>
 <li><a href="#descriptive-tables"><span class="toc-section-number">4.1</span> Descriptive Tables</a></li>
-<li><a href="#regression-tables"><span class="toc-section-number">4.2</span> Regression Tables</a></li>
+<li><a href="#regression-tables-texregxtable"><span class="toc-section-number">4.2</span> Regression Tables: <code>texreg</code>/<code>xtable</code></a></li>
 <li><a href="#base-plots"><span class="toc-section-number">4.3</span> <code>base</code> Plots</a></li>
 <li><a href="#ggplot"><span class="toc-section-number">4.4</span> <code>ggplot</code></a></li>
 </ul></li>
@@ -163,9 +163,18 @@ $(document).ready(function () {
 
 <div id="overview" class="section level1">
 <h1><span class="header-section-number">1</span> Overview</h1>
+<p>First and foremost is to install R (following instructions <a href="http://lib.stat.cmu.edu/R/CRAN/">here</a>) so that your computer knows how to interpret R code. Then, I highly recommend you install RStudio (following instructions <a href="https://www.rstudio.com/products/rstudio/download/">here</a>), which is a powerful program for organizing your interaction with the R language (a subtle distinction, and you wouldn’t really be ill-served by considering RStudio and R to be the same thing); for the jargon-hungry, RStudio is an Integrated Development Environment (IDE) for the R language.</p>
 </div>
 <div id="r-basics-8-am---9-am" class="section level1">
 <h1><span class="header-section-number">2</span> R Basics (8 AM - 9 AM)</h1>
+<p>Before we get to the fun stuff (statistical analysis), it’s important that we gain some facility with doing basic things in R first – adding numbers, creating objects, and tools for exploring/understanding new objects as we come across them, including understanding and overcoming common errors that can creep into our code.</p>
+<p>First things first, let’s follow the time-honored tradition of making R say “Hello World”.</p>
+<p>Make sure you’re in the console (the cursor in front of the right angle bracket (<code>&gt;</code>) should be blinking) and type (or copy-paste) the following:</p>
+<pre class="r"><code>print(&quot;Hello World&quot;)</code></pre>
+<pre><code>## [1] &quot;Hello World&quot;</code></pre>
+<p>Easy-peasy. The console is a great place to do what I call sandboxing – running small commands to test whether they run as expected and produce the right output in the right format, etc. But it would be very cumbersome to use the console to do everything. There’s a distinct lack of permanency to anything we do in the console.</p>
+<p>More common is to run code from an R script. You can create an R script in RStudio by clicking the plus-page icon (<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACsAAAAYCAIAAADs0ZOUAAAAA3NCSVQICAjb4U/gAAAEG0lEQVRIx7VWzW8bRRR/87G72V3HsZ0vgh3nq0gtlVAlUNpDJVRAcCGogitIcOPOgTv/CYimLRyQqBAcWnICEaq20FJEBIGGtHHt+iv+2vXuzDwOGyf2rjc5lDztYXb3NzO/ee/93jxSb7YIAMKBkb4x9r4cH4AjIgz+hsj8YwVwwAOaUQu4HwdAKcUYQ0QOgHHs4Cj6TwPoeq5tJ5RUNM5L2PccB6DjOIxRBOAwLGtu1h/daRT/aJcdIWYM6/nE1HIqmzOTQEg0reCovBsKcByHUQbgc4Jh9PeVB58/vvev26h4HU8om7EfKtu/FLdfsfM5PUkJIUD648oZy2enICYJYqPgeoxSgsBDBO41S58V7t5uFT0lP8ifyY2MXd6++1u9UO40qI8Xp0/OJ8cpY/un7Pp+oVjJZycjByWHZBgCeN0upQQBeQi0Vv3nduOxT5BS+k729EupZ2/WHt6vF5+o7u+q+popZ6bSumFQSoN9mh2nUKwM03qsyAOAL3xKI3kAAOu1HUnw9aklm+sZzQSAc5kcB3Kr8mjL2d1sVl/2PK5plNCe847UQYwbeg7ioRU22zWB8pOTF+asVPDlw8VlWISP7nzz6eatstvyhVBKITvI9qE0jtZnjz8PgQ1K0cetdt1XKmuOmkwrOM2W8GqeywAogJIKEQ+OgDCouL3RtWtf9y+7svJWhFwwM5IHp+2Jx7Wtiz+uEkK+Pf/ecib38a/fffXwvlRySU9OcyuYixHdh+zypUvr6+vBePns2Tf7GISMht7Pp/IMQSoplQyOqRCVQlSQN5Jz5hihNKgKh9vqlavzCwsAML+wsHrl6iFIvi+d4DRvTC5tNIpfljZawn//py8MynecXaXkGXNyZfzEqeSkpnHSY4AIqPacQCL30PUbaycW56/fWAttMRAM7GlhP62T2si72RcSRPt5d+fPdq0sms8Y9oV07tXM3LnM7Jg1qutGoKIgFhhecEByf/39AGIAfT4YFC6lZH50/O2ZUy8mpstue7tUnk2nF9OTOXtswk6apsk5J4T0UmGfw5DiE2IzVC4IyKN/GKH5RGaCme12Z+MJPpeenZke51zTdJ1zTinFXuFHAIlqt9GoVuuWZRmGDvHXdKQokWAJroZ1NULKjttttFptx+G6nkiMEkIIpYSQXsT3mAtfFEolS4d0KrUwl486nAAM3ULTdaXUQE3EwXohhBBSIkKluguIQkhfSiWkVBIIYZRSRjXOHdfzfd9xuuZIN64PG7qFZVm+EACDmbhvumFMpFOWaUpFyrXa9k7BcVzX7bquK5UAIJxrpqkbhmmZ5lI+Pzc7nbDtQ7qj6BbJZNL3BACQUrkad3ngEYF8KoDwfcMwpFIc4l0XbTT+RwDnXClFADillMS3mqGe5zgA/wFV1ysy3xUuogAAAABJRU5ErkJggg==" title="plus-page icon" alt="New R script" />) and hitting “R Script” or by using the keyboard shortcut <code>Ctrl</code>+<code>Shift</code>+<code>N</code>.</p>
+<p><code>paste0</code></p>
 <div id="assignment" class="section level2">
 <h2><span class="header-section-number">2.1</span> Assignment</h2>
 </div>
@@ -178,11 +187,11 @@ $(document).ready(function () {
 <div id="random-numbers" class="section level2">
 <h2><span class="header-section-number">2.4</span> Random Numbers</h2>
 </div>
-<div id="vectorization" class="section level2">
-<h2><span class="header-section-number">2.5</span> Vectorization</h2>
+<div id="vectorization-apply" class="section level2">
+<h2><span class="header-section-number">2.5</span> Vectorization / <code>*apply</code></h2>
 </div>
-<div id="toolkit" class="section level2">
-<h2><span class="header-section-number">2.6</span> Toolkit</h2>
+<div id="toolkit-dputstrclass" class="section level2">
+<h2><span class="header-section-number">2.6</span> Toolkit: <code>dput</code>/<code>str</code>/<code>class</code></h2>
 </div>
 </div>
 <div id="data-basics-9-am---11-am" class="section level1">
@@ -195,8 +204,8 @@ $(document).ready(function () {
 </div>
 <div id="regressions" class="section level2">
 <h2><span class="header-section-number">3.2</span> Regressions</h2>
-<div id="ols-lm" class="section level3">
-<h3><span class="header-section-number">3.2.1</span> OLS (<code>lm</code>)</h3>
+<div id="ols-lm-predictcoeftestsummary" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> OLS (<code>lm</code>) / <code>predict</code>/<code>coeftest</code>/<code>summary</code></h3>
 </div>
 <div id="probitlogit-glm" class="section level3">
 <h3><span class="header-section-number">3.2.2</span> Probit/Logit (<code>glm</code>)</h3>
@@ -208,19 +217,19 @@ $(document).ready(function () {
 <div id="merging" class="section level2">
 <h2><span class="header-section-number">3.4</span> Merging</h2>
 </div>
-<div id="string-data" class="section level2">
-<h2><span class="header-section-number">3.5</span> String Data</h2>
+<div id="string-data-regex" class="section level2">
+<h2><span class="header-section-number">3.5</span> String Data / regex</h2>
 </div>
 <div id="non-.csv-data" class="section level2">
 <h2><span class="header-section-number">3.6</span> Non-.csv Data</h2>
-<div id="sas" class="section level3">
-<h3><span class="header-section-number">3.6.1</span> SAS</h3>
+<div id="sas-read_sas" class="section level3">
+<h3><span class="header-section-number">3.6.1</span> SAS: <code>read_sas</code></h3>
 </div>
-<div id="excel" class="section level3">
-<h3><span class="header-section-number">3.6.2</span> Excel</h3>
+<div id="excel-readxl-xlsx" class="section level3">
+<h3><span class="header-section-number">3.6.2</span> Excel: <code>readxl</code> / <code>xlsx</code></h3>
 </div>
-<div id="fixed-width" class="section level3">
-<h3><span class="header-section-number">3.6.3</span> Fixed-width</h3>
+<div id="fixed-width-read_fwf" class="section level3">
+<h3><span class="header-section-number">3.6.3</span> Fixed-width <code>read_fwf</code></h3>
 </div>
 </div>
 </div>
@@ -229,11 +238,12 @@ $(document).ready(function () {
 <div id="descriptive-tables" class="section level2">
 <h2><span class="header-section-number">4.1</span> Descriptive Tables</h2>
 </div>
-<div id="regression-tables" class="section level2">
-<h2><span class="header-section-number">4.2</span> Regression Tables</h2>
+<div id="regression-tables-texregxtable" class="section level2">
+<h2><span class="header-section-number">4.2</span> Regression Tables: <code>texreg</code>/<code>xtable</code></h2>
 </div>
 <div id="base-plots" class="section level2">
 <h2><span class="header-section-number">4.3</span> <code>base</code> Plots</h2>
+<p><code>axes</code>/<code>matplot</code></p>
 </div>
 <div id="ggplot" class="section level2">
 <h2><span class="header-section-number">4.4</span> <code>ggplot</code></h2>
@@ -241,9 +251,11 @@ $(document).ready(function () {
 </div>
 <div id="web-scraping-rvest-130-pm---230-pm" class="section level1">
 <h1><span class="header-section-number">5</span> Web Scraping: <code>rvest</code> (1:30 PM - 2:30 PM)</h1>
+<p><code>xpath</code></p>
 </div>
 <div id="geospatial-tools-230-pm---330-pm" class="section level1">
 <h1><span class="header-section-number">6</span> Geospatial Tools (2:30 PM - 3:30 PM)</h1>
+<p><code>S4</code> methods/<code>@</code>slots, <code>CRS</code></p>
 </div>
 <div id="automatic-presentationspapers-knitr-330-pm---430-pm" class="section level1">
 <h1><span class="header-section-number">7</span> Automatic Presentations/Papers: <code>knitr</code> (3:30 PM - 4:30 PM)</h1>
@@ -253,6 +265,9 @@ $(document).ready(function () {
 </div>
 <div id="appendix" class="section level1">
 <h1><span class="header-section-number">9</span> Appendix</h1>
+<p><code>vapply</code></p>
+<p><code>CJ</code></p>
+<p><code>setkey</code></p>
 <div id="data-cleaning" class="section level2">
 <h2><span class="header-section-number">9.1</span> Data Cleaning</h2>
 </div>
