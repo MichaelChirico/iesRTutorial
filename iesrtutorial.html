@@ -110,7 +110,7 @@ $(document).ready(function () {
 
 <h1 class="title">IES R Tutorial</h1>
 <h4 class="author"><em>Michael Chirico</em></h4>
-<h4 class="date"><em>Compiled April 15, 2016 at 15:55</em></h4>
+<h4 class="date"><em>Compiled April 25, 2016 at 20:23</em></h4>
 
 </div>
 
@@ -119,11 +119,16 @@ $(document).ready(function () {
 <li><a href="#overview"><span class="toc-section-number">1</span> Overview</a></li>
 <li><a href="#r-basics-8-am---9-am"><span class="toc-section-number">2</span> R Basics (8 AM - 9 AM)</a><ul>
 <li><a href="#assignment"><span class="toc-section-number">2.1</span> Assignment</a></li>
-<li><a href="#types"><span class="toc-section-number">2.2</span> Types</a></li>
-<li><a href="#extractionindexing"><span class="toc-section-number">2.3</span> Extraction/Indexing</a></li>
-<li><a href="#random-numbers"><span class="toc-section-number">2.4</span> Random Numbers</a></li>
-<li><a href="#vectorization-apply"><span class="toc-section-number">2.5</span> Vectorization / <code>*apply</code></a></li>
-<li><a href="#toolkit-dputstrclass"><span class="toc-section-number">2.6</span> Toolkit: <code>dput</code>/<code>str</code>/<code>class</code></a></li>
+<li><a href="#vectors"><span class="toc-section-number">2.2</span> Vectors</a></li>
+<li><a href="#types"><span class="toc-section-number">2.3</span> Types</a><ul>
+<li><a href="#lists"><span class="toc-section-number">2.3.1</span> Lists</a></li>
+</ul></li>
+<li><a href="#extractionindexing"><span class="toc-section-number">2.4</span> Extraction/Indexing</a><ul>
+<li><a href="#named-vectors-and-lists"><span class="toc-section-number">2.4.1</span> Named vectors and <code>list</code>s</a></li>
+</ul></li>
+<li><a href="#random-numbers"><span class="toc-section-number">2.5</span> Random Numbers</a></li>
+<li><a href="#vectorization-apply"><span class="toc-section-number">2.6</span> Vectorization / <code>*apply</code></a></li>
+<li><a href="#toolkit-dputstrclass"><span class="toc-section-number">2.7</span> Toolkit: <code>?</code>/<code>dput</code>/<code>str</code>/<code>class</code></a></li>
 </ul></li>
 <li><a href="#data-basics-9-am---11-am"><span class="toc-section-number">3</span> Data Basics (9 AM - 11 AM)</a><ul>
 <li><a href="#reading-.csv-files"><span class="toc-section-number">3.1</span> Reading .csv Files</a><ul>
@@ -173,25 +178,166 @@ $(document).ready(function () {
 <pre class="r"><code>print(&quot;Hello World&quot;)</code></pre>
 <pre><code>## [1] &quot;Hello World&quot;</code></pre>
 <p>Easy-peasy. The console is a great place to do what I call sandboxing – running small commands to test whether they run as expected and produce the right output in the right format, etc. But it would be very cumbersome to use the console to do everything. There’s a distinct lack of permanency to anything we do in the console.</p>
-<p>More common is to run code from an R script. You can create an R script in RStudio by clicking the plus-page icon (<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACsAAAAYCAIAAADs0ZOUAAAAA3NCSVQICAjb4U/gAAAEG0lEQVRIx7VWzW8bRRR/87G72V3HsZ0vgh3nq0gtlVAlUNpDJVRAcCGogitIcOPOgTv/CYimLRyQqBAcWnICEaq20FJEBIGGtHHt+iv+2vXuzDwOGyf2rjc5lDztYXb3NzO/ee/93jxSb7YIAMKBkb4x9r4cH4AjIgz+hsj8YwVwwAOaUQu4HwdAKcUYQ0QOgHHs4Cj6TwPoeq5tJ5RUNM5L2PccB6DjOIxRBOAwLGtu1h/daRT/aJcdIWYM6/nE1HIqmzOTQEg0reCovBsKcByHUQbgc4Jh9PeVB58/vvev26h4HU8om7EfKtu/FLdfsfM5PUkJIUD648oZy2enICYJYqPgeoxSgsBDBO41S58V7t5uFT0lP8ifyY2MXd6++1u9UO40qI8Xp0/OJ8cpY/un7Pp+oVjJZycjByWHZBgCeN0upQQBeQi0Vv3nduOxT5BS+k729EupZ2/WHt6vF5+o7u+q+popZ6bSumFQSoN9mh2nUKwM03qsyAOAL3xKI3kAAOu1HUnw9aklm+sZzQSAc5kcB3Kr8mjL2d1sVl/2PK5plNCe847UQYwbeg7ioRU22zWB8pOTF+asVPDlw8VlWISP7nzz6eatstvyhVBKITvI9qE0jtZnjz8PgQ1K0cetdt1XKmuOmkwrOM2W8GqeywAogJIKEQ+OgDCouL3RtWtf9y+7svJWhFwwM5IHp+2Jx7Wtiz+uEkK+Pf/ecib38a/fffXwvlRySU9OcyuYixHdh+zypUvr6+vBePns2Tf7GISMht7Pp/IMQSoplQyOqRCVQlSQN5Jz5hihNKgKh9vqlavzCwsAML+wsHrl6iFIvi+d4DRvTC5tNIpfljZawn//py8MynecXaXkGXNyZfzEqeSkpnHSY4AIqPacQCL30PUbaycW56/fWAttMRAM7GlhP62T2si72RcSRPt5d+fPdq0sms8Y9oV07tXM3LnM7Jg1qutGoKIgFhhecEByf/39AGIAfT4YFC6lZH50/O2ZUy8mpstue7tUnk2nF9OTOXtswk6apsk5J4T0UmGfw5DiE2IzVC4IyKN/GKH5RGaCme12Z+MJPpeenZke51zTdJ1zTinFXuFHAIlqt9GoVuuWZRmGDvHXdKQokWAJroZ1NULKjttttFptx+G6nkiMEkIIpYSQXsT3mAtfFEolS4d0KrUwl486nAAM3ULTdaXUQE3EwXohhBBSIkKluguIQkhfSiWkVBIIYZRSRjXOHdfzfd9xuuZIN64PG7qFZVm+EACDmbhvumFMpFOWaUpFyrXa9k7BcVzX7bquK5UAIJxrpqkbhmmZ5lI+Pzc7nbDtQ7qj6BbJZNL3BACQUrkad3ngEYF8KoDwfcMwpFIc4l0XbTT+RwDnXClFADillMS3mqGe5zgA/wFV1ysy3xUuogAAAABJRU5ErkJggg==" title="plus-page icon" alt="New R script" />) and hitting “R Script” or by using the keyboard shortcut <code>Ctrl</code>+<code>Shift</code>+<code>N</code>.</p>
-<p><code>paste0</code></p>
+<p>More common is to run code from an R script. You can create an R script in RStudio by clicking the plus-page icon (<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACsAAAAYCAIAAADs0ZOUAAAAA3NCSVQICAjb4U/gAAAEG0lEQVRIx7VWzW8bRRR/87G72V3HsZ0vgh3nq0gtlVAlUNpDJVRAcCGogitIcOPOgTv/CYimLRyQqBAcWnICEaq20FJEBIGGtHHt+iv+2vXuzDwOGyf2rjc5lDztYXb3NzO/ee/93jxSb7YIAMKBkb4x9r4cH4AjIgz+hsj8YwVwwAOaUQu4HwdAKcUYQ0QOgHHs4Cj6TwPoeq5tJ5RUNM5L2PccB6DjOIxRBOAwLGtu1h/daRT/aJcdIWYM6/nE1HIqmzOTQEg0reCovBsKcByHUQbgc4Jh9PeVB58/vvev26h4HU8om7EfKtu/FLdfsfM5PUkJIUD648oZy2enICYJYqPgeoxSgsBDBO41S58V7t5uFT0lP8ifyY2MXd6++1u9UO40qI8Xp0/OJ8cpY/un7Pp+oVjJZycjByWHZBgCeN0upQQBeQi0Vv3nduOxT5BS+k729EupZ2/WHt6vF5+o7u+q+popZ6bSumFQSoN9mh2nUKwM03qsyAOAL3xKI3kAAOu1HUnw9aklm+sZzQSAc5kcB3Kr8mjL2d1sVl/2PK5plNCe847UQYwbeg7ioRU22zWB8pOTF+asVPDlw8VlWISP7nzz6eatstvyhVBKITvI9qE0jtZnjz8PgQ1K0cetdt1XKmuOmkwrOM2W8GqeywAogJIKEQ+OgDCouL3RtWtf9y+7svJWhFwwM5IHp+2Jx7Wtiz+uEkK+Pf/ecib38a/fffXwvlRySU9OcyuYixHdh+zypUvr6+vBePns2Tf7GISMht7Pp/IMQSoplQyOqRCVQlSQN5Jz5hihNKgKh9vqlavzCwsAML+wsHrl6iFIvi+d4DRvTC5tNIpfljZawn//py8MynecXaXkGXNyZfzEqeSkpnHSY4AIqPacQCL30PUbaycW56/fWAttMRAM7GlhP62T2si72RcSRPt5d+fPdq0sms8Y9oV07tXM3LnM7Jg1qutGoKIgFhhecEByf/39AGIAfT4YFC6lZH50/O2ZUy8mpstue7tUnk2nF9OTOXtswk6apsk5J4T0UmGfw5DiE2IzVC4IyKN/GKH5RGaCme12Z+MJPpeenZke51zTdJ1zTinFXuFHAIlqt9GoVuuWZRmGDvHXdKQokWAJroZ1NULKjttttFptx+G6nkiMEkIIpYSQXsT3mAtfFEolS4d0KrUwl486nAAM3ULTdaXUQE3EwXohhBBSIkKluguIQkhfSiWkVBIIYZRSRjXOHdfzfd9xuuZIN64PG7qFZVm+EACDmbhvumFMpFOWaUpFyrXa9k7BcVzX7bquK5UAIJxrpqkbhmmZ5lI+Pzc7nbDtQ7qj6BbJZNL3BACQUrkad3ngEYF8KoDwfcMwpFIc4l0XbTT+RwDnXClFADillMS3mqGe5zgA/wFV1ysy3xUuogAAAABJRU5ErkJggg==" title="plus-page icon" alt="New R script" />) and hitting “R Script” or by using the keyboard shortcut <code>Ctrl</code>+<code>Shift</code>+<code>N</code>. Try printing “Hello World” again by adding <code>print(&quot;Hello World&quot;)</code> to your new script and pressing <code>Ctrl</code>+<code>Enter</code> on this line. <code>Ctrl</code>+<code>Enter</code> is the shortcut for running the selected line, or for running a highlighted section of code.</p>
+<p>Once we save our R script, we can easily share it with coauthors or the general public (or even ourselves, on a different computer), who can simply run the code again on their machine to reproduce your analysis.</p>
 <div id="assignment" class="section level2">
 <h2><span class="header-section-number">2.1</span> Assignment</h2>
+<p>Consider the following:</p>
+<pre class="r"><code>x = 3</code></pre>
+<p>When we execute the above line of code, we’re creating the <em>variable</em> <code>x</code> and associating with it the value <code>3</code>. This is like creating a <code>local</code> in Stata.</p>
+<p>Variables (a.k.a. objects) are the most crucial building block for everything we want to do in R. When we create a variable, we create a shorthand for some value that we’ll refer to lower in our code.</p>
+<p>Assignment has to pass from right to left – the <em>object</em> on the right of <code>=</code> is assigned to the <em>name</em> on the left of <code>=</code>.</p>
+<p>The opposite is an error, since we haven’t told R what <code>y</code> is yet:</p>
+<pre class="r"><code>3 = y</code></pre>
+<pre><code>## Error in 3 = y: invalid (do_set) left-hand side to assignment</code></pre>
+<p>This error tells us that <code>3</code> is not a valid thing to which to assign; as a rule of thumb for beginners, all variable names must start with letters (though can contain other characters thereafter).</p>
+<blockquote>
+<blockquote>
+<p>Side note: the following works just as well: <code>x &lt;- 3</code> this method of assignment is probably more common, but we’ll stick with using <code>=</code> today since I think it’s more intuitive. The differences between <code>=</code> and <code>&lt;-</code> are all-but irrelevant for beginners, but for future reference, <a href="http://stackoverflow.com/questions/1741820/">this Q&amp;A</a> is worth a read:</p>
+</blockquote>
+</blockquote>
+</div>
+<div id="vectors" class="section level2">
+<h2><span class="header-section-number">2.2</span> Vectors</h2>
+<p>The easiest way to think of a vector is as a column (or a row) in Excel. A column in excel can contain many numbers, but instead of referring to each of them individually, we refer to the row. Typically, these numbers all have something in common (for example, a column Name in Excel should be filled with peoples’ names).</p>
+<p>The way to declare vectors in R is using <code>c</code>, which stands for _<strong>c</strong>_oncatenate:</p>
+<pre class="r"><code>x &lt;- c(1, 2, 3, 4)
+x</code></pre>
+<pre><code>## [1] 1 2 3 4</code></pre>
+<p>Now <code>x</code> contains four numbers. Note that since this type of sequence is so common, R has built in the colon (<code>:</code>) as an operator to create a variable like this more quickly/concisely:</p>
+<pre class="r"><code>x &lt;- 1:4
+x</code></pre>
+<pre><code>## [1] 1 2 3 4</code></pre>
+<pre class="r"><code>#Also works in reverse
+x &lt;- 4:1
+x</code></pre>
+<pre><code>## [1] 4 3 2 1</code></pre>
 </div>
 <div id="types" class="section level2">
-<h2><span class="header-section-number">2.2</span> Types</h2>
+<h2><span class="header-section-number">2.3</span> Types</h2>
+<p>Thus far, everything we’ve assigned to a variable has been a number. But this is <em>far</em> from the only thing we can assign to a variable in R. Consider:</p>
+<pre class="r"><code>x &lt;- c(&quot;Philadelphia&quot;, &quot;Pennsylvania&quot;)
+y &lt;- c(TRUE, FALSE)
+z &lt;- c(1L, 2L)</code></pre>
+<p><code>x</code> contains a <em>string</em> of letters <em>demarcated by <code>&quot;&quot;</code> (or <code>''</code>) to distinguish them from variable names</em>. We refer to <code>x</code> as a <code>character</code> vector.</p>
+<p><code>y</code> is a <code>logical</code> vector; it is often very convenient to keep binary variables (gender, treatment group, etc.) stored as <code>logical</code> variables, for reasons we’ll see below.</p>
+<p><code>z</code> is an <code>integer</code> vector. This is distinguished from <code>c(1, 2)</code>, which gets stored as a <code>numeric</code> vector. The difference between the two probably won’t affect you for quite some time, but it’s often important for saving computer memory. <code>1</code>, as a <code>numeric</code>, takes up more space in your computer’s memory than does <code>1L</code>. <code>L</code> signifies integer; don’t worry about why (if you insist, it stands for _<strong>L</strong>_ong integer, which is too involved for this session).</p>
+<div id="lists" class="section level3">
+<h3><span class="header-section-number">2.3.1</span> Lists</h3>
+<p>Consider this:</p>
+<pre class="r"><code>x &lt;- c(1, 2L, TRUE, &quot;America&quot;)</code></pre>
+<p>All four components of <code>x</code> are of different type (namely, <code>numeric</code>, <code>integer</code>, <code>logical</code>, <code>character</code>). Recall above that we said vectors must have something in common, but as we declared it, this couldn’t be further from the truth. In fact, R will force all of these components to have the same type – namely, character:</p>
+<pre class="r"><code>x</code></pre>
+<pre><code>## [1] &quot;1&quot;       &quot;2&quot;       &quot;TRUE&quot;    &quot;America&quot;</code></pre>
+<p>Note the quotation marks – none of the components are any longer considered as <code>character</code> strings in <code>x</code>.</p>
+<blockquote>
+<blockquote>
+<p>The specific heirarchy is <code>logical</code> &lt; <code>integer</code> &lt; <code>numeric</code> &lt; <code>character</code></p>
+</blockquote>
+</blockquote>
+<p>However, mixing types is a fundamental feature of almost all data analysis, so it stands to reason that there is a straightforward way to do so. In R, this is done with the <code>list</code> type. We can replace the code above using <code>list</code>:</p>
+<pre class="r"><code>x &lt;- list(1, 2L, TRUE, &quot;America&quot;)
+x</code></pre>
+<pre><code>## [[1]]
+## [1] 1
+## 
+## [[2]]
+## [1] 2
+## 
+## [[3]]
+## [1] TRUE
+## 
+## [[4]]
+## [1] &quot;America&quot;</code></pre>
+<p>Note how different the output looks, as compared to using <code>c</code>!! The quotation marks are gone except for the last component. You can ignore the mess of <code>[[</code> and <code>[</code> for now, but as an intimation, consider some more complicated <code>list</code>s:</p>
+<pre class="r"><code>x &lt;- list(c(1, 2), c(&quot;a&quot;, &quot;b&quot;), c(TRUE, FALSE), c(5L, 6L))
+x</code></pre>
+<pre><code>## [[1]]
+## [1] 1 2
+## 
+## [[2]]
+## [1] &quot;a&quot; &quot;b&quot;
+## 
+## [[3]]
+## [1]  TRUE FALSE
+## 
+## [[4]]
+## [1] 5 6</code></pre>
+<pre class="r"><code>y &lt;- list(list(1, 2, 3), list(4:5), 6)
+y</code></pre>
+<pre><code>## [[1]]
+## [[1]][[1]]
+## [1] 1
+## 
+## [[1]][[2]]
+## [1] 2
+## 
+## [[1]][[3]]
+## [1] 3
+## 
+## 
+## [[2]]
+## [[2]][[1]]
+## [1] 4 5
+## 
+## 
+## [[3]]
+## [1] 6</code></pre>
+<p><code>x</code> is a <code>list</code> which has 4 components, each of which is a vector with 2 components. This gives the first hint at how R treats a dataset with many variables of different types – at core, R stores a data set in a <code>list</code>!</p>
+<p><code>y</code> is a <em>nested</em> <code>list</code> – it’s a <code>list</code> that has <code>list</code>s for some of its components. This is very useful for more advanced operations, but probably won’t come up for quite some time, so don’t worry if you haven’t wrapped your head around this yet.</p>
+</div>
 </div>
 <div id="extractionindexing" class="section level2">
-<h2><span class="header-section-number">2.3</span> Extraction/Indexing</h2>
+<h2><span class="header-section-number">2.4</span> Extraction/Indexing</h2>
+<p>Consider a simple <code>numeric</code> vector:</p>
+<pre class="r"><code>x &lt;- 5:14</code></pre>
+<p>How do we get at the various numbers stored in certain positions in <code>x</code>? For example, how could we get the first number in <code>x</code>, <code>5</code>?</p>
+<p>This process is called <em>extraction</em>, and, for vectors, is done with square brackets (<code>[]</code>), e.g.:</p>
+<pre class="r"><code>x[1] #first element of x</code></pre>
+<pre><code>## [1] 5</code></pre>
+<pre class="r"><code>x[5] #fifth element of x</code></pre>
+<pre><code>## [1] 9</code></pre>
+<p>This also works on <code>list</code>s, but <code>list</code>s also have some other ways to get at their contents:</p>
+<pre class="r"><code>y &lt;- list(1:3, 4:6, 7:9)
+y[1]</code></pre>
+<pre><code>## [[1]]
+## [1] 1 2 3</code></pre>
+<p>Note that the output still has <code>[[</code> in it. This means the result of <code>y[1]</code> is <em>still a list</em>.</p>
+<p>More typically, we want to <em>remove</em> the <code>list</code> structure and just get <code>1:3</code> instead of <code>list(1:3)</code>. To do this, we use <code>[[</code>:</p>
+<pre class="r"><code>y[[1]]</code></pre>
+<pre><code>## [1] 1 2 3</code></pre>
+<div id="named-vectors-and-lists" class="section level3">
+<h3><span class="header-section-number">2.4.1</span> Named vectors and <code>list</code>s</h3>
+<p>It is also possible to name the elements of vectors and lists. This is convenient for making it easy to get certain elements without having to remember whether you stored it first, third, or whatever:</p>
+<pre class="r"><code>x &lt;- c(&quot;Iowa&quot; = &quot;Cruz&quot;, &quot;Ohio&quot; = &quot;Kasich&quot;, &quot;Pennsylvania&quot; = &quot;Trump&quot;)
+
+y &lt;- list(names = c(&quot;Kasich&quot;, &quot;Cruz&quot;, &quot;Trump&quot;),
+          ages = c(63, 45, 69),
+          hates_clinton = c(TRUE, TRUE, TRUE))</code></pre>
+<p>For named vectors, we keep using <code>[]</code> to extract elements, but we can use the name instead of the index:</p>
+<pre class="r"><code>x[&quot;Iowa&quot;]</code></pre>
+<pre><code>##   Iowa 
+## &quot;Cruz&quot;</code></pre>
+<p>For named <code>list</code>s, we can use <code>[]</code>, but, as with numbered indices, we’ll get a <code>list</code> in return. If we want the actual object contained at that point in the list, we can still use <code>[[</code>, or we can also use <code>$</code>, which is another extraction operator:</p>
+<pre class="r"><code>#now that y has names, we no longer see [[ -- instead, we see
+#  the name of each element of the list
+y[&quot;ages&quot;]</code></pre>
+<pre><code>## $ages
+## [1] 63 45 69</code></pre>
+<pre class="r"><code>y[[&quot;ages&quot;]]</code></pre>
+<pre><code>## [1] 63 45 69</code></pre>
+<pre class="r"><code>y$names</code></pre>
+<pre><code>## [1] &quot;Kasich&quot; &quot;Cruz&quot;   &quot;Trump&quot;</code></pre>
+</div>
 </div>
 <div id="random-numbers" class="section level2">
-<h2><span class="header-section-number">2.4</span> Random Numbers</h2>
+<h2><span class="header-section-number">2.5</span> Random Numbers</h2>
 </div>
 <div id="vectorization-apply" class="section level2">
-<h2><span class="header-section-number">2.5</span> Vectorization / <code>*apply</code></h2>
+<h2><span class="header-section-number">2.6</span> Vectorization / <code>*apply</code></h2>
 </div>
 <div id="toolkit-dputstrclass" class="section level2">
-<h2><span class="header-section-number">2.6</span> Toolkit: <code>dput</code>/<code>str</code>/<code>class</code></h2>
+<h2><span class="header-section-number">2.7</span> Toolkit: <code>?</code>/<code>dput</code>/<code>str</code>/<code>class</code></h2>
 </div>
 </div>
 <div id="data-basics-9-am---11-am" class="section level1">

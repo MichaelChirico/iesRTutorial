@@ -35,21 +35,176 @@ More common is to run code from an R script. You can create an R script in RStud
 
 Once we save our R script, we can easily share it with coauthors or the general public (or even ourselves, on a different computer), who can simply run the code again on their machine to reproduce your analysis. 
 
-`paste0`
-
 ## Assignment
 
+Consider the following:
 
+```{r}
+x = 3
+```
+
+When we execute the above line of code, we're creating the _variable_ `x` and associating with it the value `3`. This is like creating a `local` in Stata.
+
+Variables (a.k.a. objects) are the most crucial building block for everything we want to do in R. When we create a variable, we create a shorthand for some value that we'll refer to lower in our code.
+
+Assignment has to pass from right to left -- the _object_ on the right of `=` is assigned to the _name_ on the left of `=`.
+
+The opposite is an error, since we haven't told R what `y` is yet:
+
+```{r, error = TRUE}
+3 = y
+```
+
+This error tells us that `3` is not a valid thing to which to assign; as a rule of thumb for beginners, all variable names must start with letters (though can contain other characters thereafter).
+
+> > Side note: the following works just as well:
+> >  `x <- 3`
+> > this method of assignment is probably more common, but we'll stick with using `=` today since I think it's more intuitive. The differences between `=` and `<-` are all-but irrelevant for beginners, but for future reference, [this Q&A](http://stackoverflow.com/questions/1741820/) is worth a read: 
+
+## Vectors
+
+The easiest way to think of a vector is as a column (or a row) in Excel. A column in excel can contain many numbers, but instead of referring to each of them individually, we refer to the row. Typically, these numbers all have something in common (for example, a column Name in Excel should be filled with peoples' names).
+
+The way to declare vectors in R is using `c`, which stands for _**c**_oncatenate:
+
+```{r}
+x <- c(1, 2, 3, 4)
+x
+```
+
+Now `x` contains four numbers. Note that since this type of sequence is so common, R has built in the colon (`:`) as an operator to create a variable like this more quickly/concisely:
+
+```{r}
+x <- 1:4
+x
+#Also works in reverse
+x <- 4:1
+x
+```
 
 ## Types
 
+Thus far, everything we've assigned to a variable has been a number. But this is _far_ from the only thing we can assign to a variable in R. Consider:
+
+```{r}
+x <- c("Philadelphia", "Pennsylvania")
+y <- c(TRUE, FALSE)
+z <- c(1L, 2L)
+```
+
+`x` contains a _string_ of letters _demarcated by `""` (or `''`) to distinguish them from variable names_. We refer to `x` as a `character` vector. 
+
+`y` is a `logical` vector; it is often very convenient to keep binary variables (gender, treatment group, etc.) stored as `logical` variables, for reasons we'll see below.
+
+`z` is an `integer` vector. This is distinguished from `c(1, 2)`, which gets stored as a `numeric` vector. The difference between the two probably won't affect you for quite some time, but it's often important for saving computer memory. `1`, as a `numeric`, takes up more space in your computer's memory than does `1L`. `L` signifies integer; don't worry about why (if you insist, it stands for _**L**_ong integer, which is too involved for this session).
+
+### Lists
+
+Consider this:
+
+```{r}
+x <- c(1, 2L, TRUE, "America")
+```
+
+All four components of `x` are of different type (namely, `numeric`, `integer`, `logical`, `character`). Recall above that we said vectors must have something in common, but as we declared it, this couldn't be further from the truth. In fact, R will force all of these components to have the same type -- namely, character:
+
+```{r}
+x
+```
+
+Note the quotation marks -- none of the components are any longer considered as `character` strings in `x`.
+
+> > The specific heirarchy is `logical` < `integer` < `numeric` < `character`
+
+However, mixing types is a fundamental feature of almost all data analysis, so it stands to reason that there is a straightforward way to do so. In R, this is done with the `list` type. We can replace the code above using `list`:
+
+```{r}
+x <- list(1, 2L, TRUE, "America")
+x
+```
+
+Note how different the output looks, as compared to using `c`!! The quotation marks are gone except for the last component. You can ignore the mess of `[[` and `[` for now, but as an intimation, consider some more complicated `list`s:
+
+```{r}
+x <- list(c(1, 2), c("a", "b"), c(TRUE, FALSE), c(5L, 6L))
+x
+
+y <- list(list(1, 2, 3), list(4:5), 6)
+y
+```
+
+`x` is a `list` which has 4 components, each of which is a vector with 2 components. This gives the first hint at how R treats a dataset with many variables of different types -- at core, R stores a data set in a `list`!
+
+`y` is a _nested_ `list` -- it's a `list` that has `list`s for some of its components. This is very useful for more advanced operations, but probably won't come up for quite some time, so don't worry if you haven't wrapped your head around this yet.
+
 ## Extraction/Indexing
+
+Consider a simple `numeric` vector:
+
+```{r}
+x <- 5:14
+```
+
+How do we get at the various numbers stored in certain positions in `x`? For example, how could we get the first number in `x`, `5`?
+
+This process is called _extraction_, and, for vectors, is done with square brackets (`[]`), e.g.:
+
+```{r}
+x[1] #first element of x
+
+x[5] #fifth element of x
+```
+
+This also works on `list`s, but `list`s also have some other ways to get at their contents:
+
+```{r}
+y <- list(1:3, 4:6, 7:9)
+y[1]
+```
+
+Note that the output still has `[[` in it. This means the result of `y[1]` is _still a list_.
+
+More typically, we want to _remove_ the `list` structure and just get `1:3` instead of `list(1:3)`. To do this, we use `[[`:
+
+```{r}
+y[[1]]
+```
+
+### Named vectors and `list`s
+
+It is also possible to name the elements of vectors and lists. This is convenient for making it easy to get certain elements without having to remember whether you stored it first, third, or whatever:
+
+```{r}
+x <- c("Iowa" = "Cruz", "Ohio" = "Kasich", "Pennsylvania" = "Trump")
+
+y <- list(names = c("Kasich", "Cruz", "Trump"),
+          ages = c(63, 45, 69),
+          hates_clinton = c(TRUE, TRUE, TRUE))
+```
+
+For named vectors, we keep using `[]` to extract elements, but we can use the name instead of the index:
+
+```{r}
+x["Iowa"]
+```
+
+For named `list`s, we can use `[]`, but, as with numbered indices, we'll get a `list` in return. If we want the actual object contained at that point in the list, we can still use `[[`, or we can also use `$`, which is another extraction operator:
+
+```{r}
+#now that y has names, we no longer see [[ -- instead, we see
+#  the name of each element of the list
+y["ages"]
+
+y[["ages"]]
+
+y$names
+```
 
 ## Random Numbers
 
 ## Vectorization / `*apply`
 
-## Toolkit: `dput`/`str`/`class`
+## Toolkit: `?`/`dput`/`str`/`class`
 
 # Data Basics (9 AM - 11 AM)
 
