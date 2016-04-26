@@ -110,7 +110,7 @@ $(document).ready(function () {
 
 <h1 class="title">IES R Tutorial</h1>
 <h4 class="author"><em>Michael Chirico</em></h4>
-<h4 class="date"><em>Compiled April 25, 2016 at 20:23</em></h4>
+<h4 class="date"><em>Compiled April 26, 2016 at 11:55</em></h4>
 
 </div>
 
@@ -125,10 +125,14 @@ $(document).ready(function () {
 </ul></li>
 <li><a href="#extractionindexing"><span class="toc-section-number">2.4</span> Extraction/Indexing</a><ul>
 <li><a href="#named-vectors-and-lists"><span class="toc-section-number">2.4.1</span> Named vectors and <code>list</code>s</a></li>
+<li><a href="#multiple-extraction"><span class="toc-section-number">2.4.2</span> Multiple extraction</a></li>
+<li><a href="#logical-indexing"><span class="toc-section-number">2.4.3</span> Logical indexing</a></li>
+<li><a href="#negative-indexing"><span class="toc-section-number">2.4.4</span> Negative indexing</a></li>
 </ul></li>
-<li><a href="#random-numbers"><span class="toc-section-number">2.5</span> Random Numbers</a></li>
-<li><a href="#vectorization-apply"><span class="toc-section-number">2.6</span> Vectorization / <code>*apply</code></a></li>
-<li><a href="#toolkit-dputstrclass"><span class="toc-section-number">2.7</span> Toolkit: <code>?</code>/<code>dput</code>/<code>str</code>/<code>class</code></a></li>
+<li><a href="#base-functions"><span class="toc-section-number">2.5</span> Base functions</a></li>
+<li><a href="#random-numbers"><span class="toc-section-number">2.6</span> Random Numbers</a></li>
+<li><a href="#vectorization-apply"><span class="toc-section-number">2.7</span> Vectorization / <code>*apply</code></a></li>
+<li><a href="#toolkit-dputstrclass"><span class="toc-section-number">2.8</span> Toolkit: <code>?</code>/<code>dput</code>/<code>str</code>/<code>class</code></a></li>
 </ul></li>
 <li><a href="#data-basics-9-am---11-am"><span class="toc-section-number">3</span> Data Basics (9 AM - 11 AM)</a><ul>
 <li><a href="#reading-.csv-files"><span class="toc-section-number">3.1</span> Reading .csv Files</a><ul>
@@ -329,15 +333,102 @@ y[&quot;ages&quot;]</code></pre>
 <pre class="r"><code>y$names</code></pre>
 <pre><code>## [1] &quot;Kasich&quot; &quot;Cruz&quot;   &quot;Trump&quot;</code></pre>
 </div>
+<div id="multiple-extraction" class="section level3">
+<h3><span class="header-section-number">2.4.2</span> Multiple extraction</h3>
+<p>As often as not, when we need to extract, we need <em>more than one</em> element of the vector.</p>
+<p>To do this, we <em>pass a vector to <code>[]</code></em>. It’s must intuitive when we need elements in sequence, e.g.:</p>
+<pre class="r"><code># R conveniently keeps the letters of the
+#   alphabet stored automatically in two
+#   vectors, letters and LETTERS;
+#   the former is lower-, the latter uppercase
+x &lt;- LETTERS
+x</code></pre>
+<pre><code>##  [1] &quot;A&quot; &quot;B&quot; &quot;C&quot; &quot;D&quot; &quot;E&quot; &quot;F&quot; &quot;G&quot; &quot;H&quot; &quot;I&quot; &quot;J&quot; &quot;K&quot; &quot;L&quot; &quot;M&quot; &quot;N&quot; &quot;O&quot; &quot;P&quot; &quot;Q&quot;
+## [18] &quot;R&quot; &quot;S&quot; &quot;T&quot; &quot;U&quot; &quot;V&quot; &quot;W&quot; &quot;X&quot; &quot;Y&quot; &quot;Z&quot;</code></pre>
+<pre class="r"><code>#Get the first 5 letters
+x[1:5]</code></pre>
+<pre><code>## [1] &quot;A&quot; &quot;B&quot; &quot;C&quot; &quot;D&quot; &quot;E&quot;</code></pre>
+<p>What if we need the first and 5th elements, but not the 3rd/4th/5th elements?</p>
+<p>Remember that <code>1:5</code> is the same as <code>c(1, 2, 3, 4, 5)</code>. So we could have just used the latter:</p>
+<pre class="r"><code>x[c(1, 2, 3, 4, 5)]</code></pre>
+<pre><code>## [1] &quot;A&quot; &quot;B&quot; &quot;C&quot; &quot;D&quot; &quot;E&quot;</code></pre>
+<p>By extension, if we just want the first and fifth elements:</p>
+<pre class="r"><code>x[c(1, 5)]</code></pre>
+<pre><code>## [1] &quot;A&quot; &quot;E&quot;</code></pre>
+<p><em><strong>NOTE</strong></em>: there’s no* way to extract multiple elements using the other extraction operators, <code>[[</code> and <code>$</code>. It’s an error to try:</p>
+<pre class="r"><code>x &lt;- list(a = 1:3, b = 4:6)
+#multiple extraction by names works fine:
+x[c(&quot;a&quot;, &quot;b&quot;)]</code></pre>
+<pre><code>## $a
+## [1] 1 2 3
+## 
+## $b
+## [1] 4 5 6</code></pre>
+<pre class="r"><code>#but not with [[ or $
+x[[1:2]] #technically, R interprets this as a recursive index...</code></pre>
+<pre><code>## [1] 2</code></pre>
+<pre class="r"><code>x[[c(&quot;a&quot;, &quot;b&quot;)]] #again, a recursive index...</code></pre>
+<pre><code>## Error in x[[c(&quot;a&quot;, &quot;b&quot;)]]: subscript out of bounds</code></pre>
+<pre class="r"><code>x$c(&quot;a&quot;, &quot;b&quot;)</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): attempt to apply non-function</code></pre>
+</div>
+<div id="logical-indexing" class="section level3">
+<h3><span class="header-section-number">2.4.3</span> Logical indexing</h3>
+<p>Another exceedingly common approach is to subset an object based on a condition satisfied by some of the elements.</p>
+<p>Here, we must introduce the logical operators (also called <em>binary operators</em>, which is important for understanding associated error messages) in R.</p>
+<p>These are <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>==</code>, and <code>!=</code>. These are all the same in Stata (note: <code>~=</code>, which works in Stata as an alternate to <code>!=</code>, <em>doesn’t work in R</em>). First, let’s explore them:</p>
+<pre class="r"><code>ages &lt;- c(12, 14, 16, 18, 20, 22, 24, 30,
+          38, 40, 55, 60, 63, 66, 68, 70)
+
+#Who is voting age?
+ages &gt;= 18</code></pre>
+<pre><code>##  [1] FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+## [12]  TRUE  TRUE  TRUE  TRUE  TRUE</code></pre>
+<pre class="r"><code>#Who can't drink?
+ages &lt; 21</code></pre>
+<pre><code>##  [1]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE
+## [12] FALSE FALSE FALSE FALSE FALSE</code></pre>
+<pre class="r"><code>#Who is exactly 40?
+ages == 40</code></pre>
+<pre><code>##  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE
+## [12] FALSE FALSE FALSE FALSE FALSE</code></pre>
+<p>Note that R automatically figures out whether <em>each element</em> of <code>ages</code> satisfies the condition.</p>
+<p>The way to extend this to extraction is simple:</p>
+<pre class="r"><code>#Only take people under age 18
+ages[ages &lt; 18]</code></pre>
+<pre><code>## [1] 12 14 16</code></pre>
+<pre class="r"><code>#Only take AARPers
+ages[ages &gt;= 50]</code></pre>
+<pre><code>## [1] 55 60 63 66 68 70</code></pre>
+<pre class="r"><code>#Exclude any 70 year old:
+ages[ages != 70]</code></pre>
+<pre><code>##  [1] 12 14 16 18 20 22 24 30 38 40 55 60 63 66 68</code></pre>
+<p>The other common logical operations are intersection, union and negation, aka <strong>AND</strong>, <strong>OR</strong> and <strong>NOT</strong>, which in R, as in Stata, are <code>&amp;</code>, <code>|</code> and <code>!</code> (you’ll also often see <code>&amp;&amp;</code> and <code>||</code> in other peoples’ code; don’t worry about the difference yet, but for those who know Matlab – it’s the same).</p>
+<p>Quickly, let’s get working-agers:</p>
+<pre class="r"><code>ages[ages &gt;= 18 &amp; ages &lt;= 65]</code></pre>
+<pre><code>##  [1] 18 20 22 24 30 38 40 55 60 63</code></pre>
+<p>We can combine these to our heart’s fancy and create any combination of logical requirements, e.g.:</p>
+<pre class="r"><code>#get people who are over 18, but not exactly 34 or 70
+ages[ages &gt;= 18 &amp; !(ages == 34 | ages == 70)]</code></pre>
+<pre><code>##  [1] 18 20 22 24 30 38 40 55 60 63 66 68</code></pre>
+</div>
+<div id="negative-indexing" class="section level3">
+<h3><span class="header-section-number">2.4.4</span> Negative indexing</h3>
+<p>Sometimes, we’d rather <em>exclude</em> a small number of elements, rather than <em>include</em> elements like we have been doing so far.</p>
+<p>To do this, we precede the vector we want to extract with <code>-</code> (if it’s <code>numeric</code>/<code>integer</code>/<code>character</code>) or <code>!</code> (if it’s <code>logical</code>).</p>
+</div>
+</div>
+<div id="base-functions" class="section level2">
+<h2><span class="header-section-number">2.5</span> Base functions</h2>
 </div>
 <div id="random-numbers" class="section level2">
-<h2><span class="header-section-number">2.5</span> Random Numbers</h2>
+<h2><span class="header-section-number">2.6</span> Random Numbers</h2>
 </div>
 <div id="vectorization-apply" class="section level2">
-<h2><span class="header-section-number">2.6</span> Vectorization / <code>*apply</code></h2>
+<h2><span class="header-section-number">2.7</span> Vectorization / <code>*apply</code></h2>
 </div>
 <div id="toolkit-dputstrclass" class="section level2">
-<h2><span class="header-section-number">2.7</span> Toolkit: <code>?</code>/<code>dput</code>/<code>str</code>/<code>class</code></h2>
+<h2><span class="header-section-number">2.8</span> Toolkit: <code>?</code>/<code>dput</code>/<code>str</code>/<code>class</code></h2>
 </div>
 </div>
 <div id="data-basics-9-am---11-am" class="section level1">

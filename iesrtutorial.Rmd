@@ -200,6 +200,113 @@ y[["ages"]]
 y$names
 ```
 
+### Multiple extraction
+
+As often as not, when we need to extract, we need _more than one_ element of the vector. 
+
+To do this, we _pass a vector to `[]`_. It's must intuitive when we need elements in sequence, e.g.:
+
+```{r}
+# R conveniently keeps the letters of the
+#   alphabet stored automatically in two
+#   vectors, letters and LETTERS;
+#   the former is lower-, the latter uppercase
+x <- LETTERS
+x
+
+#Get the first 5 letters
+x[1:5]
+```
+
+What if we need the first and 5th elements, but not the 3rd/4th/5th elements?
+
+Remember that `1:5` is the same as `c(1, 2, 3, 4, 5)`. So we could have just used the latter:
+
+```{r}
+x[c(1, 2, 3, 4, 5)]
+```
+
+By extension, if we just want the first and fifth elements:
+
+```{r}
+x[c(1, 5)]
+```
+
+_**NOTE**_: there's no* way to extract multiple elements using the other extraction operators, `[[` and `$`. It's an error to try:
+
+```{r, error = TRUE}
+x <- list(a = 1:3, b = 4:6)
+#multiple extraction by names works fine:
+x[c("a", "b")]
+
+#but not with [[ or $
+x[[1:2]] #technically, R interprets this as a recursive index...
+
+x[[c("a", "b")]] #again, a recursive index...
+
+x$c("a", "b")
+```
+
+### Logical indexing
+
+Another exceedingly common approach is to subset an object based on a condition satisfied by some of the elements.
+
+Here, we must introduce the logical operators (also called _binary operators_, which is important for understanding associated error messages) in R.
+
+These are `<`, `>`, `<=`, `>=`, `==`, and `!=`. These are all the same in Stata (note: `~=`, which works in Stata as an alternate to `!=`, _doesn't work in R_). First, let's explore them:
+
+```{r}
+ages <- c(12, 14, 16, 18, 20, 22, 24, 30,
+          38, 40, 55, 60, 63, 66, 68, 70)
+
+#Who is voting age?
+ages >= 18
+
+#Who can't drink?
+ages < 21
+
+#Who is exactly 40?
+ages == 40
+```
+
+Note that R automatically figures out whether _each element_ of `ages` satisfies the condition.
+
+The way to extend this to extraction is simple:
+
+```{r}
+#Only take people under age 18
+ages[ages < 18]
+
+#Only take AARPers
+ages[ages >= 50]
+
+#Exclude any 70 year old:
+ages[ages != 70]
+```
+
+The other common logical operations are intersection, union and negation, aka **AND**, **OR** and **NOT**, which in R, as in Stata, are `&`, `|` and `!` (you'll also often see `&&` and `||` in other peoples' code; don't worry about the difference yet, but for those who know Matlab -- it's the same).
+
+Quickly, let's get working-agers:
+
+```{r}
+ages[ages >= 18 & ages <= 65]
+```
+
+We can combine these to our heart's fancy and create any combination of logical requirements, e.g.:
+
+```{r}
+#get people who are over 18, but not exactly 34 or 70
+ages[ages >= 18 & !(ages == 34 | ages == 70)]
+```
+
+### Negative indexing
+
+Sometimes, we'd rather _exclude_ a small number of elements, rather than _include_ elements like we have been doing so far.
+
+To do this, we precede the vector we want to extract with `-` (if it's `numeric`/`integer`/`character`) or `!` (if it's `logical`). 
+
+## Base functions
+
 ## Random Numbers
 
 ## Vectorization / `*apply`
