@@ -110,7 +110,7 @@ $(document).ready(function () {
 
 <h1 class="title">IES R Tutorial</h1>
 <h4 class="author"><em>Michael Chirico</em></h4>
-<h4 class="date"><em>Compiled April 27, 2016 at 18:32</em></h4>
+<h4 class="date"><em>Compiled April 27, 2016 at 23:41</em></h4>
 
 </div>
 
@@ -137,10 +137,19 @@ $(document).ready(function () {
 </ul></li>
 <li><a href="#random-numbers"><span class="toc-section-number">2.6</span> Random Numbers</a><ul>
 <li><a href="#uniform-and-normal-random-numbers"><span class="toc-section-number">2.6.1</span> Uniform and normal random numbers</a></li>
+<li><a href="#sample"><span class="toc-section-number">2.6.2</span> <code>sample</code></a></li>
+<li><a href="#replicate"><span class="toc-section-number">2.6.3</span> <code>replicate</code></a></li>
+<li><a href="#set.seed"><span class="toc-section-number">2.6.4</span> <code>set.seed</code></a></li>
 </ul></li>
 <li><a href="#vectorization-apply"><span class="toc-section-number">2.7</span> Vectorization / <code>*apply</code></a></li>
-<li><a href="#packages"><span class="toc-section-number">2.8</span> Packages</a></li>
-<li><a href="#toolkit-dputstrclass"><span class="toc-section-number">2.9</span> Toolkit: <code>?</code>/<code>dput</code>/<code>str</code>/<code>class</code></a></li>
+<li><a href="#packages"><span class="toc-section-number">2.8</span> Packages</a><ul>
+<li><a href="#where-to-find-packages"><span class="toc-section-number">2.8.1</span> Where to find packages</a></li>
+<li><a href="#how-to-install-packages"><span class="toc-section-number">2.8.2</span> How to install packages</a></li>
+<li><a href="#how-to-load-packages"><span class="toc-section-number">2.8.3</span> How to load packages</a></li>
+</ul></li>
+<li><a href="#toolkit-lsrmclassdputstr"><span class="toc-section-number">2.9</span> Toolkit: <code>ls</code>/<code>rm</code>/<code>?</code>/<code>class</code>/<code>dput</code>/<code>str</code></a><ul>
+<li><a href="#troubleshooting"><span class="toc-section-number">2.9.1</span> Troubleshooting</a></li>
+</ul></li>
 </ul></li>
 <li><a href="#data-basics-9-am---11-am"><span class="toc-section-number">3</span> Data Basics (9 AM - 11 AM)</a><ul>
 <li><a href="#reading-.csv-files"><span class="toc-section-number">3.1</span> Reading .csv Files</a><ul>
@@ -181,6 +190,11 @@ $(document).ready(function () {
 <div id="overview" class="section level1">
 <h1><span class="header-section-number">1</span> Overview</h1>
 <p>First and foremost is to install R (following instructions <a href="http://lib.stat.cmu.edu/R/CRAN/">here</a>) so that your computer knows how to interpret R code. Then, I highly recommend you install RStudio (following instructions <a href="https://www.rstudio.com/products/rstudio/download/">here</a>), which is a powerful program for organizing your interaction with the R language (a subtle distinction, and you wouldn’t really be ill-served by considering RStudio and R to be the same thing); for the jargon-hungry, RStudio is an Integrated Development Environment (IDE) for the R language.</p>
+<p>Some general guidelines for getting the most out of this workshop:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Active participation is key!</strong> You should be running every snippet of code I go over on your own machine. As with human languages, exposure is one of the building blocks of fluency. You would be insane to think that you can osmote the ability to understand and use R code just by watching me do things on a screen. This facility takes practice, practice, hair pulling, and more practice. For those with little exposure to more advanced programming languages, today’s workshop will be <em>very</em> heavy with material. You shouldn’t expect to absorb everything, but actively participating will help <em>a lot</em>.</p></li>
+<li><p><strong>Questions are openly encouraged!</strong> As I mentioned, this will, despite my efforts to make things as straightforward as possible, inevitably be a somewhat dense workshop. So nobody should hesitate to stop me if they’re lost. I am no fan of hearing myself speak, so if nobody in the audience is following me, that’s a waste of everyone’s time.</p></li>
+</ol>
 <hr />
 <hr />
 <hr />
@@ -666,23 +680,24 @@ paste(first, last)</code></pre>
 <p>The most common kind of random numbers that people want are uniform draws and normal draws.</p>
 <pre class="r"><code>#generate 10 U[0, 1] draws
 runif(10)</code></pre>
-<pre><code>##  [1] 0.23715773 0.55730440 0.89263369 0.92664771 0.07820099 0.24632386
-##  [7] 0.86423205 0.03499602 0.93718844 0.54727122</code></pre>
+<pre><code>##  [1] 0.3102979 0.9375703 0.2443062 0.6555990 0.7632626 0.7009645 0.4752986
+##  [8] 0.9237429 0.6893489 0.5922286</code></pre>
 <pre class="r"><code>#generate 10 U[3, 5] draws
 runif(10, min = 3, max = 5)</code></pre>
-<pre><code>##  [1] 3.315019 4.988181 4.563738 3.203495 4.539387 3.812131 3.140713
-##  [8] 3.499603 3.708673 4.134100</code></pre>
+<pre><code>##  [1] 4.327901 3.967558 3.890260 4.658842 3.456988 3.482611 4.119424
+##  [8] 4.055891 4.528108 3.051274</code></pre>
 <pre class="r"><code>#generate 10 N(0, 1) draws
 rnorm(10)</code></pre>
-<pre><code>##  [1]  1.9523253 -0.2634364  1.8597187  0.1507540  0.4040332 -0.6630352
-##  [7] -1.7150060 -0.6586034  0.9223195  0.5131445</code></pre>
+<pre><code>##  [1]  0.82221123 -1.31858621  0.60772894  1.71513687  2.65400373
+##  [6]  0.20043270 -0.04915735 -0.04397081  0.57000863 -0.32845528</code></pre>
 <pre class="r"><code>#generate 10 N(3, 5) draws
 rnorm(10, mean = 3, sd = 5)</code></pre>
-<pre><code>##  [1] 14.411598  8.204034 12.093815 -5.380120  4.707410  3.470677  1.274795
-##  [8] -4.914283  4.987649  4.700157</code></pre>
-<p>These examples highlight the common format of random number generators in R. To get random numbers from a distribution, there is probably a function named like <code>r</code><strong><code>dist</code></strong>, where <strong><code>dist</code></strong> is an abbreviation for the distribution (here, _<strong>unif</strong><em>orm and </em><strong>norm</strong>_al). The first argument is the number of draws; the rest of the arguments are parameters.</p>
-<p>Here is a table of the other common distributions built in, and the function used to invoke them:</p>
+<pre><code>##  [1]  7.066559 -2.852216 -3.022129  7.531710  2.923648 14.559239  3.966090
+##  [8] -7.280492  5.924625 -7.123794</code></pre>
+<p>These examples highlight the common format of random number generators in R. To get random numbers from a distribution, there is probably a function named like <code>r</code><strong><code>dist</code></strong>, where <strong><code>dist</code></strong> is an abbreviation for the distribution (here, <strong>unif</strong>orm and <strong>norm</strong>al). The first argument is the number of draws; the rest of the arguments are parameters.</p>
+<p>Here is a complete table of all of the common distributions built in to R, and the function used to invoke their random number generator (RNG):</p>
 <table>
+<caption>List of native distributions from built-in <code>stats</code> package</caption>
 <thead>
 <tr class="header">
 <th align="right">Distribution</th>
@@ -808,22 +823,321 @@ rnorm(10, mean = 3, sd = 5)</code></pre>
 </tr>
 </tbody>
 </table>
+<p>In addition to RNGs, R typically has three other functions associated with a given distribution: a <strong>d</strong>ensity function with prefix <code>d</code>, e.g. <code>dnorm</code>, giving the PDF; a <strong>p</strong>robability function with prefix <code>p</code>, e.g. <code>pnorm</code>, giving the CDF; and a <strong>q</strong>uantile function with prefix <code>q</code>, e.g. <code>qnorm</code>, giving quantiles.</p>
+<pre class="r"><code>#this is mainly used for plotting, see below
+dnorm(seq(-3, 3, length.out = 30))</code></pre>
+<pre><code>##  [1] 0.004431848 0.008069595 0.014077583 0.023529569 0.037679866
+##  [6] 0.057811501 0.084982332 0.119688537 0.161505004 0.208799242
+## [11] 0.258631467 0.306932813 0.348991450 0.380185689 0.396813332
+## [16] 0.396813332 0.380185689 0.348991450 0.306932813 0.258631467
+## [21] 0.208799242 0.161505004 0.119688537 0.084982332 0.057811501
+## [26] 0.037679866 0.023529569 0.014077583 0.008069595 0.004431848</code></pre>
+<pre class="r"><code>#great for calculating p values
+pnorm(1.96)</code></pre>
+<pre><code>## [1] 0.9750021</code></pre>
+<pre class="r"><code>#great for getting critical values
+qnorm(c(.005, .025, .05))</code></pre>
+<pre><code>## [1] -2.575829 -1.959964 -1.644854</code></pre>
+</div>
+<div id="sample" class="section level3">
+<h3><span class="header-section-number">2.6.2</span> <code>sample</code></h3>
+<p>As often as we need random draws from uniform or normal distributions, we need to take random subsets of vectors, or to get random integers. The main function for tasks like this is <code>sample</code>, which takes 4 arguments: <code>x</code> (a vector from which to sample, or an integer representing the max of numbers from which to sample), <code>size</code> (the number of elements to sample, which defaults to <code>length(x)</code>), <code>replace</code> (whether draws are taken with replacement), and <code>prob</code> (a vector of probabilities, for weighted sampling – default is uniform).</p>
+<p>As always, it’s easiest to see with some examples:</p>
+<pre class="r"><code>#A permutation of 1:5
+sample(5)</code></pre>
+<pre><code>## [1] 5 4 2 1 3</code></pre>
+<pre class="r"><code>#A size-3 subset of 1:5
+sample(5, 3)</code></pre>
+<pre><code>## [1] 1 3 4</code></pre>
+<pre class="r"><code>#A size-5 subset of 1:5, with replacement
+sample(5, 5, replace = TRUE)</code></pre>
+<pre><code>## [1] 4 1 1 4 1</code></pre>
+<pre class="r"><code>#A weighted sample of 1:5, heavily weighting 1
+sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></pre>
+<pre><code>## [1] 1 1 1 1 1</code></pre>
+<p>We can use the basic tools here to run basic randomization exercises, like rolling dice, flipping coins, or drawing cards from a deck:</p>
+<pre class="r"><code>#Flip 10 coins, get the percentage heads
+flips &lt;- sample(c(&quot;H&quot;, &quot;T&quot;), 10, replace = TRUE)
+mean(flips == &quot;H&quot;)</code></pre>
+<pre><code>## [1] 0.4</code></pre>
+<pre class="r"><code>#Roll a pair of dice and add them
+sum(sample(6, 2, replace = TRUE))</code></pre>
+<pre><code>## [1] 4</code></pre>
+<pre class="r"><code>#create a deck of labeled cards:
+#  (I copy-pasted the text for the suits from
+#   Wikipedia, but we could have used S/H/D/C:
+#   https://en.wikipedia.org/wiki/Playing_cards_in_Unicode)
+deck &lt;- paste0(rep(c(2:10, &quot;J&quot;, &quot;Q&quot;, &quot;K&quot;, &quot;A&quot;), 4),      #card values
+               rep(c(&quot;♠&quot;, &quot;♥&quot;, &quot;♦&quot;, &quot;♣&quot;), each = 13)) #suits
+deck</code></pre>
+<pre><code>##  [1] &quot;2♠&quot;  &quot;3♠&quot;  &quot;4♠&quot;  &quot;5♠&quot;  &quot;6♠&quot;  &quot;7♠&quot;  &quot;8♠&quot;  &quot;9♠&quot;  &quot;10♠&quot; &quot;J♠&quot;  &quot;Q♠&quot; 
+## [12] &quot;K♠&quot;  &quot;A♠&quot;  &quot;2♥&quot;  &quot;3♥&quot;  &quot;4♥&quot;  &quot;5♥&quot;  &quot;6♥&quot;  &quot;7♥&quot;  &quot;8♥&quot;  &quot;9♥&quot;  &quot;10♥&quot;
+## [23] &quot;J♥&quot;  &quot;Q♥&quot;  &quot;K♥&quot;  &quot;A♥&quot;  &quot;2♦&quot;  &quot;3♦&quot;  &quot;4♦&quot;  &quot;5♦&quot;  &quot;6♦&quot;  &quot;7♦&quot;  &quot;8♦&quot; 
+## [34] &quot;9♦&quot;  &quot;10♦&quot; &quot;J♦&quot;  &quot;Q♦&quot;  &quot;K♦&quot;  &quot;A♦&quot;  &quot;2♣&quot;  &quot;3♣&quot;  &quot;4♣&quot;  &quot;5♣&quot;  &quot;6♣&quot; 
+## [45] &quot;7♣&quot;  &quot;8♣&quot;  &quot;9♣&quot;  &quot;10♣&quot; &quot;J♣&quot;  &quot;Q♣&quot;  &quot;K♣&quot;  &quot;A♣&quot;</code></pre>
+<pre class="r"><code>#Now draw a poker hand
+sample(deck, 5)</code></pre>
+<pre><code>## [1] &quot;A♥&quot;  &quot;3♦&quot;  &quot;4♣&quot;  &quot;J♣&quot;  &quot;10♦&quot;</code></pre>
+</div>
+<div id="replicate" class="section level3">
+<h3><span class="header-section-number">2.6.3</span> <code>replicate</code></h3>
+<p>Full scale Monte Carlo/bootstrapping requires replicating a simulation exercise over and over. Again, R is ready and has the <code>replicate</code> function for us. Let’s simulate a few poker hands to find their frequency and compare with the theoretical frequency:</p>
+<pre class="r"><code>#It'll be easier to deal with numbers than
+#  with the fancy strings we used above
+deck_nos &lt;- 1:52
+#Simulating a flush
+simulations &lt;- 
+  replicate(10000, #number of repetitions/simulations
+            { #use curly braces to run a simulation that takes more than one line
+              hand &lt;- sample(deck_nos, 5) #draw a five-card hand
+              suits &lt;- hand %% 4 # force card number into one of 4 categories
+              length(unique(suits)) == 1 #returns TRUE if all suits are equal, FALSE else
+            }) #close braces and parentheses
+#How often does a flush happen?
+#  True frequency is 0.1965%
+mean(simulations)</code></pre>
+<pre><code>## [1] 0.0022</code></pre>
+<pre class="r"><code>#What about a pair (just two cards match)?
+#  true frequency: 42%
+simulations &lt;- 
+  replicate(10000, {
+    hand &lt;- sample(deck_nos, 5)
+    faces &lt;- hand %% 13 # force into one of 13 categories
+    sum(duplicated(faces)) == 1 #one pair if there's exactly _one_ match
+  })
+mean(simulations)</code></pre>
+<pre><code>## [1] 0.4244</code></pre>
+</div>
+<div id="set.seed" class="section level3">
+<h3><span class="header-section-number">2.6.4</span> <code>set.seed</code></h3>
+<p>Just a quick note that any time we run a simulation, it’s a good idea (for <em>replicability</em>) to <em>set and save the random seed</em>! Random numbers from computers may look random, but in fact they’re completely deterministic – if we know the value of the random seed! This is a disadvantage for information security (which is only sometimes important to us as data analysts), but an advantage for academic research, where replicability is paramount.</p>
+<p>A simple example:</p>
+<pre class="r"><code>set.seed(100)
+runif(1)</code></pre>
+<pre><code>## [1] 0.3077661</code></pre>
+<pre class="r"><code>#if we run again, we'll get a different number
+runif(1)</code></pre>
+<pre><code>## [1] 0.2576725</code></pre>
+<pre class="r"><code>#but if we re-set the seed, we'll get the same
+set.seed(100)
+runif(1)</code></pre>
+<pre><code>## [1] 0.3077661</code></pre>
 <hr />
 </div>
 </div>
 <div id="vectorization-apply" class="section level2">
 <h2><span class="header-section-number">2.7</span> Vectorization / <code>*apply</code></h2>
+<p>The last set of major workhorse functions in <code>R</code> are the <code>*apply</code> functions – <code>sapply</code> and <code>lapply</code>. <code>apply</code> is also important, but I want to avoid touching on matrices today, if I can. The oft-ignored cousins are <code>rapply</code> (<strong>r</strong>ecursive), <code>tapply</code> (<strong>t</strong>agged), <code>mapply</code> (<strong>m</strong>ultivariate), <code>vapply</code> (<strong>v</strong>erified), and <code>eapply</code> (<strong>e</strong>nvironment).</p>
+<p>You should think of <code>lapply</code> as <strong>l</strong>ist apply and <code>sapply</code> as <strong>s</strong>implified apply, because the former returns a <code>list</code>, and the latter returns a more simplified object (vector/matrix/array).</p>
+<p>Both of these functions are, by and large, what you should be using in R instead of a <code>for</code> loop. A <code>for</code> loop often consists of going through every element of a <code>list</code> and doing something to its contents. <code>for</code> loops exist in R, as they probably do in every langauge, but are typically much slower than what is often called a vectorized approach. We’ll get into that more later, but for now I’ll just leave an example of <code>lapply</code> and <code>sapply</code> in action:</p>
+<pre class="r"><code>#pick three triplets of numbers at random
+l &lt;- list(sample(100, 3), sample(100, 3), sample(100, 3))
+l</code></pre>
+<pre><code>## [[1]]
+## [1] 26 55  6
+## 
+## [[2]]
+## [1] 47 48 80
+## 
+## [[3]]
+## [1] 38 55 17</code></pre>
+<pre class="r"><code>#now find the max within each group
+lapply(l, max)</code></pre>
+<pre><code>## [[1]]
+## [1] 55
+## 
+## [[2]]
+## [1] 80
+## 
+## [[3]]
+## [1] 55</code></pre>
+<pre class="r"><code>#note that the output is a list. It's typically
+#  more convenient to have the output as a vector:
+sapply(l, max)</code></pre>
+<pre><code>## [1] 55 80 55</code></pre>
 <hr />
 </div>
 <div id="packages" class="section level2">
 <h2><span class="header-section-number">2.8</span> Packages</h2>
+<p>One of the things that makes R truly exceptional is its vast library of user-contributed packages.</p>
+<p>R comes pre-loaded with a boat-load of the most common functions / methods of analysis. But in no way is this congenital library complete.</p>
+<p>Complementing this core of the most common operations are external <em>packages</em>, which are basically sets of functions designed to accomplish specific tasks. The entire afternoon of this workshop is devoted to gaining facility in just a few of these.</p>
+<p>Best of all, unlike some super-expensive programming languages, all of the thousands of packages available to R users (most importantly through CRAN, the <strong>C</strong>omprehensive <strong>R</strong> <strong>A</strong>rchive <strong>N</strong>etwork) are <em>completely free of charge</em>.</p>
+<p>The two most important things to know about packages for now (we’ll start using my favorite, <code>data.table</code>, shortly) is where to find them, how to install them, and how to load them.</p>
+<div id="where-to-find-packages" class="section level3">
+<h3><span class="header-section-number">2.8.1</span> Where to find packages</h3>
+<p>Long story short: Google. Got a particular statistical technique in mind? The best R package for this is almost always the top Google result if asked correctly.</p>
+<p>How about heirarchical linear modeling (HLM)? A quick Google for “HLM R” or “heirarchical linear modeling R” both turn up some articles/tutorials/CRAN pages referencing <code>lmer</code>.</p>
+</div>
+<div id="how-to-install-packages" class="section level3">
+<h3><span class="header-section-number">2.8.2</span> How to install packages</h3>
+<p>Just use <code>install.packages</code>!</p>
+<pre class="r"><code>#we won't be able to run this, because it requires
+#  administrative priviliges, but you can do
+#  this easily on your own computer
+install.packages(&quot;lmer&quot;)</code></pre>
+</div>
+<div id="how-to-load-packages" class="section level3">
+<h3><span class="header-section-number">2.8.3</span> How to load packages</h3>
+<p>Just add it to your library!</p>
+<pre class="r"><code>#this won't run if it's not installed
+library(lmer)</code></pre>
+<p><em>Et voila</em>! You’ll now be able to run HLM in R. You can also Google “tutorial lmer” (or in general “tutorial [package name]”) and you’re very likely to find a trove of sites trying to help you learn the package. Most popular packages also come with worked examples available through the example function, e.g., <code>example(package = &quot;lmer&quot;)</code>.</p>
 <hr />
 </div>
-<div id="toolkit-dputstrclass" class="section level2">
-<h2><span class="header-section-number">2.9</span> Toolkit: <code>?</code>/<code>dput</code>/<code>str</code>/<code>class</code></h2>
+</div>
+<div id="toolkit-lsrmclassdputstr" class="section level2">
+<h2><span class="header-section-number">2.9</span> Toolkit: <code>ls</code>/<code>rm</code>/<code>?</code>/<code>class</code>/<code>dput</code>/<code>str</code></h2>
+<p>Just a few more things that aren’t related to statistical analysis <em>per se</em>, but which will often facilitate your coding experience.</p>
+<p>First, <code>ls</code> and <code>rm</code>, short-hand for <strong>l</strong>i<strong>s</strong>t objects and <strong>r</strong>e<strong>m</strong>ove objects. These can be useful for understanding what names you’ve assigned to objects, and for occasionally cleaning up the clutter of variables you’ll no longer use (for the meticulously clean, but also because leaving a bunch of unused objects lying around is a great way to create irritating errors / problems with your code).</p>
+<p>Let’s see all the junk we’ve created thus far in the workshop:</p>
+<pre class="r"><code>#ls is a function, so we have to use () to call it
+ls()</code></pre>
+<pre><code>##  [1] &quot;ages&quot;        &quot;candidates&quot;  &quot;color&quot;       &quot;deck&quot;        &quot;deck_nos&quot;   
+##  [6] &quot;first&quot;       &quot;flips&quot;       &quot;l&quot;           &quot;last&quot;        &quot;nominees&quot;   
+## [11] &quot;roygbiv&quot;     &quot;simulations&quot; &quot;x&quot;           &quot;y&quot;           &quot;years&quot;      
+## [16] &quot;z&quot;</code></pre>
+<pre class="r"><code>#one of the optional arguments to ls is to 
+#  also list some &quot;hidden&quot; objects:
+ls(all = TRUE)</code></pre>
+<pre><code>##  [1] &quot;ages&quot;         &quot;candidates&quot;   &quot;color&quot;        &quot;deck&quot;        
+##  [5] &quot;deck_nos&quot;     &quot;first&quot;        &quot;flips&quot;        &quot;l&quot;           
+##  [9] &quot;last&quot;         &quot;nominees&quot;     &quot;.Random.seed&quot; &quot;roygbiv&quot;     
+## [13] &quot;simulations&quot;  &quot;x&quot;            &quot;y&quot;            &quot;years&quot;       
+## [17] &quot;z&quot;</code></pre>
+<pre class="r"><code>#what a mess! let's get rid of some stuff
+rm(ages, candidates, color)
+
+#ugh, this is getting boring. What about
+#  a scorched earth technique?
+rm(list = ls(all = TRUE))
+
+#after the apocalypse, nothing remains:
+ls(all = TRUE)</code></pre>
+<pre><code>## character(0)</code></pre>
+<div id="troubleshooting" class="section level3">
+<h3><span class="header-section-number">2.9.1</span> Troubleshooting</h3>
+<p>Finally, I’ll leave you with some tools that are often the first place to look when trying to troubleshoot code that isn’t working correctly.</p>
+<div id="section" class="section level4">
+<h4><span class="header-section-number">2.9.1.1</span> <code>?</code></h4>
+<p><code>?</code> is the help operator in R. If you’d like to know <em>anything</em> about any function in R, just type <code>?</code> before its name and hit enter. Let’s start with the help page for <code>replicate</code> by entering <code>?replicate</code>. All help files are structured similarly, with the following common sections (I’ve highlighted in <strong>bold</strong> the most useful for troubleshooting):</p>
+<ol style="list-style-type: decimal">
+<li>Description: an overview of the function(s) described on the page. <code>?replicate</code>, for example, redirects us to the help page for <code>lapply</code>, since in addition to <code>replicate</code> this page covers <code>lapply</code>, <code>sapply</code>, <code>vapply</code>, and <code>simplify2array</code> (don’t worry about the last two, they’re a bit more advanced and won’t come up today).</li>
+<li><strong>Usage</strong>: a generic snippet of code which shows the name and default value of every argument of every function on the page. This is very useful for understanding the ordering and naming of all the arguments to a function. <code>replicate</code>, for example, has 3 arguments, only 2 of which we used above: <code>n</code> is the number of repetitions, which has no default; <code>expr</code> is the expression to repeat (surrounded in curly braces <code>{}</code> above), which has no default; and <code>simplify</code>, which gives us control over how/whether the results are converted from a <code>list</code>, which has default <code>&quot;array&quot;</code>, leading to the output we saw above.</li>
+<li><strong>Arguments</strong>: gives a brief overview of what each function expects to receive for each argument (the type, whether it can be a vector or has to be a scalar, etc.). You shouldn’t expect to fully understand everything that’s being told to you here for a while, since it’s pretty specific, but it can still help.</li>
+<li>Details: Some nitty-gritty about how the functions work, some mistakes to avoid, some of the more intricate details of how exactly the function goes about its task. Tends to be very dense and jargon-heavy.</li>
+<li>Value: Tells you details about the <em>type</em> of object that you should expect to be returned as a result of running each function (e.g., we noted that <code>lapply</code> <em>always</em> returns a <code>list</code>; this is noted in the Value section of <code>?replicate</code> in the first sentence).</li>
+<li>Note: Some more technical details about the function and its edge cases.</li>
+<li>References: Especially useful for packages – this usually tells you where to go to find some more reading about the algorithms implemented.</li>
+<li>See Also: Gives some related functions which might also help accomplish similar tasks.</li>
+<li><strong>Examples</strong>: A great place to look for some simple reproducible examples of how the functions work, with code that can be copy-pasted and run by you, the user.</li>
+</ol>
+<p>The help files are an absolute <em>must</em> go-to reference – it’s always the first place you should check when you’re stuck.</p>
+</div>
+<div id="class" class="section level4">
+<h4><span class="header-section-number">2.9.1.2</span> <code>class</code></h4>
+<p><code>class</code> simply tells you the class/type of an object in memory. You’d be surprised how often the root of an issue is simply that <em>you</em> think a certain variable is type X (say, <code>numeric</code>), but actually R is keeping track of it as if it’s type Y (frighteningly often, <code>factor</code> – more on that later).</p>
+</div>
+<div id="dput" class="section level4">
+<h4><span class="header-section-number">2.9.1.3</span> <code>dput</code></h4>
+<p><code>dput</code> is like a microscope for R objects. It deconstructs any variable in R to its atoms – its absolute fundamental components – and prints out what’s hidden under the hood. This is especially useful because all of the most complicated objects in R tend to have an associated <code>print</code> method which renders them in a digestible form. This is great for taking a glance at a complicated object, but not useful for understanding what’s going wrong with that object.</p>
+<p>Take, for example:</p>
+<pre class="r"><code>#we'll get more into how R understands dates/times
+#  later in the day; the key takeaway here is 
+#  how R prints the object vs. how it's actually stored.
+t &lt;- as.POSIXlt(&quot;2015-05-12&quot;)
+t</code></pre>
+<pre><code>## [1] &quot;2015-05-12 EDT&quot;</code></pre>
+<pre class="r"><code>#when we just enter the object at the console, its
+#  print method is invoked, i.e.:
+print(t)</code></pre>
+<pre><code>## [1] &quot;2015-05-12 EDT&quot;</code></pre>
+<pre class="r"><code>#this is a bit misleading. From what we see, it would appear
+#  that t is just a character string. However:
+t == &quot;2015-05-15 EDT&quot;</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code>#so, what is t? use dput
+dput(t)</code></pre>
+<pre><code>## structure(list(sec = 0, min = 0L, hour = 0L, mday = 12L, mon = 4L, 
+##     year = 115L, wday = 2L, yday = 131L, isdst = 1L, zone = &quot;EDT&quot;, 
+##     gmtoff = NA_integer_), .Names = c(&quot;sec&quot;, &quot;min&quot;, &quot;hour&quot;, &quot;mday&quot;, 
+## &quot;mon&quot;, &quot;year&quot;, &quot;wday&quot;, &quot;yday&quot;, &quot;isdst&quot;, &quot;zone&quot;, &quot;gmtoff&quot;), class = c(&quot;POSIXlt&quot;, 
+## &quot;POSIXt&quot;))</code></pre>
+<pre class="r"><code>#actually, it's a rather complicated list with components
+#  describing every which thing about the date/time we entered</code></pre>
+</div>
+<div id="str" class="section level4">
+<h4><span class="header-section-number">2.9.1.4</span> <code>str</code></h4>
+<p>Often the output of <code>dput</code> is far too verbose to be of real use. <code>str</code> is a similar function which gives us a more detailed look at the components of a complicated object, but with the advantage that it doesn’t give us too many details; it’s more like a table of contents for R objects.</p>
+<pre class="r"><code>#don't worry about what lm is yet, we'll get there soon
+y &lt;- rnorm(1000)
+x &lt;- rnorm(1000)
+r &lt;- lm(y ~ x)
+str(r)</code></pre>
+<pre><code>## List of 12
+##  $ coefficients : Named num [1:2] -0.0285 -0.0546
+##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
+##  $ residuals    : Named num [1:1000] 0.0921 -1.5679 -0.8058 -1.0352 -0.8536 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
+##  $ effects      : Named num [1:1000] 0.931 -1.735 -0.822 -1.088 -0.85 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;(Intercept)&quot; &quot;x&quot; &quot;&quot; &quot;&quot; ...
+##  $ rank         : int 2
+##  $ fitted.values: Named num [1:1000] 0.0286 0.00228 -0.04311 -0.08364 -0.02058 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
+##  $ assign       : int [1:2] 0 1
+##  $ qr           :List of 5
+##   ..$ qr   : num [1:1000, 1:2] -31.6228 0.0316 0.0316 0.0316 0.0316 ...
+##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. ..$ : chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
+##   .. .. ..$ : chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
+##   .. ..- attr(*, &quot;assign&quot;)= int [1:2] 0 1
+##   ..$ qraux: num [1:2] 1.03 1.02
+##   ..$ pivot: int [1:2] 1 2
+##   ..$ tol  : num 1e-07
+##   ..$ rank : int 2
+##   ..- attr(*, &quot;class&quot;)= chr &quot;qr&quot;
+##  $ df.residual  : int 998
+##  $ xlevels      : Named list()
+##  $ call         : language lm(formula = y ~ x)
+##  $ terms        :Classes 'terms', 'formula' length 3 y ~ x
+##   .. ..- attr(*, &quot;variables&quot;)= language list(y, x)
+##   .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
+##   .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. .. ..$ : chr [1:2] &quot;y&quot; &quot;x&quot;
+##   .. .. .. ..$ : chr &quot;x&quot;
+##   .. ..- attr(*, &quot;term.labels&quot;)= chr &quot;x&quot;
+##   .. ..- attr(*, &quot;order&quot;)= int 1
+##   .. ..- attr(*, &quot;intercept&quot;)= int 1
+##   .. ..- attr(*, &quot;response&quot;)= int 1
+##   .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: R_GlobalEnv&gt; 
+##   .. ..- attr(*, &quot;predvars&quot;)= language list(y, x)
+##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
+##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;y&quot; &quot;x&quot;
+##  $ model        :'data.frame':   1000 obs. of  2 variables:
+##   ..$ y: num [1:1000] 0.121 -1.566 -0.849 -1.119 -0.874 ...
+##   ..$ x: num [1:1000] -1.046 -0.564 0.269 1.011 -0.145 ...
+##   ..- attr(*, &quot;terms&quot;)=Classes 'terms', 'formula' length 3 y ~ x
+##   .. .. ..- attr(*, &quot;variables&quot;)= language list(y, x)
+##   .. .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
+##   .. .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. .. .. ..$ : chr [1:2] &quot;y&quot; &quot;x&quot;
+##   .. .. .. .. ..$ : chr &quot;x&quot;
+##   .. .. ..- attr(*, &quot;term.labels&quot;)= chr &quot;x&quot;
+##   .. .. ..- attr(*, &quot;order&quot;)= int 1
+##   .. .. ..- attr(*, &quot;intercept&quot;)= int 1
+##   .. .. ..- attr(*, &quot;response&quot;)= int 1
+##   .. .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: R_GlobalEnv&gt; 
+##   .. .. ..- attr(*, &quot;predvars&quot;)= language list(y, x)
+##   .. .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
+##   .. .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;y&quot; &quot;x&quot;
+##  - attr(*, &quot;class&quot;)= chr &quot;lm&quot;</code></pre>
+<p>Whew, that was a lot! Congratulations!</p>
+<p>Now, on to the more fun and useful stuff!</p>
 <hr />
 <hr />
 <hr />
+</div>
+</div>
 </div>
 </div>
 <div id="data-basics-9-am---11-am" class="section level1">
