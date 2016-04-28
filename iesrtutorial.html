@@ -110,7 +110,7 @@ $(document).ready(function () {
 
 <h1 class="title">IES R Tutorial</h1>
 <h4 class="author"><em>Michael Chirico</em></h4>
-<h4 class="date"><em>Compiled April 27, 2016 at 23:41</em></h4>
+<h4 class="date"><em>Compiled April 28, 2016 at 13:38</em></h4>
 
 </div>
 
@@ -680,20 +680,20 @@ paste(first, last)</code></pre>
 <p>The most common kind of random numbers that people want are uniform draws and normal draws.</p>
 <pre class="r"><code>#generate 10 U[0, 1] draws
 runif(10)</code></pre>
-<pre><code>##  [1] 0.3102979 0.9375703 0.2443062 0.6555990 0.7632626 0.7009645 0.4752986
-##  [8] 0.9237429 0.6893489 0.5922286</code></pre>
+<pre><code>##  [1] 0.42024142 0.69436757 0.40544869 0.54006709 0.08913584 0.12523663
+##  [7] 0.03554970 0.07741151 0.50411055 0.46290143</code></pre>
 <pre class="r"><code>#generate 10 U[3, 5] draws
 runif(10, min = 3, max = 5)</code></pre>
-<pre><code>##  [1] 4.327901 3.967558 3.890260 4.658842 3.456988 3.482611 4.119424
-##  [8] 4.055891 4.528108 3.051274</code></pre>
+<pre><code>##  [1] 3.725568 3.623249 4.152838 3.096700 3.128490 4.458787 4.725006
+##  [8] 4.505527 3.221118 3.267278</code></pre>
 <pre class="r"><code>#generate 10 N(0, 1) draws
 rnorm(10)</code></pre>
-<pre><code>##  [1]  0.82221123 -1.31858621  0.60772894  1.71513687  2.65400373
-##  [6]  0.20043270 -0.04915735 -0.04397081  0.57000863 -0.32845528</code></pre>
+<pre><code>##  [1] -1.197962486  1.065841313  1.198609884  0.796608195 -0.005417547
+##  [6]  1.384934617 -0.966750035  0.625441466  0.030058354 -1.973889991</code></pre>
 <pre class="r"><code>#generate 10 N(3, 5) draws
 rnorm(10, mean = 3, sd = 5)</code></pre>
-<pre><code>##  [1]  7.066559 -2.852216 -3.022129  7.531710  2.923648 14.559239  3.966090
-##  [8] -7.280492  5.924625 -7.123794</code></pre>
+<pre><code>##  [1] -2.004800  7.720951  4.145294  2.110591  6.337504 -1.381662  3.476413
+##  [8] 10.199867  8.267048  9.665846</code></pre>
 <p>These examples highlight the common format of random number generators in R. To get random numbers from a distribution, there is probably a function named like <code>r</code><strong><code>dist</code></strong>, where <strong><code>dist</code></strong> is an abbreviation for the distribution (here, <strong>unif</strong>orm and <strong>norm</strong>al). The first argument is the number of draws; the rest of the arguments are parameters.</p>
 <p>Here is a complete table of all of the common distributions built in to R, and the function used to invoke their random number generator (RNG):</p>
 <table>
@@ -845,13 +845,13 @@ qnorm(c(.005, .025, .05))</code></pre>
 <p>As always, it’s easiest to see with some examples:</p>
 <pre class="r"><code>#A permutation of 1:5
 sample(5)</code></pre>
-<pre><code>## [1] 5 4 2 1 3</code></pre>
+<pre><code>## [1] 1 2 3 5 4</code></pre>
 <pre class="r"><code>#A size-3 subset of 1:5
 sample(5, 3)</code></pre>
-<pre><code>## [1] 1 3 4</code></pre>
+<pre><code>## [1] 2 5 1</code></pre>
 <pre class="r"><code>#A size-5 subset of 1:5, with replacement
 sample(5, 5, replace = TRUE)</code></pre>
-<pre><code>## [1] 4 1 1 4 1</code></pre>
+<pre><code>## [1] 3 2 4 1 3</code></pre>
 <pre class="r"><code>#A weighted sample of 1:5, heavily weighting 1
 sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></pre>
 <pre><code>## [1] 1 1 1 1 1</code></pre>
@@ -859,7 +859,7 @@ sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></
 <pre class="r"><code>#Flip 10 coins, get the percentage heads
 flips &lt;- sample(c(&quot;H&quot;, &quot;T&quot;), 10, replace = TRUE)
 mean(flips == &quot;H&quot;)</code></pre>
-<pre><code>## [1] 0.4</code></pre>
+<pre><code>## [1] 0.5</code></pre>
 <pre class="r"><code>#Roll a pair of dice and add them
 sum(sample(6, 2, replace = TRUE))</code></pre>
 <pre><code>## [1] 4</code></pre>
@@ -877,7 +877,7 @@ deck</code></pre>
 ## [45] &quot;7♣&quot;  &quot;8♣&quot;  &quot;9♣&quot;  &quot;10♣&quot; &quot;J♣&quot;  &quot;Q♣&quot;  &quot;K♣&quot;  &quot;A♣&quot;</code></pre>
 <pre class="r"><code>#Now draw a poker hand
 sample(deck, 5)</code></pre>
-<pre><code>## [1] &quot;A♥&quot;  &quot;3♦&quot;  &quot;4♣&quot;  &quot;J♣&quot;  &quot;10♦&quot;</code></pre>
+<pre><code>## [1] &quot;6♥&quot; &quot;7♦&quot; &quot;2♥&quot; &quot;9♣&quot; &quot;3♦&quot;</code></pre>
 </div>
 <div id="replicate" class="section level3">
 <h3><span class="header-section-number">2.6.3</span> <code>replicate</code></h3>
@@ -896,7 +896,7 @@ simulations &lt;-
 #How often does a flush happen?
 #  True frequency is 0.1965%
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.0022</code></pre>
+<pre><code>## [1] 0.0023</code></pre>
 <pre class="r"><code>#What about a pair (just two cards match)?
 #  true frequency: 42%
 simulations &lt;- 
@@ -906,7 +906,7 @@ simulations &lt;-
     sum(duplicated(faces)) == 1 #one pair if there's exactly _one_ match
   })
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.4244</code></pre>
+<pre><code>## [1] 0.4213</code></pre>
 </div>
 <div id="set.seed" class="section level3">
 <h3><span class="header-section-number">2.6.4</span> <code>set.seed</code></h3>
@@ -1075,14 +1075,14 @@ x &lt;- rnorm(1000)
 r &lt;- lm(y ~ x)
 str(r)</code></pre>
 <pre><code>## List of 12
-##  $ coefficients : Named num [1:2] -0.0285 -0.0546
+##  $ coefficients : Named num [1:2] -0.05838 -0.00533
 ##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
-##  $ residuals    : Named num [1:1000] 0.0921 -1.5679 -0.8058 -1.0352 -0.8536 ...
+##  $ residuals    : Named num [1:1000] -0.867 1.557 0.353 -1.244 -2.158 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ effects      : Named num [1:1000] 0.931 -1.735 -0.822 -1.088 -0.85 ...
+##  $ effects      : Named num [1:1000] 1.852 -0.169 0.397 -1.196 -2.111 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;(Intercept)&quot; &quot;x&quot; &quot;&quot; &quot;&quot; ...
 ##  $ rank         : int 2
-##  $ fitted.values: Named num [1:1000] 0.0286 0.00228 -0.04311 -0.08364 -0.02058 ...
+##  $ fitted.values: Named num [1:1000] -0.0613 -0.0528 -0.0605 -0.0611 -0.0609 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##  $ assign       : int [1:2] 0 1
 ##  $ qr           :List of 5
@@ -1091,7 +1091,7 @@ str(r)</code></pre>
 ##   .. .. ..$ : chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##   .. .. ..$ : chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
 ##   .. ..- attr(*, &quot;assign&quot;)= int [1:2] 0 1
-##   ..$ qraux: num [1:2] 1.03 1.02
+##   ..$ qraux: num [1:2] 1.03 1.03
 ##   ..$ pivot: int [1:2] 1 2
 ##   ..$ tol  : num 1e-07
 ##   ..$ rank : int 2
@@ -1114,8 +1114,8 @@ str(r)</code></pre>
 ##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
 ##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;y&quot; &quot;x&quot;
 ##  $ model        :'data.frame':   1000 obs. of  2 variables:
-##   ..$ y: num [1:1000] 0.121 -1.566 -0.849 -1.119 -0.874 ...
-##   ..$ x: num [1:1000] -1.046 -0.564 0.269 1.011 -0.145 ...
+##   ..$ y: num [1:1000] -0.929 1.504 0.293 -1.306 -2.219 ...
+##   ..$ x: num [1:1000] 0.554 -1.043 0.404 0.514 0.471 ...
 ##   ..- attr(*, &quot;terms&quot;)=Classes 'terms', 'formula' length 3 y ~ x
 ##   .. .. ..- attr(*, &quot;variables&quot;)= language list(y, x)
 ##   .. .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
@@ -1148,8 +1148,116 @@ str(r)</code></pre>
 </ul>
 <div id="reading-.csv-files" class="section level2">
 <h2><span class="header-section-number">3.1</span> Reading .csv Files</h2>
+<p>The most common format of file you’re like to find in the real world is in .csv (comma-separated value) format.</p>
+<p>Quick clarification that not all comma-separated files have the extension. Often you’ll find a file with the extension .txt that actually contains text that is comma-separated. You just have to inspect the file to figure out how it’s stored.</p>
+<p>In fact that’s the case for or first example. We’re going to look at teacher attendance data for the School District of Philadelphia.</p>
+<p>The school district releases, through their Open Data Initiative, a whole bunch of data files related to the topics like school catchment zones, employee salaries, budget details, etc. All of the data can be found here: <a href="http://webgui.phila.k12.pa.us/offices/o/open-data-initiative" class="uri">http://webgui.phila.k12.pa.us/offices/o/open-data-initiative</a>.</p>
+<p>We could use <code>R</code> to download the files (we may touch on this in the afternoon), but to ease us into things, I’ve gone ahead and downloaded some files and put them on my GitHub page. Let’s look at the data from 2013-14. <a href="https://raw.githubusercontent.com/MichaelChirico/iesRTutorial/in_progress/data/School%20Profiles%20Teacher%20Attendance%202013-2014.TXT">Here’s a link to the data</a>, but it should also be loaded on your machine.</p>
+<p>We can preview the file using the terminal on a Mac. Learning to do some basic stuff in the terminal is a great investment of your time, but that’s not the focus of today’s lesson, so we’ll just stick with doing things through R. We can send commands to the terminal in R using the <code>system</code> command. The terminal command <code>head</code> (which is also a function in R, but only applies to objects already loaded) will spit out the first couple lines of a file so we can see what it looks like without having to load the whole thing (which, for larger files, can be time-consuming).</p>
+<pre class="r"><code>#Just to flex some of R's muscles, we'll find
+#  the data file from within R. As often as not,
+#  we'll just navigate to the file ourselves and
+#  just copy-paste the file path.
+#  We're looking for the folder with the data
+#  so we use include.dirs to include directories
+list.files(include.dirs = TRUE) </code></pre>
+<pre><code>## [1] &quot;data&quot;              &quot;iesrtutorial.html&quot; &quot;iesrtutorial.Rmd&quot; 
+## [4] &quot;README.md&quot;</code></pre>
+<pre class="r"><code>#I've kept things in the data folder here. We
+#  can tell it's a folder as it has no extensions.
+#  We can find the files in that folder using a 
+#  relative path (./ means starting from the 
+#  current folder, enter the folder after /).
+#  We use the full.names of the file for the next step.
+list.files(&quot;./data&quot;, full.names = TRUE)</code></pre>
+<pre><code>## [1] &quot;./data/School Profiles Teacher Attendance 2012-2013.TXT&quot;
+## [2] &quot;./data/School Profiles Teacher Attendance 2013-2014.TXT&quot;</code></pre>
+<pre class="r"><code>#Now we see the data files. The one we're after
+#  currently is &quot;School Profiles Teacher Attendance 2013-2014.TXT&quot;
+#  To get it previewed, we send the command head to the system
+#  and follow it with the quoted file name (since the
+#  file name has spaces, which is a pain)
+command = paste0('head ', '&quot;./data/School Profiles Teacher Attendance 2013-2014.TXT&quot;')</code></pre>
+<pre class="r"><code>system(command)</code></pre>
+<pre><code>## ULCS_NO,SCHOOL_YEAR,SCH_TEACHER_ATTEND,SDP_TEACHER_ATTEND,SCHOOL_ID
+## &quot;8350&quot;,&quot;2013-2014&quot;,92.7,93.4,&quot;835&quot;
+## &quot;7320&quot;,&quot;2013-2014&quot;,95,93.4,&quot;732&quot;
+## &quot;5440&quot;,&quot;2013-2014&quot;,96,93.4,&quot;544&quot;
+## &quot;8320&quot;,&quot;2013-2014&quot;,95.1,93.4,&quot;832&quot;
+## &quot;6440&quot;,&quot;2013-2014&quot;,96.6,93.4,&quot;644&quot;
+## &quot;4370&quot;,&quot;2013-2014&quot;,93.8,93.4,&quot;437&quot;
+## &quot;4030&quot;,&quot;2013-2014&quot;,94.3,93.4,&quot;403&quot;
+## &quot;2240&quot;,&quot;2013-2014&quot;,94,93.4,&quot;224&quot;
+## &quot;6450&quot;,&quot;2013-2014&quot;,95.3,93.4,&quot;645&quot;</code></pre>
+<p>We can see that even though the data has extension .txt, the file itself is very regular and clearly comma-separated.</p>
 <div id="freaddata.table" class="section level3">
 <h3><span class="header-section-number">3.1.1</span> <code>fread</code>/<code>data.table</code></h3>
+<p>To read in this data, I’m going to eschew the standard intro-to-R suggestion to use <code>read.csv</code> because we’re presented now with the perfect opportunity to introduce to you the crown jewel of R – <code>data.table</code> (full disclosure, I am an active contributor to it, but this has followed from my love for it).</p>
+<p><code>data.table</code> is a package created by Matthew Dowle and actively maintained by him, Arun Srinivasan, and Jan Gorecki. Basically, it’s designed to make working with data in R <em>very straightforward/intuitive</em> and <em>incredibly fast</em> (since it’s designed to handle data with tens of millions of observations). We’ll be spending a lot of time working with <code>data.table</code> today, and picking most of it up as we go along. You can read more on the <a href="https://github.com/Rdatatable/data.table/wiki"><code>data.table</code> homepage</a> when you get a chance.</p>
+<p>The first and most famous tool of <code>data.table</code> is <code>fread</code>. The “f” means <em><strong>FAST</strong></em>. <code>fread</code> is a highly optimized tool for reading data into R at blitzing fast speeds. You’ll barely notice the difference for typical files (less than 100,000 observations), but when you <em>do</em> notice the difference, it’s a sight to behold.</p>
+<p>On your own machine, you’ll need to install <code>data.table</code> (luckily for us, it’s already been pre-installed on your machines for today) using:</p>
+<pre class="r"><code>install.packages(&quot;data.table&quot;)
+
+#the more confident and ambitious can install
+#  the development version of the package,
+#  which tends to have more features, but may
+#  occasionally be more error-prone.
+#  Caveat coder.
+install.packages(&quot;data.table&quot;, type = &quot;source&quot;,
+                 repos = &quot;https://Rdatatable.github.io/data.table&quot;)</code></pre>
+<p>Once we’re sure it’s on our machine, we can read the data by running:</p>
+<pre class="r"><code>#load the data.table package
+library(data.table)
+
+attendance &lt;- 
+  fread(&quot;./data/School Profiles Teacher Attendance 2013-2014.TXT&quot;)</code></pre>
+<p>Just like that!</p>
+<p>Entering the data variable by itself will invoke the <code>print.data.table</code> command and display a preview of the data that was loaded:</p>
+<pre class="r"><code>attendance</code></pre>
+<pre><code>##      ULCS_NO SCHOOL_YEAR SCH_TEACHER_ATTEND SDP_TEACHER_ATTEND SCHOOL_ID
+##   1:    8350   2013-2014               92.7               93.4       835
+##   2:    7320   2013-2014               95.0               93.4       732
+##   3:    5440   2013-2014               96.0               93.4       544
+##   4:    8320   2013-2014               95.1               93.4       832
+##   5:    6440   2013-2014               96.6               93.4       644
+##  ---                                                                    
+## 208:    5480   2013-2014               92.0               93.4       548
+## 209:    1300   2013-2014               91.4               93.4       130
+## 210:    6090   2013-2014               95.3               93.4       609
+## 211:    1050   2013-2014               94.7               93.4       105
+## 212:    4300   2013-2014               94.7               93.4       430</code></pre>
+<pre class="r"><code>#we can also explicitly invoke print,
+#  which has a few more bells and whistles to
+#  facilitate understanding what our data.table
+#  looks like.
+print(attendance, class = TRUE)</code></pre>
+<pre><code>##      ULCS_NO SCHOOL_YEAR SCH_TEACHER_ATTEND SDP_TEACHER_ATTEND SCHOOL_ID
+##       &lt;char&gt;      &lt;char&gt;              &lt;num&gt;              &lt;num&gt;    &lt;char&gt;
+##   1:    8350   2013-2014               92.7               93.4       835
+##   2:    7320   2013-2014               95.0               93.4       732
+##   3:    5440   2013-2014               96.0               93.4       544
+##   4:    8320   2013-2014               95.1               93.4       832
+##  ---                                                                    
+## 208:    5480   2013-2014               92.0               93.4       548
+## 209:    1300   2013-2014               91.4               93.4       130
+## 210:    6090   2013-2014               95.3               93.4       609
+## 211:    1050   2013-2014               94.7               93.4       105
+## 212:    4300   2013-2014               94.7               93.4       430</code></pre>
+<p>Using the <code>class</code> argument to <code>print</code>, the preview now includes an abbreviated type under each of the column headers letting you know what <code>class</code> R thinks each column is (<em><strong>note</strong></em> <code>class</code> is a recent update to <code>data.table</code>; for the moment, it is not available in the version on CRAN, but should be available there soon).</p>
+<p>What about <code>attendance</code> itself? It looks like something we’ve not seen yet. Let’s explore:</p>
+<pre class="r"><code>class(attendance)</code></pre>
+<pre><code>## [1] &quot;data.table&quot; &quot;data.frame&quot;</code></pre>
+<pre class="r"><code>str(attendance)</code></pre>
+<pre><code>## Classes 'data.table' and 'data.frame':   212 obs. of  5 variables:
+##  $ ULCS_NO           : chr  &quot;8350&quot; &quot;7320&quot; &quot;5440&quot; &quot;8320&quot; ...
+##  $ SCHOOL_YEAR       : chr  &quot;2013-2014&quot; &quot;2013-2014&quot; &quot;2013-2014&quot; &quot;2013-2014&quot; ...
+##  $ SCH_TEACHER_ATTEND: num  92.7 95 96 95.1 96.6 93.8 94.3 94 95.3 92.2 ...
+##  $ SDP_TEACHER_ATTEND: num  93.4 93.4 93.4 93.4 93.4 93.4 93.4 93.4 93.4 93.4 ...
+##  $ SCHOOL_ID         : chr  &quot;835&quot; &quot;732&quot; &quot;544&quot; &quot;832&quot; ...
+##  - attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt;</code></pre>
+<pre class="r"><code>is.list(attendance)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<hr />
 </div>
 </div>
 <div id="regressions" class="section level2">

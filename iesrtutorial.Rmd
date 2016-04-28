@@ -866,8 +866,120 @@ Now, on to the more fun and useful stuff!
 
 ## Reading .csv Files
 
+The most common format of file you're like to find in the real world is in .csv (comma-separated value) format.
+
+Quick clarification that not all comma-separated files have the extension. Often you'll find a file with the extension .txt that actually contains text that is comma-separated. You just have to inspect the file to figure out how it's stored.
+
+In fact that's the case for or first example. We're going to look at teacher attendance data for the School District of Philadelphia.
+
+The school district releases, through their Open Data Initiative, a whole bunch of data files related to the topics like school catchment zones, employee salaries, budget details, etc. All of the data can be found here: http://webgui.phila.k12.pa.us/offices/o/open-data-initiative.
+
+We could use `R` to download the files (we may touch on this in the afternoon), but to ease us into things, I've gone ahead and downloaded some files and put them on my GitHub page. Let's look at the data from 2013-14. [Here's a link to the data](https://raw.githubusercontent.com/MichaelChirico/iesRTutorial/in_progress/data/School%20Profiles%20Teacher%20Attendance%202013-2014.TXT), but it should also be loaded on your machine.
+
+We can preview the file using the terminal on a Mac. Learning to do some basic stuff in the terminal is a great investment of your time, but that's not the focus of today's lesson, so we'll just stick with doing things through R. We can send commands to the terminal in R using the `system` command. The terminal command `head` (which is also a function in R, but only applies to objects already loaded) will spit out the first couple lines of a file so we can see what it looks like without having to load the whole thing (which, for larger files, can be time-consuming).
+
+```{r head}
+#Just to flex some of R's muscles, we'll find
+#  the data file from within R. As often as not,
+#  we'll just navigate to the file ourselves and
+#  just copy-paste the file path.
+#  We're looking for the folder with the data
+#  so we use include.dirs to include directories
+list.files(include.dirs = TRUE) 
+
+#I've kept things in the data folder here. We
+#  can tell it's a folder as it has no extensions.
+#  We can find the files in that folder using a 
+#  relative path (./ means starting from the 
+#  current folder, enter the folder after /).
+#  We use the full.names of the file for the next step.
+list.files("./data", full.names = TRUE)
+
+#Now we see the data files. The one we're after
+#  currently is "School Profiles Teacher Attendance 2013-2014.TXT"
+#  To get it previewed, we send the command head to the system
+#  and follow it with the quoted file name (since the
+#  file name has spaces, which is a pain)
+command = paste0('head ', '"./data/School Profiles Teacher Attendance 2013-2014.TXT"')
+```
+```{r system_uneval, eval = FALSE}
+system(command)
+```
+```{r system_eval, echo = FALSE}
+#See: http://stackoverflow.com/questions/27388964
+#  seems I have to jump through hoops to get system to work with knitr
+cat(system(command, intern = TRUE), sep = "\n")
+```
+
+We can see that even though the data has extension .txt, the file itself is very regular and clearly comma-separated.
+
 ### `fread`/`data.table`
 
+To read in this data, I'm going to eschew the standard intro-to-R suggestion to use `read.csv` because we're presented now with the perfect opportunity to introduce to you the crown jewel of R -- `data.table` (full disclosure, I am an active contributor to it, but this has followed from my love for it).
+
+`data.table` is a package created by Matthew Dowle and actively maintained by him, Arun Srinivasan, and Jan Gorecki. Basically, it's designed to make working with data in R _very straightforward/intuitive_ and _incredibly fast_ (since it's designed to handle data with tens of millions of observations). We'll be spending a lot of time working with `data.table` today, and picking most of it up as we go along. You can read more on the [`data.table` homepage](https://github.com/Rdatatable/data.table/wiki) when you get a chance.
+
+The first and most famous tool of `data.table` is `fread`. The "f" means _**FAST**_. `fread` is a highly optimized tool for reading data into R at blitzing fast speeds. You'll barely notice the difference for typical files (less than 100,000 observations), but when you _do_ notice the difference, it's a sight to behold.
+
+On your own machine, you'll need to install `data.table` (luckily for us, it's already been pre-installed on your machines for today) using:
+
+```{r install_data.table, eval = FALSE}
+install.packages("data.table")
+
+#the more confident and ambitious can install
+#  the development version of the package,
+#  which tends to have more features, but may
+#  occasionally be more error-prone.
+#  Caveat coder.
+install.packages("data.table", type = "source",
+                 repos = "https://Rdatatable.github.io/data.table")
+```
+
+Once we're sure it's on our machine, we can read the data by running:
+
+```{r fread}
+#load the data.table package
+library(data.table)
+
+attendance <- 
+  fread("./data/School Profiles Teacher Attendance 2013-2014.TXT")
+```
+
+Just like that!
+
+Entering the data variable by itself will invoke the `print.data.table` command and display a preview of the data that was loaded:
+
+```{r print.data.table}
+attendance
+
+#we can also explicitly invoke print,
+#  which has a few more bells and whistles to
+#  facilitate understanding what our data.table
+#  looks like.
+print(attendance, class = TRUE)
+```
+
+Using the `class` argument to `print`, the preview now includes an abbreviated type under each of the column headers letting you know what `class` R thinks each column is (_**note**_ `class` is a recent update to `data.table`; for the moment, it is not available in the version on CRAN, but should be available there soon).
+
+What about `attendance` itself? It looks like something we've not seen yet. Let's explore:
+
+```{r explore_data.table}
+class(attendance)
+
+str(attendance)
+
+is.list(attendance)
+```
+
+OK, lots of important stuff here. We've discovered a new type of object! `attendance` is a `data.table`. You can think of this as being a single sheet of an Excel workbook.
+
+As far as how R thinks of it, a `data.table` is a `list` on steroids. Each element of the `list` is a column, and each element has the same number of items. We can see from `str` that, like a `list`, we can use `$` to extract items (here: columns):
+
+```{r extract_column}
+attendance$SCH_TEACHER_ATTEND
+```
+
+***
 ## Regressions
 
 ### OLS (`lm`) / `predict`/`coeftest`/`summary`
