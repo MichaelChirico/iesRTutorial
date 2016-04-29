@@ -862,7 +862,6 @@ Now, on to the more fun and useful stuff!
 # Data Basics (9 AM - 11 AM)
 
 * Missing Data
-* `table`
 
 ## Reading .csv Files
 
@@ -979,6 +978,8 @@ As far as how R thinks of it, a `data.table` is a `list` on steroids. Each eleme
 attendance$SCH_TEACHER_ATTEND
 ```
 
+### Exploring Attendance Data
+
 What are the columns in this data? We usually hope we have a data dictionary, but I didn't find one on the SDP website. It appears that `ULCS_NO` is the same as `SCHOOL_ID` (padded with a `0`). It's not clear if the school district is anonymizing the schools or if we simply have to match the `SCHOOL_ID` to the school's name in another file.
 
 The meat of the data are the two columns `SCH_TEACHER_ATTEND` and `SDP_TEACHER_ATTEND`. The former is the attendance rate of teachers at a given school; the latter is the average for the whole district (which is why it's the same in every row).
@@ -1014,6 +1015,186 @@ attendance[SCH_TEACHER_ATTEND < 90]
 #And schools with particularly high attendance
 attendance[SCH_TEACHER_ATTEND > 97]
 ```
+
+Without knowing more about the schools, all we can say is that there are a certain number of schools with very high or very low attendance. 
+
+### Teacher Salaries
+
+Another file posted to the SDP website contains information on teachers' salaries. I've again downloaded this data already for you, but if you're curious [here's](http://webgui.phila.k12.pa.us/offices/o/open-data-initiative/documents/employee---20160401.zip) a link to the data from the website.
+
+This one actually comes with a data dictionary of sorts in the form of a README file. We can use R to display the README like so:
+
+```{r readme, warning = FALSE, comment = ""}
+writeLines(readLines("./data/README_SDP_Employee.txt"))
+```
+
+`readLines` is a function used to bring in text files to R objects. It returns every line of the file as one element of a `character` vector. `writeLines` is typically used for _creating_ text files, but if we don't tell it a file to use, it prints the output to the console.
+
+The file describes all of three of the files that came with the download; of importance is `employee_imformation.csv`. We see here the columns are all described, which will help us understand what we see when we load in the data. Let's do it!
+
+```{r read_salaries}
+salaries <- fread("./data/employee_information.csv")
+print(salaries, class = TRUE)
+
+#it's a pain to have to lay on the SHIFT key all the
+#  time, so let's rename the columns so that
+#  are in lower case. We need three functions:
+#  tolower, which takes all upper-case letters in a 
+#  string and replaces them with their lower-case
+#  counterpart; names, which returns the names of
+#  any object (vector, list, data.table, etc.);
+#  and setnames, which has three arguments:
+#  1) a data.table, 2) the columns to rename, and
+#  3) their replacements. If we only use two arguments,
+#  R assumes we want to replace _all_ column names, and
+#  that the second argument is the replacement values.
+setnames(salaries, tolower(names(salaries)))
+
+#checking the result:
+salaries
+```
+
+This is a much bigger data set -- covering all employees of the SDP and giving many more details about them. Let's explore a bit:
+
+```{r explore_salaries}
+#table is a great function for describing discrete variables.
+#  it gives the count of observations in each cell, and can also
+#  be used to create what Stata calls two-way tables.
+salaries[ , table(pay_rate_type)]
+
+salaries[ , table(organization_level)]
+
+#a cross-tabulation of these two; the first argument will
+#  appear in the rows, the second in the columns
+salaries[ , table(pay_rate_type, organization_level)]
+
+salaries[ , table(organization_level, gender)]
+```
+
+Let's say we're only interested in salaried employees. How do we get rid of the hourly/daily employees?
+
+Unlike in Stata, where we'd use `drop` and would have to jump through hoops to recover the lost observations (in case we decided to expand our focus later in our analysis), we can simply create a new `data.table` in R that contain only the observations we care about. This is, in my opinion, one of the most salient examples of a feature of R that blows Stata out of the water. We can keep many data sets at our disposal at once, without having to unload/reload the ones we're not currently using. This will prove _especially_ helpful when it comes to data cleaning/merging/reshaping.
+
+```{r salaried}
+salaried <- salaries[pay_rate_type == "SALARIED"]
+```
+
+
+Even more useful may be to exclude anyone who's not a teacher. First, we have to exclude anyone who's not a teacher. How do we figure out who's a teacher?
+
+Approach:
+
+ 1. Count the number of observations in each category of `title_description` (we can see from the preview that there are at least some teachers under `TEACHER,FULL TIME`)
+ 2. Sort these categories to find the most common categories, since presumably teachers are by far the most common SDP employees.
+ 
+Carrying this out will introduce a few new things:
+
+ - Grouping. We're going to *group by `title_description`*, and count observations in each group. If I remember correctly, in Stata, this would be like `by title_description: count`. When `data.table` does this, you should think of your `data.table` being split into a whole bunch of smaller `data.table`s, each of which has all of the observations for exactly one level of `title_description`. 
+ - `.N`. `data.table` uses the abbreviation `.N` to stand for "number of observations". It is defined _locally_, within each group, so all of the many `data.table`s mentioned above has its own `.N`. This is basically like `count` in Stata.
+ - `order`. We can arrange the rows of a table by using `order` in the first argument (`i`); use a minus sign (`-`) to go in decreasing order, otherwise it's increasing order (like we saw with `sort`).
+ - Chaining. We can tack on more and more `[]` to any given `data.table` operation to hone or continue or adjust our outcomes beyond what we could do in a single call to `[]`. The general syntax is `DT[...][...][...][...]`, where each `[...]` consists of doing some manipulation/subset/aggregation, etc.
+
+```{r find_teachers}
+#Let's take it step-by-step
+# 1: Find the count of employees in each category
+salaried[ , .N, by = title_description]
+
+# 2: reorder these to find the most common
+salaried[ , .N, by = title_description][order(N)]
+
+# 3: put it in decreasing order
+salaried[ , .N, by = title_description][order(-N)]
+
+# 4: Only look at the top 20 most frequent positions
+# (idea -- once it's resorted, these are simply
+#  the first twenty rows of the sorted table)
+salaried[ , .N, by = title_description][order(-N)][1:20]
+```
+
+We can start to see many interesting facets of employment at SDP here. Almost 300 school police officers but only 180 nurses. Ripe ground for exploring on your own!
+
+I'll continue focusing on teachers; it appears all but the special ed. teachers are grouped under `TEACHER,FULL TIME`, so we can subset:
+
+```{r get_teachers}
+teachers <- salaried[title_description == "TEACHER,FULL TIME"]
+teachers
+```
+
+### Group mean salaries -- various cuts
+
+Now we can explore data by group. How does pay differ by gender?
+
+```{r gender_gap}
+#simple to code!
+teachers[ , mean(pay_rate), by = gender]
+
+#mean automatically got called V1. If we want
+#  a more friendly output, we have to change a little:
+teachers[ , .(avg_wage = mean(pay_rate)), by = gender]
+```
+
+So in teaching in Philly, actually women earn significantly more than men (this is indeed significant; I'll show you how to test that in a bit)!
+
+(Of course men and women with the same experience and certification are paid basically the same -- it's written explicitly in the teachers' contract -- but we don't have any experience or certification measures to control for this)
+
+How does pay differ by organization level?
+
+```{r organization_gap}
+teachers[ , .(avg_wage = mean(pay_rate)), by = organization_level]
+```
+
+Which school has the best-paid teachers?
+
+```{r rich_school}
+teachers[ , .(avg_wage = mean(pay_rate)),
+         by = home_organization_description
+          ][order(-avg_wage)]
+```
+
+This looks fishy! It's rare for any average worth knowing to come out exactly to an integer. I suspect there are very few teachers at these schools. How can we check?
+
+```{r rich_school_2}
+#remember our handy friend .N!!
+teachers[ , .(.N, avg_wage = mean(pay_rate)),
+          by = home_organization_description
+          ][order(-avg_wage)]
+```
+
+In fact, almost all of the "best-" and "worst-" paid schools are outliers because there's only one employee listed. So that's not really a fair measure of dominance.
+
+So what can we do to improve our measure?
+
+What's typically done is to exclude all schools that don't have pass some cutoff minimum number of employees. For this exercise, let's say we want to exclude all schools that have fewer than 10 full-time teachers in the data.
+
+The way to do so is pretty natural. Remember that when we use `by`, we're essentially splitting our main `data.table` up into `r teachers[ , uniqueN(home_organization)]` smaller `data.table`s, one for each school. We want to keep only those sub-`data.table`s that have at least 10 teachers -- i.e., they have at least 10 rows, i.e., `.N` is at least 10:
+
+```{r rich_school_3}
+#No longer keep .N as an output -- this is just for focus,
+#  since we already know all the schools have at least
+#  ten teachers
+teachers[ , if (.N >= 10) .(avg_wage = mean(pay_rate)),
+          by = home_organization_description
+          ][order(-avg_wage)]
+```
+
+Here we see our first `if` statement in R. The basic form of an `if` statement in R is:
+
+```{r if_statements, eval = FALSE}
+#Note the parentheses around the logical!! Very easy to forget
+if (some_logical){
+  # what to do if true
+} else {
+  # what to do if false
+}
+```
+
+It's important to note that `some_logical` has to be either `TRUE` or `FALSE` -- it can't be a vector!! This sounds easy now but it's guaranteed to trip you up at some point.
+
+There's no `else` statement in the condition we used above. So, for all the schools where there are fewer than 10 teachers, nothing happens (technically, the statement returns `NULL` -- but don't worry about that for now), and `data.table` ignores any such sub-`data.table`.
+
+I don't really know what `NON-PUBLIC PROGRAMS` means... but besides that, we see a lot of staple high school names. Of course, all teachers in Philly are on the same teachers' contract and hence the same pay scale -- so what this exercise has _really_ told us is that South Philly high has the most experienced and/or certified teachers, and that teachers at Dunbar are young and/or uncertified.
+
+We could go on exploring / slicing&dicing this data all day, but I think we've learned enough essentials of manipulation/inspection for now. We'll pick up more tricks as we move along.
 
 ***
 ## Regressions

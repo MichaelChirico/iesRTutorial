@@ -110,7 +110,7 @@ $(document).ready(function () {
 
 <h1 class="title">IES R Tutorial</h1>
 <h4 class="author"><em>Michael Chirico</em></h4>
-<h4 class="date"><em>Compiled April 29, 2016 at 11:50</em></h4>
+<h4 class="date"><em>Compiled April 29, 2016 at 18:32</em></h4>
 
 </div>
 
@@ -154,6 +154,9 @@ $(document).ready(function () {
 <li><a href="#data-basics-9-am---11-am"><span class="toc-section-number">3</span> Data Basics (9 AM - 11 AM)</a><ul>
 <li><a href="#reading-.csv-files"><span class="toc-section-number">3.1</span> Reading .csv Files</a><ul>
 <li><a href="#freaddata.table"><span class="toc-section-number">3.1.1</span> <code>fread</code>/<code>data.table</code></a></li>
+<li><a href="#exploring-attendance-data"><span class="toc-section-number">3.1.2</span> Exploring Attendance Data</a></li>
+<li><a href="#teacher-salaries"><span class="toc-section-number">3.1.3</span> Teacher Salaries</a></li>
+<li><a href="#group-mean-salaries-various-cuts"><span class="toc-section-number">3.1.4</span> Group mean salaries – various cuts</a></li>
 </ul></li>
 <li><a href="#regressions"><span class="toc-section-number">3.2</span> Regressions</a><ul>
 <li><a href="#ols-lm-predictcoeftestsummary"><span class="toc-section-number">3.2.1</span> OLS (<code>lm</code>) / <code>predict</code>/<code>coeftest</code>/<code>summary</code></a></li>
@@ -680,20 +683,20 @@ paste(first, last)</code></pre>
 <p>The most common kind of random numbers that people want are uniform draws and normal draws.</p>
 <pre class="r"><code>#generate 10 U[0, 1] draws
 runif(10)</code></pre>
-<pre><code>##  [1] 0.6767443 0.3314466 0.2905184 0.2789228 0.3227597 0.4218326 0.2213203
-##  [8] 0.5377949 0.3683350 0.2428204</code></pre>
+<pre><code>##  [1] 0.21282970 0.65339816 0.82068284 0.42259107 0.80388918 0.07395919
+##  [7] 0.80015750 0.48508078 0.32880966 0.07972363</code></pre>
 <pre class="r"><code>#generate 10 U[3, 5] draws
 runif(10, min = 3, max = 5)</code></pre>
-<pre><code>##  [1] 4.168516 4.187958 3.417876 3.048400 3.303156 3.499428 4.932933
-##  [8] 4.113449 3.155699 3.504150</code></pre>
+<pre><code>##  [1] 4.199225 3.917534 3.477550 3.141230 4.033276 3.984249 4.077753
+##  [8] 4.559164 4.595978 3.219528</code></pre>
 <pre class="r"><code>#generate 10 N(0, 1) draws
 rnorm(10)</code></pre>
-<pre><code>##  [1] -0.5718726 -0.5957992  0.5673461  1.8021304  1.7052277 -0.1635307
-##  [7]  0.4941407  1.1517386  0.6733380  0.5550563</code></pre>
+<pre><code>##  [1] -0.5425921 -0.7158974 -1.5277680 -0.3374812  0.2369382  0.8975257
+##  [7]  1.0516327  0.3981044  0.2990908 -0.7040828</code></pre>
 <pre class="r"><code>#generate 10 N(3, 5) draws
 rnorm(10, mean = 3, sd = 5)</code></pre>
-<pre><code>##  [1] 12.2307861 -3.4822432  3.0151295  9.5056351  1.7590427  0.7049513
-##  [7]  2.7753200  1.6790902  1.6052026  4.5645885</code></pre>
+<pre><code>##  [1]  2.3789269 -1.7054642 -6.1584871  5.0181442 -6.2720149 -0.5993357
+##  [7]  7.9675386 12.6716972  2.7576229  2.7415646</code></pre>
 <p>These examples highlight the common format of random number generators in R. To get random numbers from a distribution, there is probably a function named like <code>r</code><strong><code>dist</code></strong>, where <strong><code>dist</code></strong> is an abbreviation for the distribution (here, <strong>unif</strong>orm and <strong>norm</strong>al). The first argument is the number of draws; the rest of the arguments are parameters.</p>
 <p>Here is a complete table of all of the common distributions built in to R, and the function used to invoke their random number generator (RNG):</p>
 <table>
@@ -845,13 +848,13 @@ qnorm(c(.005, .025, .05))</code></pre>
 <p>As always, it’s easiest to see with some examples:</p>
 <pre class="r"><code>#A permutation of 1:5
 sample(5)</code></pre>
-<pre><code>## [1] 2 3 4 1 5</code></pre>
+<pre><code>## [1] 5 4 3 1 2</code></pre>
 <pre class="r"><code>#A size-3 subset of 1:5
 sample(5, 3)</code></pre>
-<pre><code>## [1] 1 5 4</code></pre>
+<pre><code>## [1] 4 3 5</code></pre>
 <pre class="r"><code>#A size-5 subset of 1:5, with replacement
 sample(5, 5, replace = TRUE)</code></pre>
-<pre><code>## [1] 4 3 4 5 2</code></pre>
+<pre><code>## [1] 2 3 3 2 2</code></pre>
 <pre class="r"><code>#A weighted sample of 1:5, heavily weighting 1
 sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></pre>
 <pre><code>## [1] 1 1 1 1 1</code></pre>
@@ -859,10 +862,10 @@ sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></
 <pre class="r"><code>#Flip 10 coins, get the percentage heads
 flips &lt;- sample(c(&quot;H&quot;, &quot;T&quot;), 10, replace = TRUE)
 mean(flips == &quot;H&quot;)</code></pre>
-<pre><code>## [1] 0.5</code></pre>
+<pre><code>## [1] 0.7</code></pre>
 <pre class="r"><code>#Roll a pair of dice and add them
 sum(sample(6, 2, replace = TRUE))</code></pre>
-<pre><code>## [1] 8</code></pre>
+<pre><code>## [1] 4</code></pre>
 <pre class="r"><code>#create a deck of labeled cards:
 #  (I copy-pasted the text for the suits from
 #   Wikipedia, but we could have used S/H/D/C:
@@ -877,7 +880,7 @@ deck</code></pre>
 ## [45] &quot;7♣&quot;  &quot;8♣&quot;  &quot;9♣&quot;  &quot;10♣&quot; &quot;J♣&quot;  &quot;Q♣&quot;  &quot;K♣&quot;  &quot;A♣&quot;</code></pre>
 <pre class="r"><code>#Now draw a poker hand
 sample(deck, 5)</code></pre>
-<pre><code>## [1] &quot;9♠&quot; &quot;K♣&quot; &quot;A♣&quot; &quot;6♥&quot; &quot;Q♥&quot;</code></pre>
+<pre><code>## [1] &quot;3♦&quot; &quot;7♥&quot; &quot;3♥&quot; &quot;J♣&quot; &quot;K♠&quot;</code></pre>
 </div>
 <div id="replicate" class="section level3">
 <h3><span class="header-section-number">2.6.3</span> <code>replicate</code></h3>
@@ -896,7 +899,7 @@ simulations &lt;-
 #How often does a flush happen?
 #  True frequency is 0.1965%
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.0019</code></pre>
+<pre><code>## [1] 0.0022</code></pre>
 <pre class="r"><code>#What about a pair (just two cards match)?
 #  true frequency: 42%
 simulations &lt;- 
@@ -906,7 +909,7 @@ simulations &lt;-
     sum(duplicated(faces)) == 1 #one pair if there's exactly _one_ match
   })
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.4238</code></pre>
+<pre><code>## [1] 0.4263</code></pre>
 </div>
 <div id="set.seed" class="section level3">
 <h3><span class="header-section-number">2.6.4</span> <code>set.seed</code></h3>
@@ -1075,14 +1078,14 @@ x &lt;- rnorm(1000)
 r &lt;- lm(y ~ x)
 str(r)</code></pre>
 <pre><code>## List of 12
-##  $ coefficients : Named num [1:2] -0.0605 0.0126
+##  $ coefficients : Named num [1:2] 0.00224 -0.00145
 ##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
-##  $ residuals    : Named num [1:1000] -1.3079 0.5197 0.4378 -0.494 -0.0502 ...
+##  $ residuals    : Named num [1:1000] 1.427 3.004 -0.644 0.902 2.804 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ effects      : Named num [1:1000] 1.8834 -0.3956 0.488 -0.4372 -0.0398 ...
+##  $ effects      : Named num [1:1000] -0.0743 0.0445 -0.6299 0.8795 2.9354 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;(Intercept)&quot; &quot;x&quot; &quot;&quot; &quot;&quot; ...
 ##  $ rank         : int 2
-##  $ fitted.values: Named num [1:1000] -0.0556 -0.0518 -0.0667 -0.0715 -0.038 ...
+##  $ fitted.values: Named num [1:1000] -0.000724 0.001455 0.003144 0.002574 0.004933 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##  $ assign       : int [1:2] 0 1
 ##  $ qr           :List of 5
@@ -1114,8 +1117,8 @@ str(r)</code></pre>
 ##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
 ##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;y&quot; &quot;x&quot;
 ##  $ model        :'data.frame':   1000 obs. of  2 variables:
-##   ..$ y: num [1:1000] -1.3634 0.4679 0.3711 -0.5655 -0.0882 ...
-##   ..$ x: num [1:1000] 0.388 0.692 -0.498 -0.876 1.786 ...
+##   ..$ y: num [1:1000] 1.426 3.006 -0.641 0.905 2.809 ...
+##   ..$ x: num [1:1000] 2.048 0.541 -0.627 -0.233 -1.865 ...
 ##   ..- attr(*, &quot;terms&quot;)=Classes 'terms', 'formula' length 3 y ~ x
 ##   .. .. ..- attr(*, &quot;variables&quot;)= language list(y, x)
 ##   .. .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
@@ -1144,7 +1147,6 @@ str(r)</code></pre>
 <h1><span class="header-section-number">3</span> Data Basics (9 AM - 11 AM)</h1>
 <ul>
 <li>Missing Data</li>
-<li><code>table</code></li>
 </ul>
 <div id="reading-.csv-files" class="section level2">
 <h2><span class="header-section-number">3.1</span> Reading .csv Files</h2>
@@ -1170,8 +1172,9 @@ list.files(include.dirs = TRUE) </code></pre>
 #  current folder, enter the folder after /).
 #  We use the full.names of the file for the next step.
 list.files(&quot;./data&quot;, full.names = TRUE)</code></pre>
-<pre><code>## [1] &quot;./data/School Profiles Teacher Attendance 2012-2013.TXT&quot;
-## [2] &quot;./data/School Profiles Teacher Attendance 2013-2014.TXT&quot;</code></pre>
+<pre><code>## [1] &quot;./data/employee_information.csv&quot;                        
+## [2] &quot;./data/README_SDP_Employee.txt&quot;                         
+## [3] &quot;./data/School Profiles Teacher Attendance 2013-2014.TXT&quot;</code></pre>
 <pre class="r"><code>#Now we see the data files. The one we're after
 #  currently is &quot;School Profiles Teacher Attendance 2013-2014.TXT&quot;
 #  To get it previewed, we send the command head to the system
@@ -1276,6 +1279,9 @@ print(attendance, class = TRUE)</code></pre>
 ## [183] 94.5 94.1 94.1 88.7 94.0 93.4 94.2 94.6 96.2 91.4 92.0 96.5 92.0 95.1
 ## [197] 94.7 96.6 96.8 91.7 96.1 95.9 93.0 91.5 94.4 93.2 88.5 92.0 91.4 95.3
 ## [211] 94.7 94.7</code></pre>
+</div>
+<div id="exploring-attendance-data" class="section level3">
+<h3><span class="header-section-number">3.1.2</span> Exploring Attendance Data</h3>
 <p>What are the columns in this data? We usually hope we have a data dictionary, but I didn’t find one on the SDP website. It appears that <code>ULCS_NO</code> is the same as <code>SCHOOL_ID</code> (padded with a <code>0</code>). It’s not clear if the school district is anonymizing the schools or if we simply have to match the <code>SCHOOL_ID</code> to the school’s name in another file.</p>
 <p>The meat of the data are the two columns <code>SCH_TEACHER_ATTEND</code> and <code>SDP_TEACHER_ATTEND</code>. The former is the attendance rate of teachers at a given school; the latter is the average for the whole district (which is why it’s the same in every row).</p>
 <p>We can now start to explore the data. The only real column of interest is <code>SCH_TEACHER_ATTEND</code>. With this, we can explore how teacher attendance varies across the city.</p>
@@ -1324,6 +1330,448 @@ attendance[SCH_TEACHER_ATTEND &gt; 97]</code></pre>
 ## 2:    6040   2013-2014               97.6               93.4       604
 ## 3:    8560   2013-2014               97.6               93.4       856
 ## 4:    1190   2013-2014               98.1               93.4       119</code></pre>
+<p>Without knowing more about the schools, all we can say is that there are a certain number of schools with very high or very low attendance.</p>
+</div>
+<div id="teacher-salaries" class="section level3">
+<h3><span class="header-section-number">3.1.3</span> Teacher Salaries</h3>
+<p>Another file posted to the SDP website contains information on teachers’ salaries. I’ve again downloaded this data already for you, but if you’re curious <a href="http://webgui.phila.k12.pa.us/offices/o/open-data-initiative/documents/employee---20160401.zip">here’s</a> a link to the data from the website.</p>
+<p>This one actually comes with a data dictionary of sorts in the form of a README file. We can use R to display the README like so:</p>
+<pre class="r"><code>writeLines(readLines(&quot;./data/README_SDP_Employee.txt&quot;))</code></pre>
+<pre><code>README_SDP_Employee.txt
+REVISIONS
+20160401 (April 1st, 2016) - Second release in 2016.
+
+This README file contains some background information and guidance on School District of Philadelphia (SDP) data. This set of data was extracted on March 31st 2016, and includes every active employee of the School District of Philadelphia as of the extract date. Do not hesitate to contact us if you have any questions, or would like to request other data sets.
+Happy data diving!
+opendata@philasd.org
+
+Individual files:
+
+README_SDP_EMPLOYEE.TXT  - You're soaking in it!
+
+employee_information.csv
+Provides basic information on every employee of the School District of Philadelphia. 
+LAST_NAME - Employee's last name.
+FIRST_NAME - Employee's first name.
+PAY_RATE_TYPE - The pay rate type for the employee, either SALARIED, DAILY or HOURLY.
+PAY_RATE - The pay rate for the employee. If the pay rate type is salaried, then the annual salary (minus any benefits). If the pay rate type is daily, then the daily pay, and if pay rate type is hourly, then the hourly pay rate. If the pay rate is zero the employee is typically in a leave status that does not receive pay; for example military leave.
+TITLE_DESCRIPTION - Title for employee; there are over 500 unique titles.
+HOME_ORGANIZATION - The home organization code identifies where the employee is primarily stationed. Some employees are &quot;per diem&quot;, meaning they work on a daily basis at a variety of locations; other employees may work at multiple locations, but are attributed to one location.
+HOME_ORGANIZATION_DESCRIPTION - The home organization description identifies the home location by name, typically the name of the school or office.
+ORGANIZATION_LEVEL - Identifies the type of location the employee works at; for example, administrative office, garage, elementary school, etc.
+TYPE_OF_REPRESENTATION - The union representation for the employee. NON REP means the employee is not represented by any union.
+GENDER - Gender of employee.
+RUN_DATE - The date the data was extracted from SDP data systems.
+
+School District Data Sets Terms of Use.pdf
+Terms of use for use the open data sets from the School District of Philadelphia.</code></pre>
+<p><code>readLines</code> is a function used to bring in text files to R objects. It returns every line of the file as one element of a <code>character</code> vector. <code>writeLines</code> is typically used for <em>creating</em> text files, but if we don’t tell it a file to use, it prints the output to the console.</p>
+<p>The file describes all of three of the files that came with the download; of importance is <code>employee_imformation.csv</code>. We see here the columns are all described, which will help us understand what we see when we load in the data. Let’s do it!</p>
+<pre class="r"><code>salaries &lt;- fread(&quot;./data/employee_information.csv&quot;)
+print(salaries, class = TRUE)</code></pre>
+<pre><code>##           LAST_NAME FIRST_NAME PAY_RATE_TYPE PAY_RATE
+##              &lt;char&gt;     &lt;char&gt;        &lt;char&gt;    &lt;int&gt;
+##     1:        AARON     ANDREA      SALARIED    31261
+##     2:        AARON      PEGGY      SALARIED     9349
+##     3:        ABARY     RODNEY      SALARIED    76461
+##     4:        ABATE     JO-ANN        HOURLY       48
+##    ---                                               
+## 17558:        ZWICK      KEVIN      SALARIED    46694
+## 17559:        ZWIRN     RHONDA      SALARIED    76461
+## 17560:       ZWOLAK       PAUL      SALARIED    54364
+## 17561:    ZYCHOWICZ       LISA      SALARIED    67706
+## 17562: ZYGMUND-FELT      ALLYN      SALARIED    90051
+##                     TITLE_DESCRIPTION HOME_ORGANIZATION
+##                                &lt;char&gt;            &lt;char&gt;
+##     1:       GENERAL CLEANER, 8 HOURS              4300
+##     2:  STUDENT CLIMATE STAFF,4 HOURS              6360
+##     3:                   SCHOOL NURSE              2370
+##     4: TEACHER-EXTRA CURR/STAFF DEVEL              9EW0
+##    ---                                                 
+## 17558:              TEACHER,FULL TIME              8300
+## 17559:         TEACHER,SPEC EDUCATION              6210
+## 17560:              TEACHER,FULL TIME              2290
+## 17561:              TEACHER,FULL TIME              8420
+## 17562:              TEACHER,FULL TIME              7100
+##        HOME_ORGANIZATION_DESCRIPTION        ORGANIZATION_LEVEL
+##                               &lt;char&gt;                    &lt;char&gt;
+##     1:         HESTON, EDWARD SCHOOL         ELEMENTARY SCHOOL
+##     2:   ROOSEVELT ELEMENTARY SCHOOL         ELEMENTARY SCHOOL
+##     3:   MCDANIEL, DELAPLAINE SCHOOL         ELEMENTARY SCHOOL
+##     4:           NON-PUBLIC PROGRAMS NON ADMINISTRATIVE OFFICE
+##    ---                                                        
+## 17558:                MAYFAIR SCHOOL         ELEMENTARY SCHOOL
+## 17559:   EDMONDS, FRANKLIN S. SCHOOL         ELEMENTARY SCHOOL
+## 17560:      FRANKLIN LEARNING CENTER               HIGH SCHOOL
+## 17561:       DECATUR, STEPHEN SCHOOL         ELEMENTARY SCHOOL
+## 17562:  COOKE, JAY ELEMENTARY SCHOOL         ELEMENTARY SCHOOL
+##        TYPE_OF_REPRESENTATION GENDER RUN_DATE
+##                        &lt;char&gt; &lt;char&gt;   &lt;char&gt;
+##     1:             LOCAL 1201      F 4/1/2016
+##     2:              LOCAL 634      F 4/1/2016
+##     3:            PFT-TEACHER      M 4/1/2016
+##     4:            PFT-TEACHER      F 4/1/2016
+##    ---                                       
+## 17558:            PFT-TEACHER      M 4/1/2016
+## 17559:            PFT-TEACHER      F 4/1/2016
+## 17560:            PFT-TEACHER      M 4/1/2016
+## 17561:            PFT-TEACHER      F 4/1/2016
+## 17562:            PFT-TEACHER      F 4/1/2016</code></pre>
+<pre class="r"><code>#it's a pain to have to lay on the SHIFT key all the
+#  time, so let's rename the columns so that
+#  are in lower case. We need three functions:
+#  tolower, which takes all upper-case letters in a 
+#  string and replaces them with their lower-case
+#  counterpart; names, which returns the names of
+#  any object (vector, list, data.table, etc.);
+#  and setnames, which has three arguments:
+#  1) a data.table, 2) the columns to rename, and
+#  3) their replacements. If we only use two arguments,
+#  R assumes we want to replace _all_ column names, and
+#  that the second argument is the replacement values.
+setnames(salaries, tolower(names(salaries)))
+
+#checking the result:
+salaries</code></pre>
+<pre><code>##           last_name first_name pay_rate_type pay_rate
+##     1:        AARON     ANDREA      SALARIED    31261
+##     2:        AARON      PEGGY      SALARIED     9349
+##     3:        ABARY     RODNEY      SALARIED    76461
+##     4:        ABATE     JO-ANN        HOURLY       48
+##     5:  ABAYOMI-IGE   OLABIMPE      SALARIED    76461
+##    ---                                               
+## 17558:        ZWICK      KEVIN      SALARIED    46694
+## 17559:        ZWIRN     RHONDA      SALARIED    76461
+## 17560:       ZWOLAK       PAUL      SALARIED    54364
+## 17561:    ZYCHOWICZ       LISA      SALARIED    67706
+## 17562: ZYGMUND-FELT      ALLYN      SALARIED    90051
+##                     title_description home_organization
+##     1:       GENERAL CLEANER, 8 HOURS              4300
+##     2:  STUDENT CLIMATE STAFF,4 HOURS              6360
+##     3:                   SCHOOL NURSE              2370
+##     4: TEACHER-EXTRA CURR/STAFF DEVEL              9EW0
+##     5:         TEACHER,SPEC EDUCATION              6100
+##    ---                                                 
+## 17558:              TEACHER,FULL TIME              8300
+## 17559:         TEACHER,SPEC EDUCATION              6210
+## 17560:              TEACHER,FULL TIME              2290
+## 17561:              TEACHER,FULL TIME              8420
+## 17562:              TEACHER,FULL TIME              7100
+##         home_organization_description        organization_level
+##     1:          HESTON, EDWARD SCHOOL         ELEMENTARY SCHOOL
+##     2:    ROOSEVELT ELEMENTARY SCHOOL         ELEMENTARY SCHOOL
+##     3:    MCDANIEL, DELAPLAINE SCHOOL         ELEMENTARY SCHOOL
+##     4:            NON-PUBLIC PROGRAMS NON ADMINISTRATIVE OFFICE
+##     5: LEEDS, MORRIS E. MIDDLE SCHOOL             MIDDLE SCHOOL
+##    ---                                                         
+## 17558:                 MAYFAIR SCHOOL         ELEMENTARY SCHOOL
+## 17559:    EDMONDS, FRANKLIN S. SCHOOL         ELEMENTARY SCHOOL
+## 17560:       FRANKLIN LEARNING CENTER               HIGH SCHOOL
+## 17561:        DECATUR, STEPHEN SCHOOL         ELEMENTARY SCHOOL
+## 17562:   COOKE, JAY ELEMENTARY SCHOOL         ELEMENTARY SCHOOL
+##        type_of_representation gender run_date
+##     1:             LOCAL 1201      F 4/1/2016
+##     2:              LOCAL 634      F 4/1/2016
+##     3:            PFT-TEACHER      M 4/1/2016
+##     4:            PFT-TEACHER      F 4/1/2016
+##     5:            PFT-TEACHER      F 4/1/2016
+##    ---                                       
+## 17558:            PFT-TEACHER      M 4/1/2016
+## 17559:            PFT-TEACHER      F 4/1/2016
+## 17560:            PFT-TEACHER      M 4/1/2016
+## 17561:            PFT-TEACHER      F 4/1/2016
+## 17562:            PFT-TEACHER      F 4/1/2016</code></pre>
+<p>This is a much bigger data set – covering all employees of the SDP and giving many more details about them. Let’s explore a bit:</p>
+<pre class="r"><code>#table is a great function for describing discrete variables.
+#  it gives the count of observations in each cell, and can also
+#  be used to create what Stata calls two-way tables.
+salaries[ , table(pay_rate_type)]</code></pre>
+<pre><code>## pay_rate_type
+##    DAILY   HOURLY SALARIED 
+##      141      526    16895</code></pre>
+<pre class="r"><code>salaries[ , table(organization_level)]</code></pre>
+<pre><code>## organization_level
+##                        ACADEMY          ADMINISTRATIVE OFFICE 
+##                              4                           1578 
+## CAREER AND TECHNICAL HIGH SCHL                CHARTER SCHOOLS 
+##                            456                             12 
+##     DISTRICT BUILDING/PROPERTY                EARLY CHILDHOOD 
+##                             64                            356 
+##              ELEMENTARY SCHOOL                         GARAGE 
+##                           9667                              6 
+##                    HIGH SCHOOL         INACTIVE WITH ACTIVITY 
+##                           3101                             11 
+##               LEARNING NETWORK                  MIDDLE SCHOOL 
+##                             20                            954 
+##      NON ADMINISTRATIVE OFFICE              NON PUBLIC SCHOOL 
+##                           1191                              1 
+##    TRANSITION / OVERAGE SCHOOL 
+##                            141</code></pre>
+<pre class="r"><code>#a cross-tabulation of these two; the first argument will
+#  appear in the rows, the second in the columns
+salaries[ , table(pay_rate_type, organization_level)]</code></pre>
+<pre><code>##              organization_level
+## pay_rate_type ACADEMY ADMINISTRATIVE OFFICE CAREER AND TECHNICAL HIGH SCHL
+##      DAILY          2                    31                              4
+##      HOURLY         0                   147                              0
+##      SALARIED       2                  1400                            452
+##              organization_level
+## pay_rate_type CHARTER SCHOOLS DISTRICT BUILDING/PROPERTY EARLY CHILDHOOD
+##      DAILY                  0                          0               0
+##      HOURLY                 0                          0               2
+##      SALARIED              12                         64             354
+##              organization_level
+## pay_rate_type ELEMENTARY SCHOOL GARAGE HIGH SCHOOL INACTIVE WITH ACTIVITY
+##      DAILY                   23      0          11                      0
+##      HOURLY                   0      0           2                      0
+##      SALARIED              9644      6        3088                     11
+##              organization_level
+## pay_rate_type LEARNING NETWORK MIDDLE SCHOOL NON ADMINISTRATIVE OFFICE
+##      DAILY                   2             1                        65
+##      HOURLY                  0             0                       375
+##      SALARIED               18           953                       751
+##              organization_level
+## pay_rate_type NON PUBLIC SCHOOL TRANSITION / OVERAGE SCHOOL
+##      DAILY                    0                           2
+##      HOURLY                   0                           0
+##      SALARIED                 1                         139</code></pre>
+<pre class="r"><code>salaries[ , table(organization_level, gender)]</code></pre>
+<pre><code>##                                 gender
+## organization_level                  F    M
+##   ACADEMY                           1    3
+##   ADMINISTRATIVE OFFICE           911  667
+##   CAREER AND TECHNICAL HIGH SCHL  269  187
+##   CHARTER SCHOOLS                  11    1
+##   DISTRICT BUILDING/PROPERTY       26   38
+##   EARLY CHILDHOOD                 343   13
+##   ELEMENTARY SCHOOL              7989 1678
+##   GARAGE                            0    6
+##   HIGH SCHOOL                    1988 1113
+##   INACTIVE WITH ACTIVITY            5    6
+##   LEARNING NETWORK                  7   13
+##   MIDDLE SCHOOL                   706  248
+##   NON ADMINISTRATIVE OFFICE       597  594
+##   NON PUBLIC SCHOOL                 1    0
+##   TRANSITION / OVERAGE SCHOOL      94   47</code></pre>
+<p>Let’s say we’re only interested in salaried employees. How do we get rid of the hourly/daily employees?</p>
+<p>Unlike in Stata, where we’d use <code>drop</code> and would have to jump through hoops to recover the lost observations (in case we decided to expand our focus later in our analysis), we can simply create a new <code>data.table</code> in R that contain only the observations we care about. This is, in my opinion, one of the most salient examples of a feature of R that blows Stata out of the water. We can keep many data sets at our disposal at once, without having to unload/reload the ones we’re not currently using. This will prove <em>especially</em> helpful when it comes to data cleaning/merging/reshaping.</p>
+<pre class="r"><code>salaried &lt;- salaries[pay_rate_type == &quot;SALARIED&quot;]</code></pre>
+<p>Even more useful may be to exclude anyone who’s not a teacher. First, we have to exclude anyone who’s not a teacher. How do we figure out who’s a teacher?</p>
+<p>Approach:</p>
+<ol style="list-style-type: decimal">
+<li>Count the number of observations in each category of <code>title_description</code> (we can see from the preview that there are at least some teachers under <code>TEACHER,FULL TIME</code>)</li>
+<li>Sort these categories to find the most common categories, since presumably teachers are by far the most common SDP employees.</li>
+</ol>
+<p>Carrying this out will introduce a few new things:</p>
+<ul>
+<li>Grouping. We’re going to <em>group by <code>title_description</code></em>, and count observations in each group. If I remember correctly, in Stata, this would be like <code>by title_description: count</code>. When <code>data.table</code> does this, you should think of your <code>data.table</code> being split into a whole bunch of smaller <code>data.table</code>s, each of which has all of the observations for exactly one level of <code>title_description</code>.</li>
+<li><code>.N</code>. <code>data.table</code> uses the abbreviation <code>.N</code> to stand for “number of observations”. It is defined <em>locally</em>, within each group, so all of the many <code>data.table</code>s mentioned above has its own <code>.N</code>. This is basically like <code>count</code> in Stata.</li>
+<li><code>order</code>. We can arrange the rows of a table by using <code>order</code> in the first argument (<code>i</code>); use a minus sign (<code>-</code>) to go in decreasing order, otherwise it’s increasing order (like we saw with <code>sort</code>).</li>
+<li>Chaining. We can tack on more and more <code>[]</code> to any given <code>data.table</code> operation to hone or continue or adjust our outcomes beyond what we could do in a single call to <code>[]</code>. The general syntax is <code>DT[...][...][...][...]</code>, where each <code>[...]</code> consists of doing some manipulation/subset/aggregation, etc.</li>
+</ul>
+<pre class="r"><code>#Let's take it step-by-step
+# 1: Find the count of employees in each category
+salaried[ , .N, by = title_description]</code></pre>
+<pre><code>##                   title_description    N
+##   1:       GENERAL CLEANER, 8 HOURS  503
+##   2:  STUDENT CLIMATE STAFF,4 HOURS  451
+##   3:                   SCHOOL NURSE  184
+##   4:         TEACHER,SPEC EDUCATION 1314
+##   5:  STUDENT CLIMATE STAFF,3 HOURS  410
+##  ---                                    
+## 531: DATA ANALYST - CHARTER SCHOOLS    1
+## 532:        DIR,OPERATIONAL SYS DEV    1
+## 533:         DIR,SYSTEMS ADMIN UNIT    1
+## 534:  DIR,INSURANCE RISK MANAGEMENT    1
+## 535:   DIR,DISTRICT PERFORMANCE OFF    1</code></pre>
+<pre class="r"><code># 2: reorder these to find the most common
+salaried[ , .N, by = title_description][order(N)]</code></pre>
+<pre><code>##                   title_description    N
+##   1:   SCHOOL-BASED TECH MAINT ASST    1
+##   2: DIR,CERT,SUB SVCS,SCH ALLOT SU    1
+##   3:             NUTRITIONIST, PKHS    1
+##   4: ADMINISTRATOR,PHILA VIRTUAL AC    1
+##   5:     HR SYSTEMS CONTROL ANALYST    1
+##  ---                                    
+## 531:       GENERAL CLEANER, 8 HOURS  503
+## 532:    CLASSROOM ASST,SP ED,SV HND  594
+## 533:    ONE TO ONE ASST, SPECIAL ED  757
+## 534:         TEACHER,SPEC EDUCATION 1314
+## 535:              TEACHER,FULL TIME 6652</code></pre>
+<pre class="r"><code># 3: put it in decreasing order
+salaried[ , .N, by = title_description][order(-N)]</code></pre>
+<pre><code>##                   title_description    N
+##   1:              TEACHER,FULL TIME 6652
+##   2:         TEACHER,SPEC EDUCATION 1314
+##   3:    ONE TO ONE ASST, SPECIAL ED  757
+##   4:    CLASSROOM ASST,SP ED,SV HND  594
+##   5:       GENERAL CLEANER, 8 HOURS  503
+##  ---                                    
+## 531: DATA ANALYST - CHARTER SCHOOLS    1
+## 532:        DIR,OPERATIONAL SYS DEV    1
+## 533:         DIR,SYSTEMS ADMIN UNIT    1
+## 534:  DIR,INSURANCE RISK MANAGEMENT    1
+## 535:   DIR,DISTRICT PERFORMANCE OFF    1</code></pre>
+<pre class="r"><code># 4: Only look at the top 20 most frequent positions
+# (idea -- once it's resorted, these are simply
+#  the first twenty rows of the sorted table)
+salaried[ , .N, by = title_description][order(-N)][1:20]</code></pre>
+<pre><code>##                  title_description    N
+##  1:              TEACHER,FULL TIME 6652
+##  2:         TEACHER,SPEC EDUCATION 1314
+##  3:    ONE TO ONE ASST, SPECIAL ED  757
+##  4:    CLASSROOM ASST,SP ED,SV HND  594
+##  5:       GENERAL CLEANER, 8 HOURS  503
+##  6:  STUDENT CLIMATE STAFF,4 HOURS  451
+##  7:  STUDENT CLIMATE STAFF,3 HOURS  410
+##  8:            FOOD SVCS ASSISTANT  386
+##  9: SUPPORTIVE SERVICES ASST, 4 HR  317
+## 10:                  BUS ATTENDANT  295
+## 11:          SCHOOL POLICE OFFICER  264
+## 12: SUPPORTIVE SERVICES ASST, 3 HR  249
+## 13:    SCHOOL COUNSELOR, 10 MONTHS  245
+## 14:            CUSTODIAL ASSISTANT  241
+## 15:                      PRINCIPAL  225
+## 16:                    SECRETARY I  224
+## 17:                   SCHOOL NURSE  184
+## 18:        FOOD SVCS WORKER SENIOR  163
+## 19:  STUDENT CLIMATE STAFF,5 HOURS  145
+## 20:  BUS CHAUFFEUR PT (4-5HRS/DAY)  128</code></pre>
+<p>We can start to see many interesting facets of employment at SDP here. Almost 300 school police officers but only 180 nurses. Ripe ground for exploring on your own!</p>
+<p>I’ll continue focusing on teachers; it appears all but the special ed. teachers are grouped under <code>TEACHER,FULL TIME</code>, so we can subset:</p>
+<pre class="r"><code>teachers &lt;- salaried[title_description == &quot;TEACHER,FULL TIME&quot;]
+teachers</code></pre>
+<pre><code>##          last_name first_name pay_rate_type pay_rate title_description
+##    1:       ABBOTT      JOYCE      SALARIED    76461 TEACHER,FULL TIME
+##    2:     ABDALLAH JUWAYRIYAH      SALARIED    46694 TEACHER,FULL TIME
+##    3:  ABDEL-JALIL    GHADEER      SALARIED    45359 TEACHER,FULL TIME
+##    4:  ABDUL BASIT    BARBARA      SALARIED    67706 TEACHER,FULL TIME
+##    5: ABDUL-LATEEF     VILLIA      SALARIED    48945 TEACHER,FULL TIME
+##   ---                                                                 
+## 6648:      ZUNGOLO    WILLIAM      SALARIED    90051 TEACHER,FULL TIME
+## 6649:        ZWICK      KEVIN      SALARIED    46694 TEACHER,FULL TIME
+## 6650:       ZWOLAK       PAUL      SALARIED    54364 TEACHER,FULL TIME
+## 6651:    ZYCHOWICZ       LISA      SALARIED    67706 TEACHER,FULL TIME
+## 6652: ZYGMUND-FELT      ALLYN      SALARIED    90051 TEACHER,FULL TIME
+##       home_organization home_organization_description organization_level
+##    1:              1290       HAMILTON, ANDREW SCHOOL  ELEMENTARY SCHOOL
+##    2:              1470           LOCKE, ALAIN SCHOOL  ELEMENTARY SCHOOL
+##    3:              7440         TAYLOR, BAYARD SCHOOL  ELEMENTARY SCHOOL
+##    4:              7530         ROWEN, WILLIAM SCHOOL  ELEMENTARY SCHOOL
+##    5:              1010     BARTRAM, JOHN HIGH SCHOOL        HIGH SCHOOL
+##   ---                                                                   
+## 6648:              8390     FITZPATRICK, A. L. SCHOOL  ELEMENTARY SCHOOL
+## 6649:              8300                MAYFAIR SCHOOL  ELEMENTARY SCHOOL
+## 6650:              2290      FRANKLIN LEARNING CENTER        HIGH SCHOOL
+## 6651:              8420       DECATUR, STEPHEN SCHOOL  ELEMENTARY SCHOOL
+## 6652:              7100  COOKE, JAY ELEMENTARY SCHOOL  ELEMENTARY SCHOOL
+##       type_of_representation gender run_date
+##    1:            PFT-TEACHER      F 4/1/2016
+##    2:            PFT-TEACHER      F 4/1/2016
+##    3:            PFT-TEACHER      F 4/1/2016
+##    4:            PFT-TEACHER      F 4/1/2016
+##    5:            PFT-TEACHER      F 4/1/2016
+##   ---                                       
+## 6648:            PFT-TEACHER      M 4/1/2016
+## 6649:            PFT-TEACHER      M 4/1/2016
+## 6650:            PFT-TEACHER      M 4/1/2016
+## 6651:            PFT-TEACHER      F 4/1/2016
+## 6652:            PFT-TEACHER      F 4/1/2016</code></pre>
+</div>
+<div id="group-mean-salaries-various-cuts" class="section level3">
+<h3><span class="header-section-number">3.1.4</span> Group mean salaries – various cuts</h3>
+<p>Now we can explore data by group. How does pay differ by gender?</p>
+<pre class="r"><code>#simple to code!
+teachers[ , mean(pay_rate), by = gender]</code></pre>
+<pre><code>##    gender       V1
+## 1:      F 68624.85
+## 2:      M 67689.59</code></pre>
+<pre class="r"><code>#mean automatically got called V1. If we want
+#  a more friendly output, we have to change a little:
+teachers[ , .(avg_wage = mean(pay_rate)), by = gender]</code></pre>
+<pre><code>##    gender avg_wage
+## 1:      F 68624.85
+## 2:      M 67689.59</code></pre>
+<p>So in teaching in Philly, actually women earn significantly more than men (this is indeed significant; I’ll show you how to test that in a bit)!</p>
+<p>(Of course men and women with the same experience and certification are paid basically the same – it’s written explicitly in the teachers’ contract – but we don’t have any experience or certification measures to control for this)</p>
+<p>How does pay differ by organization level?</p>
+<pre class="r"><code>teachers[ , .(avg_wage = mean(pay_rate)), by = organization_level]</code></pre>
+<pre><code>##                organization_level avg_wage
+## 1:              ELEMENTARY SCHOOL 67639.16
+## 2:                    HIGH SCHOOL 69527.33
+## 3:                  MIDDLE SCHOOL 69481.66
+## 4: CAREER AND TECHNICAL HIGH SCHL 71931.52
+## 5:                EARLY CHILDHOOD 74058.15
+## 6:    TRANSITION / OVERAGE SCHOOL 63434.37
+## 7:          ADMINISTRATIVE OFFICE 66255.22
+## 8:      NON ADMINISTRATIVE OFFICE 82723.82
+## 9:                        ACADEMY 67789.00</code></pre>
+<p>Which school has the best-paid teachers?</p>
+<pre class="r"><code>teachers[ , .(avg_wage = mean(pay_rate)),
+         by = home_organization_description
+          ][order(-avg_wage)]</code></pre>
+<pre><code>##      home_organization_description avg_wage
+##   1:       LOGAN SCHOOL HEAD START 90051.00
+##   2:   COOK-WISSAHICKON HEAD START 90051.00
+##   3:       SHAWMONT BRIGHT FUTURES 90051.00
+##   4:        MUNOZ-MARIN HEAD START 90051.00
+##   5:          SHARSWOOD HEAD START 90051.00
+##  ---                                       
+## 287:        DUNBAR, PAUL L. SCHOOL 56805.95
+## 288:        SOUTH PHILA HEAD START 51113.00
+## 289:             BLAINE HEAD START 51113.00
+## 290:            BETHUNE HEAD START 51113.00
+## 291:            MIFFLIN HEAD START     0.00</code></pre>
+<p>This looks fishy! It’s rare for any average worth knowing to come out exactly to an integer. I suspect there are very few teachers at these schools. How can we check?</p>
+<pre class="r"><code>#remember our handy friend .N!!
+teachers[ , .(.N, avg_wage = mean(pay_rate)),
+          by = home_organization_description
+          ][order(-avg_wage)]</code></pre>
+<pre><code>##      home_organization_description  N avg_wage
+##   1:       LOGAN SCHOOL HEAD START  1 90051.00
+##   2:   COOK-WISSAHICKON HEAD START  1 90051.00
+##   3:       SHAWMONT BRIGHT FUTURES  1 90051.00
+##   4:        MUNOZ-MARIN HEAD START  1 90051.00
+##   5:          SHARSWOOD HEAD START  1 90051.00
+##  ---                                          
+## 287:        DUNBAR, PAUL L. SCHOOL 21 56805.95
+## 288:        SOUTH PHILA HEAD START  1 51113.00
+## 289:             BLAINE HEAD START  1 51113.00
+## 290:            BETHUNE HEAD START  1 51113.00
+## 291:            MIFFLIN HEAD START  1     0.00</code></pre>
+<p>In fact, almost all of the “best-” and “worst-” paid schools are outliers because there’s only one employee listed. So that’s not really a fair measure of dominance.</p>
+<p>So what can we do to improve our measure?</p>
+<p>What’s typically done is to exclude all schools that don’t have pass some cutoff minimum number of employees. For this exercise, let’s say we want to exclude all schools that have fewer than 10 full-time teachers in the data.</p>
+<p>The way to do so is pretty natural. Remember that when we use <code>by</code>, we’re essentially splitting our main <code>data.table</code> up into 291 smaller <code>data.table</code>s, one for each school. We want to keep only those sub-<code>data.table</code>s that have at least 10 teachers – i.e., they have at least 10 rows, i.e., <code>.N</code> is at least 10:</p>
+<pre class="r"><code>#No longer keep .N as an output -- this is just for focus,
+#  since we already know all the schools have at least
+#  ten teachers
+teachers[ , if (.N &gt;= 10) .(avg_wage = mean(pay_rate)),
+          by = home_organization_description
+          ][order(-avg_wage)]</code></pre>
+<pre><code>##      home_organization_description avg_wage
+##   1:           NON-PUBLIC PROGRAMS 82723.82
+##   2:       SOUTH PHILADELPHIA H.S. 78295.27
+##   3:  GIRLS, PHILA HIGH SCHOOL FOR 77710.83
+##   4:          POWEL, SAMUEL SCHOOL 77700.50
+##   5:       PENN TREATY HIGH SCHOOL 76291.82
+##  ---                                       
+## 208:               KENSINGTON CAPA 59277.92
+## 209:        HUEY, SAMUEL B. SCHOOL 58582.12
+## 210:      PEIRCE, THOMAS M. SCHOOL 58114.21
+## 211: CLEMENTE, ROBERTO MIDDLE SCHL 57635.85
+## 212:        DUNBAR, PAUL L. SCHOOL 56805.95</code></pre>
+<p>Here we see our first <code>if</code> statement in R. The basic form of an <code>if</code> statement in R is:</p>
+<pre class="r"><code>#Note the parentheses around the logical!! Very easy to forget
+if (some_logical){
+  # what to do if true
+} else {
+  # what to do if false
+}</code></pre>
+<p>It’s important to note that <code>some_logical</code> has to be either <code>TRUE</code> or <code>FALSE</code> – it can’t be a vector!! This sounds easy now but it’s guaranteed to trip you up at some point.</p>
+<p>There’s no <code>else</code> statement in the condition we used above. So, for all the schools where there are fewer than 10 teachers, nothing happens (technically, the statement returns <code>NULL</code> – but don’t worry about that for now), and <code>data.table</code> ignores any such sub-<code>data.table</code>.</p>
+<p>I don’t really know what <code>NON-PUBLIC PROGRAMS</code> means… but besides that, we see a lot of staple high school names. Of course, all teachers in Philly are on the same teachers’ contract and hence the same pay scale – so what this exercise has <em>really</em> told us is that South Philly high has the most experienced and/or certified teachers, and that teachers at Dunbar are young and/or uncertified.</p>
+<p>We could go on exploring / slicing&amp;dicing this data all day, but I think we’ve learned enough essentials of manipulation/inspection for now. We’ll pick up more tricks as we move along.</p>
 <hr />
 </div>
 </div>
