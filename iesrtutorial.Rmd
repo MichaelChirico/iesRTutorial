@@ -971,12 +971,48 @@ str(attendance)
 is.list(attendance)
 ```
 
-OK, lots of important stuff here. We've discovered a new type of object! `attendance` is a `data.table`. You can think of this as being a single sheet of an Excel workbook.
+OK, lots of important stuff here. We've discovered a new type of object! `attendance` is a `data.table`. You can think of this as being a single sheet of an Excel workbook. It is specific to the `data.table` package, and is an improvement on the `data.frame` type found in base R (we'll see this type a bit later).
 
 As far as how R thinks of it, a `data.table` is a `list` on steroids. Each element of the `list` is a column, and each element has the same number of items. We can see from `str` that, like a `list`, we can use `$` to extract items (here: columns):
 
 ```{r extract_column}
 attendance$SCH_TEACHER_ATTEND
+```
+
+What are the columns in this data? We usually hope we have a data dictionary, but I didn't find one on the SDP website. It appears that `ULCS_NO` is the same as `SCHOOL_ID` (padded with a `0`). It's not clear if the school district is anonymizing the schools or if we simply have to match the `SCHOOL_ID` to the school's name in another file.
+
+The meat of the data are the two columns `SCH_TEACHER_ATTEND` and `SDP_TEACHER_ATTEND`. The former is the attendance rate of teachers at a given school; the latter is the average for the whole district (which is why it's the same in every row).
+
+We can now start to explore the data. The only real column of interest is `SCH_TEACHER_ATTEND`. With this, we can explore how teacher attendance varies across the city.
+
+Interacting with a `data.table` for exploration involves accessing it with `[]`. Within `[]`, there are _**three**_ _main_ arguments:
+
+ 1. `i`: which _rows_ do we want? (**subsetting**)
+ 2. `j`: which _columns_ do we want? (**selection** and **manipulation**)
+ 3. `by`: **grouping** our operations in `j` _by_ categories within a column.
+ 
+ The `i` and `j` notation come from thinking of a `data.table` as a matrix. To express the `i`th row and `j`th column of a matrix `A`, math people often write `A[i,j]`.
+ 
+ Let's see the first two in action in exploring our first data set
+
+```{r attend_summary}
+#Summarize the variable to get a quick understanding
+#we're looking at ALL rows, so we leave the first argument BLANK
+#we're trying to summarize SCH_TEACHER_ATTEND, so we
+#  use the summary function in the second argument
+attendance[ , summary(SCH_TEACHER_ATTEND)]
+```
+
+So most schools are within 2 percent of the district average. What about schools that are particularly high or particularly low?
+
+```{r attend_high_low}
+#We are focusing on certain rows, so we
+#  say the condition defining those
+#  rows in the first argument
+attendance[SCH_TEACHER_ATTEND < 90]
+
+#And schools with particularly high attendance
+attendance[SCH_TEACHER_ATTEND > 97]
 ```
 
 ***

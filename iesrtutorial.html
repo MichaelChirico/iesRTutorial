@@ -110,7 +110,7 @@ $(document).ready(function () {
 
 <h1 class="title">IES R Tutorial</h1>
 <h4 class="author"><em>Michael Chirico</em></h4>
-<h4 class="date"><em>Compiled April 28, 2016 at 13:38</em></h4>
+<h4 class="date"><em>Compiled April 29, 2016 at 11:50</em></h4>
 
 </div>
 
@@ -680,20 +680,20 @@ paste(first, last)</code></pre>
 <p>The most common kind of random numbers that people want are uniform draws and normal draws.</p>
 <pre class="r"><code>#generate 10 U[0, 1] draws
 runif(10)</code></pre>
-<pre><code>##  [1] 0.42024142 0.69436757 0.40544869 0.54006709 0.08913584 0.12523663
-##  [7] 0.03554970 0.07741151 0.50411055 0.46290143</code></pre>
+<pre><code>##  [1] 0.6767443 0.3314466 0.2905184 0.2789228 0.3227597 0.4218326 0.2213203
+##  [8] 0.5377949 0.3683350 0.2428204</code></pre>
 <pre class="r"><code>#generate 10 U[3, 5] draws
 runif(10, min = 3, max = 5)</code></pre>
-<pre><code>##  [1] 3.725568 3.623249 4.152838 3.096700 3.128490 4.458787 4.725006
-##  [8] 4.505527 3.221118 3.267278</code></pre>
+<pre><code>##  [1] 4.168516 4.187958 3.417876 3.048400 3.303156 3.499428 4.932933
+##  [8] 4.113449 3.155699 3.504150</code></pre>
 <pre class="r"><code>#generate 10 N(0, 1) draws
 rnorm(10)</code></pre>
-<pre><code>##  [1] -1.197962486  1.065841313  1.198609884  0.796608195 -0.005417547
-##  [6]  1.384934617 -0.966750035  0.625441466  0.030058354 -1.973889991</code></pre>
+<pre><code>##  [1] -0.5718726 -0.5957992  0.5673461  1.8021304  1.7052277 -0.1635307
+##  [7]  0.4941407  1.1517386  0.6733380  0.5550563</code></pre>
 <pre class="r"><code>#generate 10 N(3, 5) draws
 rnorm(10, mean = 3, sd = 5)</code></pre>
-<pre><code>##  [1] -2.004800  7.720951  4.145294  2.110591  6.337504 -1.381662  3.476413
-##  [8] 10.199867  8.267048  9.665846</code></pre>
+<pre><code>##  [1] 12.2307861 -3.4822432  3.0151295  9.5056351  1.7590427  0.7049513
+##  [7]  2.7753200  1.6790902  1.6052026  4.5645885</code></pre>
 <p>These examples highlight the common format of random number generators in R. To get random numbers from a distribution, there is probably a function named like <code>r</code><strong><code>dist</code></strong>, where <strong><code>dist</code></strong> is an abbreviation for the distribution (here, <strong>unif</strong>orm and <strong>norm</strong>al). The first argument is the number of draws; the rest of the arguments are parameters.</p>
 <p>Here is a complete table of all of the common distributions built in to R, and the function used to invoke their random number generator (RNG):</p>
 <table>
@@ -845,13 +845,13 @@ qnorm(c(.005, .025, .05))</code></pre>
 <p>As always, it’s easiest to see with some examples:</p>
 <pre class="r"><code>#A permutation of 1:5
 sample(5)</code></pre>
-<pre><code>## [1] 1 2 3 5 4</code></pre>
+<pre><code>## [1] 2 3 4 1 5</code></pre>
 <pre class="r"><code>#A size-3 subset of 1:5
 sample(5, 3)</code></pre>
-<pre><code>## [1] 2 5 1</code></pre>
+<pre><code>## [1] 1 5 4</code></pre>
 <pre class="r"><code>#A size-5 subset of 1:5, with replacement
 sample(5, 5, replace = TRUE)</code></pre>
-<pre><code>## [1] 3 2 4 1 3</code></pre>
+<pre><code>## [1] 4 3 4 5 2</code></pre>
 <pre class="r"><code>#A weighted sample of 1:5, heavily weighting 1
 sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></pre>
 <pre><code>## [1] 1 1 1 1 1</code></pre>
@@ -862,7 +862,7 @@ mean(flips == &quot;H&quot;)</code></pre>
 <pre><code>## [1] 0.5</code></pre>
 <pre class="r"><code>#Roll a pair of dice and add them
 sum(sample(6, 2, replace = TRUE))</code></pre>
-<pre><code>## [1] 4</code></pre>
+<pre><code>## [1] 8</code></pre>
 <pre class="r"><code>#create a deck of labeled cards:
 #  (I copy-pasted the text for the suits from
 #   Wikipedia, but we could have used S/H/D/C:
@@ -877,7 +877,7 @@ deck</code></pre>
 ## [45] &quot;7♣&quot;  &quot;8♣&quot;  &quot;9♣&quot;  &quot;10♣&quot; &quot;J♣&quot;  &quot;Q♣&quot;  &quot;K♣&quot;  &quot;A♣&quot;</code></pre>
 <pre class="r"><code>#Now draw a poker hand
 sample(deck, 5)</code></pre>
-<pre><code>## [1] &quot;6♥&quot; &quot;7♦&quot; &quot;2♥&quot; &quot;9♣&quot; &quot;3♦&quot;</code></pre>
+<pre><code>## [1] &quot;9♠&quot; &quot;K♣&quot; &quot;A♣&quot; &quot;6♥&quot; &quot;Q♥&quot;</code></pre>
 </div>
 <div id="replicate" class="section level3">
 <h3><span class="header-section-number">2.6.3</span> <code>replicate</code></h3>
@@ -896,7 +896,7 @@ simulations &lt;-
 #How often does a flush happen?
 #  True frequency is 0.1965%
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.0023</code></pre>
+<pre><code>## [1] 0.0019</code></pre>
 <pre class="r"><code>#What about a pair (just two cards match)?
 #  true frequency: 42%
 simulations &lt;- 
@@ -906,7 +906,7 @@ simulations &lt;-
     sum(duplicated(faces)) == 1 #one pair if there's exactly _one_ match
   })
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.4213</code></pre>
+<pre><code>## [1] 0.4238</code></pre>
 </div>
 <div id="set.seed" class="section level3">
 <h3><span class="header-section-number">2.6.4</span> <code>set.seed</code></h3>
@@ -1075,14 +1075,14 @@ x &lt;- rnorm(1000)
 r &lt;- lm(y ~ x)
 str(r)</code></pre>
 <pre><code>## List of 12
-##  $ coefficients : Named num [1:2] -0.05838 -0.00533
+##  $ coefficients : Named num [1:2] -0.0605 0.0126
 ##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
-##  $ residuals    : Named num [1:1000] -0.867 1.557 0.353 -1.244 -2.158 ...
+##  $ residuals    : Named num [1:1000] -1.3079 0.5197 0.4378 -0.494 -0.0502 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ effects      : Named num [1:1000] 1.852 -0.169 0.397 -1.196 -2.111 ...
+##  $ effects      : Named num [1:1000] 1.8834 -0.3956 0.488 -0.4372 -0.0398 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;(Intercept)&quot; &quot;x&quot; &quot;&quot; &quot;&quot; ...
 ##  $ rank         : int 2
-##  $ fitted.values: Named num [1:1000] -0.0613 -0.0528 -0.0605 -0.0611 -0.0609 ...
+##  $ fitted.values: Named num [1:1000] -0.0556 -0.0518 -0.0667 -0.0715 -0.038 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##  $ assign       : int [1:2] 0 1
 ##  $ qr           :List of 5
@@ -1091,7 +1091,7 @@ str(r)</code></pre>
 ##   .. .. ..$ : chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##   .. .. ..$ : chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
 ##   .. ..- attr(*, &quot;assign&quot;)= int [1:2] 0 1
-##   ..$ qraux: num [1:2] 1.03 1.03
+##   ..$ qraux: num [1:2] 1.03 1.02
 ##   ..$ pivot: int [1:2] 1 2
 ##   ..$ tol  : num 1e-07
 ##   ..$ rank : int 2
@@ -1114,8 +1114,8 @@ str(r)</code></pre>
 ##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
 ##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;y&quot; &quot;x&quot;
 ##  $ model        :'data.frame':   1000 obs. of  2 variables:
-##   ..$ y: num [1:1000] -0.929 1.504 0.293 -1.306 -2.219 ...
-##   ..$ x: num [1:1000] 0.554 -1.043 0.404 0.514 0.471 ...
+##   ..$ y: num [1:1000] -1.3634 0.4679 0.3711 -0.5655 -0.0882 ...
+##   ..$ x: num [1:1000] 0.388 0.692 -0.498 -0.876 1.786 ...
 ##   ..- attr(*, &quot;terms&quot;)=Classes 'terms', 'formula' length 3 y ~ x
 ##   .. .. ..- attr(*, &quot;variables&quot;)= language list(y, x)
 ##   .. .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
@@ -1257,6 +1257,73 @@ print(attendance, class = TRUE)</code></pre>
 ##  - attr(*, &quot;.internal.selfref&quot;)=&lt;externalptr&gt;</code></pre>
 <pre class="r"><code>is.list(attendance)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
+<p>OK, lots of important stuff here. We’ve discovered a new type of object! <code>attendance</code> is a <code>data.table</code>. You can think of this as being a single sheet of an Excel workbook. It is specific to the <code>data.table</code> package, and is an improvement on the <code>data.frame</code> type found in base R (we’ll see this type a bit later).</p>
+<p>As far as how R thinks of it, a <code>data.table</code> is a <code>list</code> on steroids. Each element of the <code>list</code> is a column, and each element has the same number of items. We can see from <code>str</code> that, like a <code>list</code>, we can use <code>$</code> to extract items (here: columns):</p>
+<pre class="r"><code>attendance$SCH_TEACHER_ATTEND</code></pre>
+<pre><code>##   [1] 92.7 95.0 96.0 95.1 96.6 93.8 94.3 94.0 95.3 92.2 90.8 94.3 93.6 95.0
+##  [15] 92.8 85.3 86.4 95.9 93.0 94.8 90.1 95.0 93.4 94.4 91.8 94.6 95.4 92.3
+##  [29] 95.8 94.0 95.1 94.7 88.4 93.7 94.6 95.5 94.8 95.3 94.0 95.3 89.9 93.2
+##  [43] 91.7 89.0 93.1 92.7 94.2 97.2 93.6 92.4 92.6 92.7 92.0 94.4 94.3 93.6
+##  [57] 92.4 95.1 93.4 95.6 87.8 94.7 93.5 95.7 90.9 94.4 95.7 90.2 95.7 95.2
+##  [71] 93.3 93.5 89.0 95.0 89.7 93.9 93.2 93.5 92.1 93.0 94.8 95.1 94.8 90.8
+##  [85] 95.7 93.3 92.8 89.6 95.4 91.5 94.1 93.3 93.7 96.8 95.3 94.1 93.9 88.0
+##  [99] 94.6 95.1 86.9 95.5 95.0 97.6 95.8 93.8 94.4 96.0 95.8 89.7 94.3 92.7
+## [113] 93.1 95.1 94.5 95.4 94.4 94.4 90.8 94.5 93.3 90.6 93.5 94.4 91.9 90.7
+## [127] 91.6 92.1 94.7 95.4 86.5 94.8 94.5 90.1 96.1 93.1 95.8 92.0 94.1 91.7
+## [141] 94.0 92.4 95.6 91.2 92.1 92.8 93.8 93.7 88.8 96.1 94.4 90.6 95.3 95.3
+## [155] 90.9 94.0 94.1 95.6 93.9 91.9 91.5 93.2 94.2 93.0 91.2 91.8 95.9 92.1
+## [169] 93.8 92.6 90.0 94.1 96.5 91.1 89.8 93.6 94.3 97.6 93.0 98.1 91.4 93.4
+## [183] 94.5 94.1 94.1 88.7 94.0 93.4 94.2 94.6 96.2 91.4 92.0 96.5 92.0 95.1
+## [197] 94.7 96.6 96.8 91.7 96.1 95.9 93.0 91.5 94.4 93.2 88.5 92.0 91.4 95.3
+## [211] 94.7 94.7</code></pre>
+<p>What are the columns in this data? We usually hope we have a data dictionary, but I didn’t find one on the SDP website. It appears that <code>ULCS_NO</code> is the same as <code>SCHOOL_ID</code> (padded with a <code>0</code>). It’s not clear if the school district is anonymizing the schools or if we simply have to match the <code>SCHOOL_ID</code> to the school’s name in another file.</p>
+<p>The meat of the data are the two columns <code>SCH_TEACHER_ATTEND</code> and <code>SDP_TEACHER_ATTEND</code>. The former is the attendance rate of teachers at a given school; the latter is the average for the whole district (which is why it’s the same in every row).</p>
+<p>We can now start to explore the data. The only real column of interest is <code>SCH_TEACHER_ATTEND</code>. With this, we can explore how teacher attendance varies across the city.</p>
+<p>Interacting with a <code>data.table</code> for exploration involves accessing it with <code>[]</code>. Within <code>[]</code>, there are <em><strong>three</strong></em> <em>main</em> arguments:</p>
+<ol style="list-style-type: decimal">
+<li><code>i</code>: which <em>rows</em> do we want? (<strong>subsetting</strong>)</li>
+<li><code>j</code>: which <em>columns</em> do we want? (<strong>selection</strong> and <strong>manipulation</strong>)</li>
+<li><code>by</code>: <strong>grouping</strong> our operations in <code>j</code> <em>by</em> categories within a column.</li>
+</ol>
+<p>The <code>i</code> and <code>j</code> notation come from thinking of a <code>data.table</code> as a matrix. To express the <code>i</code>th row and <code>j</code>th column of a matrix <code>A</code>, math people often write <code>A[i,j]</code>.</p>
+<p>Let’s see the first two in action in exploring our first data set</p>
+<pre class="r"><code>#Summarize the variable to get a quick understanding
+#we're looking at ALL rows, so we leave the first argument BLANK
+#we're trying to summarize SCH_TEACHER_ATTEND, so we
+#  use the summary function in the second argument
+attendance[ , summary(SCH_TEACHER_ATTEND)]</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   85.30   92.10   93.90   93.43   95.00   98.10</code></pre>
+<p>So most schools are within 2 percent of the district average. What about schools that are particularly high or particularly low?</p>
+<pre class="r"><code>#We are focusing on certain rows, so we
+#  say the condition defining those
+#  rows in the first argument
+attendance[SCH_TEACHER_ATTEND &lt; 90]</code></pre>
+<pre><code>##     ULCS_NO SCHOOL_YEAR SCH_TEACHER_ATTEND SDP_TEACHER_ATTEND SCHOOL_ID
+##  1:    4350   2013-2014               85.3               93.4       435
+##  2:    4570   2013-2014               86.4               93.4       457
+##  3:    1340   2013-2014               88.4               93.4       134
+##  4:    7350   2013-2014               89.9               93.4       735
+##  5:    7220   2013-2014               89.0               93.4       722
+##  6:    2480   2013-2014               87.8               93.4       248
+##  7:    6360   2013-2014               89.0               93.4       636
+##  8:    8240   2013-2014               89.7               93.4       824
+##  9:    5430   2013-2014               89.6               93.4       543
+## 10:    6260   2013-2014               88.0               93.4       626
+## 11:    6340   2013-2014               86.9               93.4       634
+## 12:    7290   2013-2014               89.7               93.4       729
+## 13:    5370   2013-2014               86.5               93.4       537
+## 14:    1330   2013-2014               88.8               93.4       133
+## 15:    7510   2013-2014               89.8               93.4       751
+## 16:    4240   2013-2014               88.7               93.4       424
+## 17:    1130   2013-2014               88.5               93.4       113</code></pre>
+<pre class="r"><code>#And schools with particularly high attendance
+attendance[SCH_TEACHER_ATTEND &gt; 97]</code></pre>
+<pre><code>##    ULCS_NO SCHOOL_YEAR SCH_TEACHER_ATTEND SDP_TEACHER_ATTEND SCHOOL_ID
+## 1:    5340   2013-2014               97.2               93.4       534
+## 2:    6040   2013-2014               97.6               93.4       604
+## 3:    8560   2013-2014               97.6               93.4       856
+## 4:    1190   2013-2014               98.1               93.4       119</code></pre>
 <hr />
 </div>
 </div>
