@@ -110,7 +110,7 @@ $(document).ready(function () {
 
 <h1 class="title">IES R Tutorial</h1>
 <h4 class="author"><em>Michael Chirico</em></h4>
-<h4 class="date"><em>Compiled April 29, 2016 at 18:32</em></h4>
+<h4 class="date"><em>Compiled April 30, 2016 at 15:15</em></h4>
 
 </div>
 
@@ -158,12 +158,15 @@ $(document).ready(function () {
 <li><a href="#teacher-salaries"><span class="toc-section-number">3.1.3</span> Teacher Salaries</a></li>
 <li><a href="#group-mean-salaries-various-cuts"><span class="toc-section-number">3.1.4</span> Group mean salaries – various cuts</a></li>
 </ul></li>
-<li><a href="#regressions"><span class="toc-section-number">3.2</span> Regressions</a><ul>
-<li><a href="#ols-lm-predictcoeftestsummary"><span class="toc-section-number">3.2.1</span> OLS (<code>lm</code>) / <code>predict</code>/<code>coeftest</code>/<code>summary</code></a></li>
-<li><a href="#probitlogit-glm"><span class="toc-section-number">3.2.2</span> Probit/Logit (<code>glm</code>)</a></li>
+<li><a href="#merging"><span class="toc-section-number">3.2</span> Merging</a><ul>
+<li><a href="#adding-a-column-to-a-data.table"><span class="toc-section-number">3.2.1</span> <code>:=</code> - Adding a column to a <code>data.table</code></a></li>
+<li><a href="#merge-and-update"><span class="toc-section-number">3.2.2</span> Merge and update</a></li>
 </ul></li>
-<li><a href="#reshaping"><span class="toc-section-number">3.3</span> Reshaping</a></li>
-<li><a href="#merging"><span class="toc-section-number">3.4</span> Merging</a></li>
+<li><a href="#regressions"><span class="toc-section-number">3.3</span> Regressions</a><ul>
+<li><a href="#ols-lm-predictcoeftestsummary"><span class="toc-section-number">3.3.1</span> OLS (<code>lm</code>) / <code>predict</code>/<code>coeftest</code>/<code>summary</code></a></li>
+<li><a href="#probitlogit-glm"><span class="toc-section-number">3.3.2</span> Probit/Logit (<code>glm</code>)</a></li>
+</ul></li>
+<li><a href="#reshaping"><span class="toc-section-number">3.4</span> Reshaping</a></li>
 <li><a href="#string-data-regex"><span class="toc-section-number">3.5</span> String Data / regex</a></li>
 <li><a href="#non-.csv-data"><span class="toc-section-number">3.6</span> Non-.csv Data</a><ul>
 <li><a href="#sas-read_sas"><span class="toc-section-number">3.6.1</span> SAS: <code>read_sas</code></a></li>
@@ -683,20 +686,20 @@ paste(first, last)</code></pre>
 <p>The most common kind of random numbers that people want are uniform draws and normal draws.</p>
 <pre class="r"><code>#generate 10 U[0, 1] draws
 runif(10)</code></pre>
-<pre><code>##  [1] 0.21282970 0.65339816 0.82068284 0.42259107 0.80388918 0.07395919
-##  [7] 0.80015750 0.48508078 0.32880966 0.07972363</code></pre>
+<pre><code>##  [1] 0.93206148 0.27399248 0.64524455 0.59236746 0.20114165 0.84824124
+##  [7] 0.09910169 0.78685851 0.74470867 0.46583739</code></pre>
 <pre class="r"><code>#generate 10 U[3, 5] draws
 runif(10, min = 3, max = 5)</code></pre>
-<pre><code>##  [1] 4.199225 3.917534 3.477550 3.141230 4.033276 3.984249 4.077753
-##  [8] 4.559164 4.595978 3.219528</code></pre>
+<pre><code>##  [1] 3.875893 3.062618 3.480862 3.710756 3.191807 3.362733 3.370285
+##  [8] 3.429946 4.501463 3.352343</code></pre>
 <pre class="r"><code>#generate 10 N(0, 1) draws
 rnorm(10)</code></pre>
-<pre><code>##  [1] -0.5425921 -0.7158974 -1.5277680 -0.3374812  0.2369382  0.8975257
-##  [7]  1.0516327  0.3981044  0.2990908 -0.7040828</code></pre>
+<pre><code>##  [1]  0.869284534 -0.008346087 -0.384470389 -0.050715176 -0.661193282
+##  [6]  0.727011953 -0.594515271 -1.918735453 -1.664992909 -0.515779742</code></pre>
 <pre class="r"><code>#generate 10 N(3, 5) draws
 rnorm(10, mean = 3, sd = 5)</code></pre>
-<pre><code>##  [1]  2.3789269 -1.7054642 -6.1584871  5.0181442 -6.2720149 -0.5993357
-##  [7]  7.9675386 12.6716972  2.7576229  2.7415646</code></pre>
+<pre><code>##  [1]  2.1140326  0.3946692  5.4921924  4.1181548  6.1266781  6.1695683
+##  [7]  5.7619482  0.4012316  3.8183739 -5.8102023</code></pre>
 <p>These examples highlight the common format of random number generators in R. To get random numbers from a distribution, there is probably a function named like <code>r</code><strong><code>dist</code></strong>, where <strong><code>dist</code></strong> is an abbreviation for the distribution (here, <strong>unif</strong>orm and <strong>norm</strong>al). The first argument is the number of draws; the rest of the arguments are parameters.</p>
 <p>Here is a complete table of all of the common distributions built in to R, and the function used to invoke their random number generator (RNG):</p>
 <table>
@@ -848,13 +851,13 @@ qnorm(c(.005, .025, .05))</code></pre>
 <p>As always, it’s easiest to see with some examples:</p>
 <pre class="r"><code>#A permutation of 1:5
 sample(5)</code></pre>
-<pre><code>## [1] 5 4 3 1 2</code></pre>
+<pre><code>## [1] 4 3 5 2 1</code></pre>
 <pre class="r"><code>#A size-3 subset of 1:5
 sample(5, 3)</code></pre>
-<pre><code>## [1] 4 3 5</code></pre>
+<pre><code>## [1] 1 4 5</code></pre>
 <pre class="r"><code>#A size-5 subset of 1:5, with replacement
 sample(5, 5, replace = TRUE)</code></pre>
-<pre><code>## [1] 2 3 3 2 2</code></pre>
+<pre><code>## [1] 2 5 5 3 4</code></pre>
 <pre class="r"><code>#A weighted sample of 1:5, heavily weighting 1
 sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></pre>
 <pre><code>## [1] 1 1 1 1 1</code></pre>
@@ -862,10 +865,10 @@ sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></
 <pre class="r"><code>#Flip 10 coins, get the percentage heads
 flips &lt;- sample(c(&quot;H&quot;, &quot;T&quot;), 10, replace = TRUE)
 mean(flips == &quot;H&quot;)</code></pre>
-<pre><code>## [1] 0.7</code></pre>
+<pre><code>## [1] 0.4</code></pre>
 <pre class="r"><code>#Roll a pair of dice and add them
 sum(sample(6, 2, replace = TRUE))</code></pre>
-<pre><code>## [1] 4</code></pre>
+<pre><code>## [1] 8</code></pre>
 <pre class="r"><code>#create a deck of labeled cards:
 #  (I copy-pasted the text for the suits from
 #   Wikipedia, but we could have used S/H/D/C:
@@ -880,7 +883,7 @@ deck</code></pre>
 ## [45] &quot;7♣&quot;  &quot;8♣&quot;  &quot;9♣&quot;  &quot;10♣&quot; &quot;J♣&quot;  &quot;Q♣&quot;  &quot;K♣&quot;  &quot;A♣&quot;</code></pre>
 <pre class="r"><code>#Now draw a poker hand
 sample(deck, 5)</code></pre>
-<pre><code>## [1] &quot;3♦&quot; &quot;7♥&quot; &quot;3♥&quot; &quot;J♣&quot; &quot;K♠&quot;</code></pre>
+<pre><code>## [1] &quot;5♠&quot; &quot;2♥&quot; &quot;9♣&quot; &quot;5♦&quot; &quot;2♦&quot;</code></pre>
 </div>
 <div id="replicate" class="section level3">
 <h3><span class="header-section-number">2.6.3</span> <code>replicate</code></h3>
@@ -899,7 +902,7 @@ simulations &lt;-
 #How often does a flush happen?
 #  True frequency is 0.1965%
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.0022</code></pre>
+<pre><code>## [1] 0.0015</code></pre>
 <pre class="r"><code>#What about a pair (just two cards match)?
 #  true frequency: 42%
 simulations &lt;- 
@@ -909,7 +912,7 @@ simulations &lt;-
     sum(duplicated(faces)) == 1 #one pair if there's exactly _one_ match
   })
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.4263</code></pre>
+<pre><code>## [1] 0.4207</code></pre>
 </div>
 <div id="set.seed" class="section level3">
 <h3><span class="header-section-number">2.6.4</span> <code>set.seed</code></h3>
@@ -1078,14 +1081,14 @@ x &lt;- rnorm(1000)
 r &lt;- lm(y ~ x)
 str(r)</code></pre>
 <pre><code>## List of 12
-##  $ coefficients : Named num [1:2] 0.00224 -0.00145
+##  $ coefficients : Named num [1:2] 0.0356 0.0608
 ##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
-##  $ residuals    : Named num [1:1000] 1.427 3.004 -0.644 0.902 2.804 ...
+##  $ residuals    : Named num [1:1000] -0.653 -0.668 -0.259 -0.2 0.847 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ effects      : Named num [1:1000] -0.0743 0.0445 -0.6299 0.8795 2.9354 ...
+##  $ effects      : Named num [1:1000] -1.155 -1.915 -0.223 -0.211 0.839 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;(Intercept)&quot; &quot;x&quot; &quot;&quot; &quot;&quot; ...
 ##  $ rank         : int 2
-##  $ fitted.values: Named num [1:1000] -0.000724 0.001455 0.003144 0.002574 0.004933 ...
+##  $ fitted.values: Named num [1:1000] 0.0977 0.0664 0.0889 -0.056 -0.0469 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##  $ assign       : int [1:2] 0 1
 ##  $ qr           :List of 5
@@ -1094,7 +1097,7 @@ str(r)</code></pre>
 ##   .. .. ..$ : chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##   .. .. ..$ : chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
 ##   .. ..- attr(*, &quot;assign&quot;)= int [1:2] 0 1
-##   ..$ qraux: num [1:2] 1.03 1.02
+##   ..$ qraux: num [1:2] 1.03 1.01
 ##   ..$ pivot: int [1:2] 1 2
 ##   ..$ tol  : num 1e-07
 ##   ..$ rank : int 2
@@ -1117,8 +1120,8 @@ str(r)</code></pre>
 ##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
 ##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;y&quot; &quot;x&quot;
 ##  $ model        :'data.frame':   1000 obs. of  2 variables:
-##   ..$ y: num [1:1000] 1.426 3.006 -0.641 0.905 2.809 ...
-##   ..$ x: num [1:1000] 2.048 0.541 -0.627 -0.233 -1.865 ...
+##   ..$ y: num [1:1000] -0.556 -0.602 -0.171 -0.256 0.8 ...
+##   ..$ x: num [1:1000] 1.023 0.508 0.877 -1.507 -1.359 ...
 ##   ..- attr(*, &quot;terms&quot;)=Classes 'terms', 'formula' length 3 y ~ x
 ##   .. .. ..- attr(*, &quot;variables&quot;)= language list(y, x)
 ##   .. .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
@@ -1775,20 +1778,420 @@ if (some_logical){
 <hr />
 </div>
 </div>
+<div id="merging" class="section level2">
+<h2><span class="header-section-number">3.2</span> Merging</h2>
+<p>Recall our teacher attendance data:</p>
+<pre class="r"><code>attendance</code></pre>
+<pre><code>##      ULCS_NO SCHOOL_YEAR SCH_TEACHER_ATTEND SDP_TEACHER_ATTEND SCHOOL_ID
+##   1:    8350   2013-2014               92.7               93.4       835
+##   2:    7320   2013-2014               95.0               93.4       732
+##   3:    5440   2013-2014               96.0               93.4       544
+##   4:    8320   2013-2014               95.1               93.4       832
+##   5:    6440   2013-2014               96.6               93.4       644
+##  ---                                                                    
+## 208:    5480   2013-2014               92.0               93.4       548
+## 209:    1300   2013-2014               91.4               93.4       130
+## 210:    6090   2013-2014               95.3               93.4       609
+## 211:    1050   2013-2014               94.7               93.4       105
+## 212:    4300   2013-2014               94.7               93.4       430</code></pre>
+<p>We couldn’t really tell anything about the schools because we didn’t know what the school codes meant.</p>
+<p>Well, it appears we’ve found the Rosetta Stone in the teacher salary data. The <code>home_organization</code> field looks very much like the <code>ULCS_NO</code> field in the attendance data.</p>
+<p>Obviously, it’d be ideal to <em>know</em> for sure that they represent the same ID for each school. In lieu of that, we can bolster our confidence in the alignment by comparing the fields a bit. Here are some techniques:</p>
+<pre class="r"><code>#We know from attendance there are 212 schools.
+#  How many unique schools are represented in the teacher data?
+teachers[ , uniqueN(home_organization)]</code></pre>
+<pre><code>## [1] 291</code></pre>
+<pre class="r"><code>#How many of the ULCS_NO values are also found in home_organization
+#  intersect find the middle of the venn diagram for the 
+#  first and second arguments
+length(intersect(attendance$ULCS_NO, teachers[ , unique(home_organization)]))</code></pre>
+<pre><code>## [1] 211</code></pre>
+<p>That’s pretty convincing if you ask me.</p>
+<p>So, how do we match the two data sets? In Stata, depending on which data set you currently have in memory, we would either perform a one-to-many or a many-to-one merge.</p>
+<p>In R, merging either way is a cinch. But first, we need a few more tools.</p>
+<div id="adding-a-column-to-a-data.table" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> <code>:=</code> - Adding a column to a <code>data.table</code></h3>
+<p>When we want to add a new column to an existing <code>data.table</code>, we use the <code>:=</code> operator <code>j</code> (the second argument). A quick aside, this is done <em>by reference</em>, which means it’s <strong>memory-efficient</strong> and <strong>fast</strong>; see <a href="http://stackoverflow.com/questions/7029944/when-should-i-use-the-operator-in-data-table">this Q&amp;A for more details</a>.</p>
+<p>Let’s try it out with two examples. Right now, in <code>attendance</code>, teacher attendance rates are listed as a percentage (out of 100); sometimes, it’s more convenient to have percentages as a proportion (out of one).</p>
+<p>Also, we might like to know the <em>relative</em> attendance rates – the ratio of attendance at a given school to average attendance.</p>
+<p>In <code>teachers</code>, <code>gender</code> is stored as a <code>character</code> – either <code>M</code> or <code>F</code>. But it’s often quite convenient to have binary variables stored as <code>logical</code> – for subsetting.</p>
+<pre class="r"><code>#add attendance as a proportion
+attendance[ , attendance_proportion := SCH_TEACHER_ATTEND / 100]
+
+#add relative attendance
+attendance[ , attendance_relative := SCH_TEACHER_ATTEND / SDP_TEACHER_ATTEND]
+
+#a quirk of data.table is that after using
+#  :=, we sometimes have to force printing,
+#  which we can do by appending [] to the end
+attendance[]</code></pre>
+<pre><code>##      ULCS_NO SCHOOL_YEAR SCH_TEACHER_ATTEND SDP_TEACHER_ATTEND SCHOOL_ID
+##   1:    8350   2013-2014               92.7               93.4       835
+##   2:    7320   2013-2014               95.0               93.4       732
+##   3:    5440   2013-2014               96.0               93.4       544
+##   4:    8320   2013-2014               95.1               93.4       832
+##   5:    6440   2013-2014               96.6               93.4       644
+##  ---                                                                    
+## 208:    5480   2013-2014               92.0               93.4       548
+## 209:    1300   2013-2014               91.4               93.4       130
+## 210:    6090   2013-2014               95.3               93.4       609
+## 211:    1050   2013-2014               94.7               93.4       105
+## 212:    4300   2013-2014               94.7               93.4       430
+##      attendance_proportion attendance_relative
+##   1:                 0.927           0.9925054
+##   2:                 0.950           1.0171306
+##   3:                 0.960           1.0278373
+##   4:                 0.951           1.0182013
+##   5:                 0.966           1.0342612
+##  ---                                          
+## 208:                 0.920           0.9850107
+## 209:                 0.914           0.9785867
+## 210:                 0.953           1.0203426
+## 211:                 0.947           1.0139186
+## 212:                 0.947           1.0139186</code></pre>
+<pre class="r"><code>#add logical version of gender
+teachers[ , male := gender == &quot;M&quot;]
+
+#now, subset to show only male teachers
+teachers[(male)]</code></pre>
+<pre><code>##        last_name first_name pay_rate_type pay_rate title_description
+##    1: ABDULALEEM   MUHAMMAD      SALARIED    65121 TEACHER,FULL TIME
+##    2:   ABDULLAH    RASHEED      SALARIED    83382 TEACHER,FULL TIME
+##    3:   ACKERMAN       CARL      SALARIED    83382 TEACHER,FULL TIME
+##    4:      ADAIR    DARRELL      SALARIED    66461 TEACHER,FULL TIME
+##    5:      ADAIR     JOSEPH      SALARIED    51113 TEACHER,FULL TIME
+##   ---                                                               
+## 1822:     ZUCKER    JEFFREY      SALARIED    73453 TEACHER,FULL TIME
+## 1823:     ZUFOLO      BRIAN      SALARIED    57451 TEACHER,FULL TIME
+## 1824:    ZUNGOLO    WILLIAM      SALARIED    90051 TEACHER,FULL TIME
+## 1825:      ZWICK      KEVIN      SALARIED    46694 TEACHER,FULL TIME
+## 1826:     ZWOLAK       PAUL      SALARIED    54364 TEACHER,FULL TIME
+##       home_organization  home_organization_description
+##    1:              6090 RANDOLPH TECHNICAL HIGH SCHOOL
+##    2:              4220        BLAINE, JAMES G. SCHOOL
+##    3:              2670       CONSTITUTION HIGH SCHOOL
+##    4:              2010 FRANKLIN, BENJAMIN HIGH SCHOOL
+##    5:              5400                RICHMOND SCHOOL
+##   ---                                                 
+## 1822:              7310       FELTONVILLE INTERMEDIATE
+## 1823:              5330      HUNTER, WILLIAM H. SCHOOL
+## 1824:              8390      FITZPATRICK, A. L. SCHOOL
+## 1825:              8300                 MAYFAIR SCHOOL
+## 1826:              2290       FRANKLIN LEARNING CENTER
+##                   organization_level type_of_representation gender
+##    1: CAREER AND TECHNICAL HIGH SCHL            PFT-TEACHER      M
+##    2:              ELEMENTARY SCHOOL            PFT-TEACHER      M
+##    3:                    HIGH SCHOOL            PFT-TEACHER      M
+##    4:                    HIGH SCHOOL            PFT-TEACHER      M
+##    5:              ELEMENTARY SCHOOL            PFT-TEACHER      M
+##   ---                                                             
+## 1822:              ELEMENTARY SCHOOL            PFT-TEACHER      M
+## 1823:              ELEMENTARY SCHOOL            PFT-TEACHER      M
+## 1824:              ELEMENTARY SCHOOL            PFT-TEACHER      M
+## 1825:              ELEMENTARY SCHOOL            PFT-TEACHER      M
+## 1826:                    HIGH SCHOOL            PFT-TEACHER      M
+##       run_date male
+##    1: 4/1/2016 TRUE
+##    2: 4/1/2016 TRUE
+##    3: 4/1/2016 TRUE
+##    4: 4/1/2016 TRUE
+##    5: 4/1/2016 TRUE
+##   ---              
+## 1822: 4/1/2016 TRUE
+## 1823: 4/1/2016 TRUE
+## 1824: 4/1/2016 TRUE
+## 1825: 4/1/2016 TRUE
+## 1826: 4/1/2016 TRUE</code></pre>
+</div>
+<div id="merge-and-update" class="section level3">
+<h3><span class="header-section-number">3.2.2</span> Merge and update</h3>
+<p>Now we’re equipped to understand the syntax for a merge. Let’s add the school’s name (<code>home_organization_description</code> in <code>teachers</code>) to the attendance data.</p>
+<p>First, note that <code>teachers</code> has more data in it than we need. There are many teachers in each school, meaning the mapping between <code>home_organization</code> code and school name is repeated many times (once for each teacher in a given school). This presents a sort of an issue when we try and merge the <code>teachers</code> data into <code>attendance</code> – for each <code>ULCS_NO</code> that gets matched to a <code>home_organization</code> in <code>teachers</code>, there will be many rows, even if they all have the same information. To deal with this we’ll use <code>unique</code> to eliminate all the duplicates. We’ll go step-by-step first, then all at once:</p>
+<pre class="r"><code>#this will take the FIRST row associated
+#  with each school. This is important in
+#  general, but not here since we only
+#  care about the school-level data for now,
+#  which is the same in all rows.
+schools &lt;- unique(teachers, by = &quot;home_organization&quot;)
+schools</code></pre>
+<pre><code>##         last_name first_name pay_rate_type pay_rate title_description
+##   1:       ABBOTT      JOYCE      SALARIED    76461 TEACHER,FULL TIME
+##   2:     ABDALLAH JUWAYRIYAH      SALARIED    46694 TEACHER,FULL TIME
+##   3:  ABDEL-JALIL    GHADEER      SALARIED    45359 TEACHER,FULL TIME
+##   4:  ABDUL BASIT    BARBARA      SALARIED    67706 TEACHER,FULL TIME
+##   5: ABDUL-LATEEF     VILLIA      SALARIED    48945 TEACHER,FULL TIME
+##  ---                                                                 
+## 287:     VALENTIN   MADELINE      SALARIED    65121 TEACHER,FULL TIME
+## 288:   WERTZ YORI    DESIREE      SALARIED    76461 TEACHER,FULL TIME
+## 289:     WIDMAIER      DONNA      SALARIED    76461 TEACHER,FULL TIME
+## 290:     WILLIAMS     TAMMAR      SALARIED    76461 TEACHER,FULL TIME
+## 291:       WRIGHT        AMY      SALARIED    67789 TEACHER,FULL TIME
+##      home_organization home_organization_description organization_level
+##   1:              1290       HAMILTON, ANDREW SCHOOL  ELEMENTARY SCHOOL
+##   2:              1470           LOCKE, ALAIN SCHOOL  ELEMENTARY SCHOOL
+##   3:              7440         TAYLOR, BAYARD SCHOOL  ELEMENTARY SCHOOL
+##   4:              7530         ROWEN, WILLIAM SCHOOL  ELEMENTARY SCHOOL
+##   5:              1010     BARTRAM, JOHN HIGH SCHOOL        HIGH SCHOOL
+##  ---                                                                   
+## 287:              7262     ELLWOOD SCHOOL HEAD START    EARLY CHILDHOOD
+## 288:              8352    SPRUANCE SCHOOL HEAD START    EARLY CHILDHOOD
+## 289:              6202       DAY, ANNA B. HEAD START    EARLY CHILDHOOD
+## 290:              1027         LEA SCHOOL HEAD START    EARLY CHILDHOOD
+## 291:              2242              BREGY HEAD START    EARLY CHILDHOOD
+##      type_of_representation gender run_date  male
+##   1:            PFT-TEACHER      F 4/1/2016 FALSE
+##   2:            PFT-TEACHER      F 4/1/2016 FALSE
+##   3:            PFT-TEACHER      F 4/1/2016 FALSE
+##   4:            PFT-TEACHER      F 4/1/2016 FALSE
+##   5:            PFT-TEACHER      F 4/1/2016 FALSE
+##  ---                                             
+## 287:             PFT- PRE K      F 4/1/2016 FALSE
+## 288:             PFT- PRE K      F 4/1/2016 FALSE
+## 289:             PFT- PRE K      F 4/1/2016 FALSE
+## 290:             PFT- PRE K      F 4/1/2016 FALSE
+## 291:             PFT- PRE K      F 4/1/2016 FALSE</code></pre>
+<pre class="r"><code>#now merge, using := to add the school name column
+attendance[schools, school_name :=
+             home_organization_description, 
+           on = c(ULCS_NO = &quot;home_organization&quot;)]
+attendance</code></pre>
+<pre><code>##      ULCS_NO SCHOOL_YEAR SCH_TEACHER_ATTEND SDP_TEACHER_ATTEND SCHOOL_ID
+##   1:    8350   2013-2014               92.7               93.4       835
+##   2:    7320   2013-2014               95.0               93.4       732
+##   3:    5440   2013-2014               96.0               93.4       544
+##   4:    8320   2013-2014               95.1               93.4       832
+##   5:    6440   2013-2014               96.6               93.4       644
+##  ---                                                                    
+## 208:    5480   2013-2014               92.0               93.4       548
+## 209:    1300   2013-2014               91.4               93.4       130
+## 210:    6090   2013-2014               95.3               93.4       609
+## 211:    1050   2013-2014               94.7               93.4       105
+## 212:    4300   2013-2014               94.7               93.4       430
+##      attendance_proportion attendance_relative
+##   1:                 0.927           0.9925054
+##   2:                 0.950           1.0171306
+##   3:                 0.960           1.0278373
+##   4:                 0.951           1.0182013
+##   5:                 0.966           1.0342612
+##  ---                                          
+## 208:                 0.920           0.9850107
+## 209:                 0.914           0.9785867
+## 210:                 0.953           1.0203426
+## 211:                 0.947           1.0139186
+## 212:                 0.947           1.0139186
+##                         school_name
+##   1:       SPRUANCE, GILBERT SCHOOL
+##   2:        HOWE, JULIA WARD SCHOOL
+##   3:     WILLARD, FRANCES E. SCHOOL
+##   4: LABRUM,GEN HARRY MIDDLE SCHOOL
+##   5:     LINGELBACH, ANNA L. SCHOOL
+##  ---                               
+## 208:     KEARNY, GEN. PHILIP SCHOOL
+## 209:    HARRINGTON, AVERY D. SCHOOL
+## 210: RANDOLPH TECHNICAL HIGH SCHOOL
+## 211:      ROBESON, PAUL HIGH SCHOOL
+## 212:          HESTON, EDWARD SCHOOL</code></pre>
+<p>This general form of the syntax we just used is <code>X[Y, variable_in_x := variable_in_y, on = c(a = &quot;b&quot;)]</code>. Let’s break that down a bit:</p>
+<ul>
+<li><code>X</code> and <code>Y</code> are <code>data.table</code>s. We match their rows according to alignment in the variables specified by the <code>on</code> argument within the square brackets (<code>[]</code>) used to access <code>X</code>.</li>
+<li><code>on = c(a = &quot;b&quot;)</code> tells R that rows in column <code>a</code> in <code>X</code> (both things on the <em>left</em>) should be matched &amp; associated with rows of the same value in column <code>b</code> in <code>Y</code>.</li>
+<li>we add the variable on the left of <code>:=</code> to <code>data.table</code> <code>X</code>. The variable on the right of <code>:=</code> is typically found in <code>Y</code> – it could also be an expression consisting of columns in <code>X</code> <em>and</em> <code>Y</code>.</li>
+</ul>
+<p>Let’s explore a few other ways we could have gone about doing this merge. First, let’s remove the column that we just created so that we’re really starting from scratch. The way to remove columns from a <code>data.table</code> is to set them to <code>NULL</code>, which is <em>very</em> fast.</p>
+<pre class="r"><code>attendance[ , school_name := NULL][]</code></pre>
+<pre><code>##      ULCS_NO SCHOOL_YEAR SCH_TEACHER_ATTEND SDP_TEACHER_ATTEND SCHOOL_ID
+##   1:    8350   2013-2014               92.7               93.4       835
+##   2:    7320   2013-2014               95.0               93.4       732
+##   3:    5440   2013-2014               96.0               93.4       544
+##   4:    8320   2013-2014               95.1               93.4       832
+##   5:    6440   2013-2014               96.6               93.4       644
+##  ---                                                                    
+## 208:    5480   2013-2014               92.0               93.4       548
+## 209:    1300   2013-2014               91.4               93.4       130
+## 210:    6090   2013-2014               95.3               93.4       609
+## 211:    1050   2013-2014               94.7               93.4       105
+## 212:    4300   2013-2014               94.7               93.4       430
+##      attendance_proportion attendance_relative
+##   1:                 0.927           0.9925054
+##   2:                 0.950           1.0171306
+##   3:                 0.960           1.0278373
+##   4:                 0.951           1.0182013
+##   5:                 0.966           1.0342612
+##  ---                                          
+## 208:                 0.920           0.9850107
+## 209:                 0.914           0.9785867
+## 210:                 0.953           1.0203426
+## 211:                 0.947           1.0139186
+## 212:                 0.947           1.0139186</code></pre>
+<pre class="r"><code>#alternative 1: skip defining schools
+#  extra tidbit: sometimes, both the 
+#  main table (x) and the merging table
+#  (in the first argument, i -- we called
+#   it Y above) have columns with the same
+#  name. To overcome the ambiguity this 
+#  engenders, we can prepend i. to the
+#  column names in teachers to tell R
+#  that we're referring _explicitly_
+#  to that column in teachers. Similarly,
+#  we can prepend x. to tell R that we're
+#  referring to the column in attendance
+attendance[unique(teachers, by = &quot;home_organization&quot;),
+           school_name := i.home_organization_description,
+           on = c(ULCS_NO = &quot;home_organization&quot;)][]</code></pre>
+<pre><code>##      ULCS_NO SCHOOL_YEAR SCH_TEACHER_ATTEND SDP_TEACHER_ATTEND SCHOOL_ID
+##   1:    8350   2013-2014               92.7               93.4       835
+##   2:    7320   2013-2014               95.0               93.4       732
+##   3:    5440   2013-2014               96.0               93.4       544
+##   4:    8320   2013-2014               95.1               93.4       832
+##   5:    6440   2013-2014               96.6               93.4       644
+##  ---                                                                    
+## 208:    5480   2013-2014               92.0               93.4       548
+## 209:    1300   2013-2014               91.4               93.4       130
+## 210:    6090   2013-2014               95.3               93.4       609
+## 211:    1050   2013-2014               94.7               93.4       105
+## 212:    4300   2013-2014               94.7               93.4       430
+##      attendance_proportion attendance_relative
+##   1:                 0.927           0.9925054
+##   2:                 0.950           1.0171306
+##   3:                 0.960           1.0278373
+##   4:                 0.951           1.0182013
+##   5:                 0.966           1.0342612
+##  ---                                          
+## 208:                 0.920           0.9850107
+## 209:                 0.914           0.9785867
+## 210:                 0.953           1.0203426
+## 211:                 0.947           1.0139186
+## 212:                 0.947           1.0139186
+##                         school_name
+##   1:       SPRUANCE, GILBERT SCHOOL
+##   2:        HOWE, JULIA WARD SCHOOL
+##   3:     WILLARD, FRANCES E. SCHOOL
+##   4: LABRUM,GEN HARRY MIDDLE SCHOOL
+##   5:     LINGELBACH, ANNA L. SCHOOL
+##  ---                               
+## 208:     KEARNY, GEN. PHILIP SCHOOL
+## 209:    HARRINGTON, AVERY D. SCHOOL
+## 210: RANDOLPH TECHNICAL HIGH SCHOOL
+## 211:      ROBESON, PAUL HIGH SCHOOL
+## 212:          HESTON, EDWARD SCHOOL</code></pre>
+<pre class="r"><code>#reset again
+attendance[ , school_name := NULL]
+
+#alternative 2: use unique within the merge
+#  by = .EACHI is a syntax unique to merging.
+#  Using this tells R to do the thing in j
+#  within each group that's matched.
+#  So, here, each ULCS_NO gets matched to many
+#  home_organization rows in teachers.
+#  within this group, we use unique to
+#  get the school's name, since unique turns the
+#  vector of school names (one per teacher in
+#  each school that's matched) into a single value.
+attendance[teachers, 
+           school_name := unique(home_organization_description),
+           on = c(ULCS_NO = &quot;home_organization&quot;), by = .EACHI][]</code></pre>
+<pre><code>##      ULCS_NO SCHOOL_YEAR SCH_TEACHER_ATTEND SDP_TEACHER_ATTEND SCHOOL_ID
+##   1:    8350   2013-2014               92.7               93.4       835
+##   2:    7320   2013-2014               95.0               93.4       732
+##   3:    5440   2013-2014               96.0               93.4       544
+##   4:    8320   2013-2014               95.1               93.4       832
+##   5:    6440   2013-2014               96.6               93.4       644
+##  ---                                                                    
+## 208:    5480   2013-2014               92.0               93.4       548
+## 209:    1300   2013-2014               91.4               93.4       130
+## 210:    6090   2013-2014               95.3               93.4       609
+## 211:    1050   2013-2014               94.7               93.4       105
+## 212:    4300   2013-2014               94.7               93.4       430
+##      attendance_proportion attendance_relative
+##   1:                 0.927           0.9925054
+##   2:                 0.950           1.0171306
+##   3:                 0.960           1.0278373
+##   4:                 0.951           1.0182013
+##   5:                 0.966           1.0342612
+##  ---                                          
+## 208:                 0.920           0.9850107
+## 209:                 0.914           0.9785867
+## 210:                 0.953           1.0203426
+## 211:                 0.947           1.0139186
+## 212:                 0.947           1.0139186
+##                         school_name
+##   1:       SPRUANCE, GILBERT SCHOOL
+##   2:        HOWE, JULIA WARD SCHOOL
+##   3:     WILLARD, FRANCES E. SCHOOL
+##   4: LABRUM,GEN HARRY MIDDLE SCHOOL
+##   5:     LINGELBACH, ANNA L. SCHOOL
+##  ---                               
+## 208:     KEARNY, GEN. PHILIP SCHOOL
+## 209:    HARRINGTON, AVERY D. SCHOOL
+## 210: RANDOLPH TECHNICAL HIGH SCHOOL
+## 211:      ROBESON, PAUL HIGH SCHOOL
+## 212:          HESTON, EDWARD SCHOOL</code></pre>
+<pre class="r"><code>#reset again
+attendance[ , school_name := NULL]
+
+#alternative 3: like 2, except use [] instead of unique.
+#  This alternative works, and is faster, but is less robust
+#  to finding mistakes in your data. Thankfully, this data is
+#  pretty clean, but we often find messy data in the wild --
+#  maybe there was a typo in the organization code or school name,
+#  and instead of each home_organization being matched to
+#  exactly one home_organization_description, we might find
+#  it matched to several (e.g., &quot;PS 131&quot; and &quot;PS #131&quot;).
+#  If we use the unique approach from alternative 2,
+#  we'll get an error, which tells us we need to examine our data
+#  more closely. This approach will definitely not generate an error.
+attendance[teachers,
+           school_name := home_organization_description[1],
+           on = c(ULCS_NO = &quot;home_organization&quot;), by = .EACHI][]</code></pre>
+<pre><code>##      ULCS_NO SCHOOL_YEAR SCH_TEACHER_ATTEND SDP_TEACHER_ATTEND SCHOOL_ID
+##   1:    8350   2013-2014               92.7               93.4       835
+##   2:    7320   2013-2014               95.0               93.4       732
+##   3:    5440   2013-2014               96.0               93.4       544
+##   4:    8320   2013-2014               95.1               93.4       832
+##   5:    6440   2013-2014               96.6               93.4       644
+##  ---                                                                    
+## 208:    5480   2013-2014               92.0               93.4       548
+## 209:    1300   2013-2014               91.4               93.4       130
+## 210:    6090   2013-2014               95.3               93.4       609
+## 211:    1050   2013-2014               94.7               93.4       105
+## 212:    4300   2013-2014               94.7               93.4       430
+##      attendance_proportion attendance_relative
+##   1:                 0.927           0.9925054
+##   2:                 0.950           1.0171306
+##   3:                 0.960           1.0278373
+##   4:                 0.951           1.0182013
+##   5:                 0.966           1.0342612
+##  ---                                          
+## 208:                 0.920           0.9850107
+## 209:                 0.914           0.9785867
+## 210:                 0.953           1.0203426
+## 211:                 0.947           1.0139186
+## 212:                 0.947           1.0139186
+##                         school_name
+##   1:       SPRUANCE, GILBERT SCHOOL
+##   2:        HOWE, JULIA WARD SCHOOL
+##   3:     WILLARD, FRANCES E. SCHOOL
+##   4: LABRUM,GEN HARRY MIDDLE SCHOOL
+##   5:     LINGELBACH, ANNA L. SCHOOL
+##  ---                               
+## 208:     KEARNY, GEN. PHILIP SCHOOL
+## 209:    HARRINGTON, AVERY D. SCHOOL
+## 210: RANDOLPH TECHNICAL HIGH SCHOOL
+## 211:      ROBESON, PAUL HIGH SCHOOL
+## 212:          HESTON, EDWARD SCHOOL</code></pre>
+</div>
+</div>
 <div id="regressions" class="section level2">
-<h2><span class="header-section-number">3.2</span> Regressions</h2>
+<h2><span class="header-section-number">3.3</span> Regressions</h2>
 <div id="ols-lm-predictcoeftestsummary" class="section level3">
-<h3><span class="header-section-number">3.2.1</span> OLS (<code>lm</code>) / <code>predict</code>/<code>coeftest</code>/<code>summary</code></h3>
+<h3><span class="header-section-number">3.3.1</span> OLS (<code>lm</code>) / <code>predict</code>/<code>coeftest</code>/<code>summary</code></h3>
 </div>
 <div id="probitlogit-glm" class="section level3">
-<h3><span class="header-section-number">3.2.2</span> Probit/Logit (<code>glm</code>)</h3>
+<h3><span class="header-section-number">3.3.2</span> Probit/Logit (<code>glm</code>)</h3>
 </div>
 </div>
 <div id="reshaping" class="section level2">
-<h2><span class="header-section-number">3.3</span> Reshaping</h2>
-</div>
-<div id="merging" class="section level2">
-<h2><span class="header-section-number">3.4</span> Merging</h2>
+<h2><span class="header-section-number">3.4</span> Reshaping</h2>
 </div>
 <div id="string-data-regex" class="section level2">
 <h2><span class="header-section-number">3.5</span> String Data / regex</h2>

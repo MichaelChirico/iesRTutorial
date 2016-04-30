@@ -861,7 +861,7 @@ Now, on to the more fun and useful stuff!
 ***
 # Data Basics (9 AM - 11 AM)
 
-* Missing Data
+This section is intended to lay the groundwork of all of the most common data analysis tasks we face when tackling our empirical problems. 
 
 ## Reading .csv Files
 
@@ -1197,6 +1197,156 @@ I don't really know what `NON-PUBLIC PROGRAMS` means... but besides that, we see
 We could go on exploring / slicing&dicing this data all day, but I think we've learned enough essentials of manipulation/inspection for now. We'll pick up more tricks as we move along.
 
 ***
+## Merging
+
+Recall our teacher attendance data:
+
+```{r attendance_redux}
+attendance
+```
+
+We couldn't really tell anything about the schools because we didn't know what the school codes meant.
+
+Well, it appears we've found the Rosetta Stone in the teacher salary data. The `home_organization` field looks very much like the `ULCS_NO` field in the attendance data.
+
+Obviously, it'd be ideal to _know_ for sure that they represent the same ID for each school. In lieu of that, we can bolster our confidence in the alignment by comparing the fields a bit. Here are some techniques:
+
+```{r compare_ids}
+#We know from attendance there are 212 schools.
+#  How many unique schools are represented in the teacher data?
+teachers[ , uniqueN(home_organization)]
+
+#How many of the ULCS_NO values are also found in home_organization
+#  intersect find the middle of the venn diagram for the 
+#  first and second arguments
+length(intersect(attendance$ULCS_NO, teachers[ , unique(home_organization)]))
+```
+
+That's pretty convincing if you ask me.
+
+So, how do we match the two data sets? In Stata, depending on which data set you currently have in memory, we would either perform a one-to-many or a many-to-one merge.
+
+In R, merging either way is a cinch. But first, we need a few more tools.
+
+### `:=` - Adding a column to a `data.table`
+
+When we want to add a new column to an existing `data.table`, we use the `:=` operator `j` (the second argument). A quick aside, this is done _by reference_, which means it's **memory-efficient** and **fast**; see [this Q&A for more details](http://stackoverflow.com/questions/7029944/when-should-i-use-the-operator-in-data-table).
+
+Let's try it out with two examples. Right now, in `attendance`, teacher attendance rates are listed as a percentage (out of 100); sometimes, it's more convenient to have percentages as a proportion (out of one).
+
+Also, we might like to know the _relative_ attendance rates -- the ratio of attendance at a given school to average attendance.
+
+In `teachers`, `gender` is stored as a `character` -- either `M` or `F`. But it's often quite convenient to have binary variables stored as `logical` -- for subsetting. 
+
+```{r defining}
+#add attendance as a proportion
+attendance[ , attendance_proportion := SCH_TEACHER_ATTEND / 100]
+
+#add relative attendance
+attendance[ , attendance_relative := SCH_TEACHER_ATTEND / SDP_TEACHER_ATTEND]
+
+#a quirk of data.table is that after using
+#  :=, we sometimes have to force printing,
+#  which we can do by appending [] to the end
+attendance[]
+
+#add logical version of gender
+teachers[ , male := gender == "M"]
+
+#now, subset to show only male teachers
+teachers[(male)]
+```
+
+### Merge and update
+
+Now we're equipped to understand the syntax for a merge. Let's add the school's name (`home_organization_description` in `teachers`) to the attendance data.
+
+First, note that `teachers` has more data in it than we need. There are many teachers in each school, meaning the mapping between `home_organization` code and school name is repeated many times (once for each teacher in a given school). This presents a sort of an issue when we try and merge the `teachers` data into `attendance` -- for each `ULCS_NO` that gets matched to a `home_organization` in `teachers`, there will be many rows, even if they all have the same information. To deal with this we'll use `unique` to eliminate all the duplicates. We'll go step-by-step first, then all at once:
+
+```{r merge_school_name}
+#this will take the FIRST row associated
+#  with each school. This is important in
+#  general, but not here since we only
+#  care about the school-level data for now,
+#  which is the same in all rows.
+schools <- unique(teachers, by = "home_organization")
+schools
+
+#now merge, using := to add the school name column
+attendance[schools, school_name :=
+             home_organization_description, 
+           on = c(ULCS_NO = "home_organization")]
+attendance
+```
+
+This general form of the syntax we just used is `X[Y, variable_in_x := variable_in_y, on = c(a = "b")]`. Let's break that down a bit:
+
+ - `X` and `Y` are `data.table`s. We match their rows according to alignment in the variables specified by the `on` argument within the square brackets (`[]`) used to access `X`.
+ - `on = c(a = "b")` tells R that rows in column `a` in `X` (both things on the _left_) should be matched & associated with rows of the same value in column `b` in `Y`.
+ - we add the variable on the left of `:=` to `data.table` `X`. The variable on the right of `:=` is typically found in `Y` -- it could also be an expression consisting of columns in `X` _and_ `Y`.
+ 
+ Let's explore a few other ways we could have gone about doing this merge. First, let's remove the column that we just created so that we're really starting from scratch. The way to remove columns from a `data.table` is to set them to `NULL`, which is _very_ fast.
+ 
+ 
+```{r merge_alternatives}
+attendance[ , school_name := NULL][]
+
+#alternative 1: skip defining schools
+#  extra tidbit: sometimes, both the 
+#  main table (x) and the merging table
+#  (in the first argument, i -- we called
+#   it Y above) have columns with the same
+#  name. To overcome the ambiguity this 
+#  engenders, we can prepend i. to the
+#  column names in teachers to tell R
+#  that we're referring _explicitly_
+#  to that column in teachers. Similarly,
+#  we can prepend x. to tell R that we're
+#  referring to the column in attendance
+attendance[unique(teachers, by = "home_organization"),
+           school_name := i.home_organization_description,
+           on = c(ULCS_NO = "home_organization")][]
+
+#reset again
+attendance[ , school_name := NULL]
+
+#alternative 2: use unique within the merge
+#  by = .EACHI is a syntax unique to merging.
+#  Using this tells R to do the thing in j
+#  within each group that's matched.
+#  So, here, each ULCS_NO gets matched to many
+#  home_organization rows in teachers.
+#  within this group, we use unique to
+#  get the school's name, since unique turns the
+#  vector of school names (one per teacher in
+#  each school that's matched) into a single value.
+attendance[teachers, 
+           school_name := unique(home_organization_description),
+           on = c(ULCS_NO = "home_organization"), by = .EACHI][]
+
+#reset again
+attendance[ , school_name := NULL]
+
+#alternative 3: like 2, except use [] instead of unique.
+#  This alternative works, and is faster, but is less robust
+#  to finding mistakes in your data. Thankfully, this data is
+#  pretty clean, but we often find messy data in the wild --
+#  maybe there was a typo in the organization code or school name,
+#  and instead of each home_organization being matched to
+#  exactly one home_organization_description, we might find
+#  it matched to several (e.g., "PS 131" and "PS #131").
+#  If we use the unique approach from alternative 2,
+#  we'll get an error, which tells us we need to examine our data
+#  more closely. This approach will definitely not generate an error.
+attendance[teachers,
+           school_name := home_organization_description[1],
+           on = c(ULCS_NO = "home_organization"), by = .EACHI][]
+```
+
+It's up to your taste which approach suits you -- each is perfect for a certain situation.
+
+### Missing Data
+
 ## Regressions
 
 ### OLS (`lm`) / `predict`/`coeftest`/`summary`
@@ -1204,8 +1354,6 @@ We could go on exploring / slicing&dicing this data all day, but I think we've l
 ### Probit/Logit (`glm`)
 
 ## Reshaping
-
-## Merging
 
 ## String Data / regex
 
