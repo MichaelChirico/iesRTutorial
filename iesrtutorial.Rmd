@@ -1347,6 +1347,69 @@ It's up to your taste which approach suits you -- each is perfect for a certain 
 
 ### Missing Data
 
+No data set is perfect. In fact, most data sets are nightmares. Missing data is pervasive, so it stands to reason that R is well-equipped to handle missing data.
+
+All missing data is coded in R as `NA`. That is, if we've been careful when loading the data into R, usually by telling R what missing data looks like in a given file. Take `fread`, for example. We haven't needed it yet because the two data sets we've loaded have been complete/balanced, but `fread` has an argument called `na.strings` which is used to tell R what to look for in a data file to consider as missing (i.e., as `NA`).
+
+We now have some missing data after our merge, however. To see this, note the following:
+
+```{r show_na}
+#is.na returns a logical vector saying
+#  whether each element of school_name
+#  is missing (NA) or not
+attendance[is.na(school_name)]
+
+#NOTE: TESTING NA WITH EQUALITY DOESN'T WORK
+attendance[school_name == NA]
+```
+
+So what's up with `ULCS_NO` `2140`? Why does this school have no teachers in the salary data??
+
+Turns out, it _is_ in the salary data, but none of the teachers are listed as `TEACHER,FULL TIME`:
+
+```{r show_masterman}
+#remember, salaries is the full set
+#  of ALL employees of SDP -- we
+#  didn't remove any observations from here
+#(using the nrows argument for print to condense output)
+print(salaries[home_organization == "2140"], nrows = 10)
+
+#since they're not full-time teachers, what are they?
+salaries[home_organization == "2140",
+         table(title_description)]
+```
+
+That's right -- at Masterman, none of the teachers appear to be classified as such. They're classified for wage purposes as `TEACHER,DEMONSTRATION`. I don't really know what this means... I was only able to find a [small tidbit on the SDP website](http://webgui.phila.k12.pa.us/offices/e/ee/opportunitites/demonstration-teachers/demonstration-teachers-positions/demonstration-teacher-of-elementary-education):
+
+> Demonstration Teachers are unique educators. They utilize the most current educational techniques and instructional media, which contribute to effective teaching practices in their specific teaching areas. They are observed at times by personnel from within the School District as well as visitors from other areas and institutions, both national and international.
+
+This appears to be something basically exclusive to Masterman, with a fair presence at John Hancock as well:
+
+```{r other_demo_teachers}
+salaries[title_description == "TEACHER,DEMONSTRATION",
+         .N, by = home_organization_description]
+```
+
+So, it turns out we'd be better off just using `salaries` for the merge to define the school's name:
+
+```{r re_merge}
+attendance[salaries, 
+           school_name := unique(home_organization_description),
+           on = c(ULCS_NO = "home_organization"), by = .EACHI]
+attendance[is.na(school_name)] #fixed!
+```
+
+Now we can repeat our earlier exercise and reveal the names of the best- and worst- attended schools in Philly. While we're at it, we can introduce column subsetting. To focus attention on only a few columns, we can simply put them in `j` and wrap them in `.()`. Only the columns we name here will show up in the output (so that it doesn't take up as much room and we can immediately focus on the most important information)
+
+```{r call_out_attendance}
+attendance[SCH_TEACHER_ATTEND < 90 | 
+             SCH_TEACHER_ATTEND > 97
+           ][order(-SCH_TEACHER_ATTEND), 
+             .(ULCS_NO, school_name, SCH_TEACHER_ATTEND)]
+```
+
+How fitting! Motivation High School appears to value teacher attendance very highly.
+
 ## Regressions
 
 ### OLS (`lm`) / `predict`/`coeftest`/`summary`
