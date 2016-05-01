@@ -1410,6 +1410,61 @@ attendance[SCH_TEACHER_ATTEND < 90 |
 
 How fitting! Motivation High School appears to value teacher attendance very highly.
 
+## Non-.csv Data, Part I: Excel Files
+
+Often, the world is cruel and we are unable to find the data that we want to use for our project in a standard character-separated format. When this situation arises, we have two options.
+
+The first is to simply convert that data into our favorite format and treat the new file as the master data file, never looking back.
+
+There are three major problems with this approach:
+
+ 1. Processing time. It can be time-consuming to convert many files; this is a fixed cost, but often our time is better spent analyzing the data than toying with it and tinkering with the parameters of a data converter.
+ 2. Data fidelity. All data converters have their flaws. Encoding issues, unexpected data types, you name it. It's almost impossible to tell when, in the process of converting your data, some observation's entries have been mistakenly changed without your knowing.
+ 3. Software licenses. Some files are stored in program-specific binary file formats (SAS, Stata, even R all have specific file types). This is intended to make it really easy to work from session to session within that program, and re-loading a data environment is fast and simple. Moving to machines that don't have that software installed, however, can be nightmarish.
+ 
+My preferred approach is to use R itself to read in file in _all_ formats. Users of R have encountered all of our problems before, and many kind souls out there in the ether have been so generous as to donate their tailor-made solutions to the R community.
+
+Excel files are an example of one such foreign format. As you can imagine, Excel files are ubiquitous. It's no surprise, then, that CRAN is _plastered_ with different packages designed to load and interact with data created and stored in Excel formats. See [this Q&A](http://stackoverflow.com/q/6099243/3576984) for the gamut of options.
+
+Today we'll cover just two options, since I have found them to be quite effective and have never needed any of the others. The first is the package `readxl`. It is designed to be streamlined and fast. It has few bells and whistles and is not very flexible. To handle more fringe/out-of-the-ordinary data files, there is `xlsx`. The main advantage I've found for `xlsx` is that it's better at properly reading fields formatted as dates, which is a [complicated facet of how .xlsx files are stored](http://www.cpearson.com/excel/datetime.htm).
+
+On our own machines, we would install them like we would any other package:
+
+```{r install_excel, eval = FALSE}
+#we can install multiple packages at once by
+#  passing a character vector to install.packages
+install.packages(c("xlsx", "readxl"))
+```
+
+### School Demographic Data
+
+Philly's ODI also releases some Excel files summarizing some basic demographic information about each school. This data, as usual already on your machine, was downloaded from [here](http://webgui.phila.k12.pa.us/offices/o/open-data-initiative/documents/enrollment-and-demographics_20160125.zip).
+
+R doesn't have any easy facility to preview the data in an Excel file, so we'll just pause from R for now and check it out in Excel.
+
+Excuse us for a moment, R.
+
+<<R sips coffee>>
+
+As we can see, the data is a tad messy, but R has the strength to deal with it! Let's go!
+
+```{r readxl, results = "hide"}
+library(readxl)
+#As we saw, this file has many sheets. the read_excel function
+#  has an argument sheet which we use to specify the sheet we want
+school_gender <-
+  read_excel("./data/2015-2016 Enr Dem (Suppressed).xls", 
+             sheet = "Gender", skip = 5)
+```
+
+Now that we've ventured outside of the `data.table` world, we'll have to deal with a minor annoyance -- `data.frame`s.
+
+`data.frame`s are R's native data management class. I find them to be a pain to deal with; for example, if we `print` a `data.frame`, it will print the _entire_ table, instead of truncating all but the beginning and end of the object, which is basically a useless overload of information. Also, most of the handy syntax that we're starting to get used to from `data.table` is inaccessible/doesn't work in `data.frame`s. `data.frame` syntax is ugly.
+
+Luckily for us, `data.table` has a perfect tool for people like us that are lost in the `data.frame` wilderness: `setDT`!
+
+`setDT` will do its best to convert non-`data.table` objects to `data.table`s _by reference_, which means that there's no copy being made. This is probably meaningless to you now, but just know that if you have a huge data set (millions of observations), making a copy of your data is something you should try and avoid doing at all costs, as it's very time- and memory-consuming. 
+
 ## Regressions
 
 ### OLS (`lm`) / `predict`/`coeftest`/`summary`
