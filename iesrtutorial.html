@@ -110,7 +110,7 @@ $(document).ready(function () {
 
 <h1 class="title">IES R Tutorial</h1>
 <h4 class="author"><em>Michael Chirico</em></h4>
-<h4 class="date"><em>Compiled April 30, 2016 at 19:19</em></h4>
+<h4 class="date"><em>Compiled May 01, 2016 at 19:23</em></h4>
 
 </div>
 
@@ -163,16 +163,19 @@ $(document).ready(function () {
 <li><a href="#merge-and-update"><span class="toc-section-number">3.2.2</span> Merge and update</a></li>
 <li><a href="#missing-data"><span class="toc-section-number">3.2.3</span> Missing Data</a></li>
 </ul></li>
-<li><a href="#regressions"><span class="toc-section-number">3.3</span> Regressions</a><ul>
-<li><a href="#ols-lm-predictcoeftestsummary"><span class="toc-section-number">3.3.1</span> OLS (<code>lm</code>) / <code>predict</code>/<code>coeftest</code>/<code>summary</code></a></li>
-<li><a href="#probitlogit-glm"><span class="toc-section-number">3.3.2</span> Probit/Logit (<code>glm</code>)</a></li>
+<li><a href="#non-.csv-data-part-i-excel-files"><span class="toc-section-number">3.3</span> Non-.csv Data, Part I: Excel Files</a><ul>
+<li><a href="#school-demographic-data"><span class="toc-section-number">3.3.1</span> School Demographic Data</a></li>
 </ul></li>
-<li><a href="#reshaping"><span class="toc-section-number">3.4</span> Reshaping</a></li>
-<li><a href="#string-data-regex"><span class="toc-section-number">3.5</span> String Data / regex</a></li>
-<li><a href="#non-.csv-data"><span class="toc-section-number">3.6</span> Non-.csv Data</a><ul>
-<li><a href="#sas-read_sas"><span class="toc-section-number">3.6.1</span> SAS: <code>read_sas</code></a></li>
-<li><a href="#excel-readxl-xlsx"><span class="toc-section-number">3.6.2</span> Excel: <code>readxl</code> / <code>xlsx</code></a></li>
-<li><a href="#fixed-width-read_fwf"><span class="toc-section-number">3.6.3</span> Fixed-width <code>read_fwf</code></a></li>
+<li><a href="#regressions"><span class="toc-section-number">3.4</span> Regressions</a><ul>
+<li><a href="#ols-lm-predictcoeftestsummary"><span class="toc-section-number">3.4.1</span> OLS (<code>lm</code>) / <code>predict</code>/<code>coeftest</code>/<code>summary</code></a></li>
+<li><a href="#probitlogit-glm"><span class="toc-section-number">3.4.2</span> Probit/Logit (<code>glm</code>)</a></li>
+</ul></li>
+<li><a href="#reshaping"><span class="toc-section-number">3.5</span> Reshaping</a></li>
+<li><a href="#string-data-regex"><span class="toc-section-number">3.6</span> String Data / regex</a></li>
+<li><a href="#non-.csv-data"><span class="toc-section-number">3.7</span> Non-.csv Data</a><ul>
+<li><a href="#sas-read_sas"><span class="toc-section-number">3.7.1</span> SAS: <code>read_sas</code></a></li>
+<li><a href="#excel-readxl-xlsx"><span class="toc-section-number">3.7.2</span> Excel: <code>readxl</code> / <code>xlsx</code></a></li>
+<li><a href="#fixed-width-read_fwf"><span class="toc-section-number">3.7.3</span> Fixed-width <code>read_fwf</code></a></li>
 </ul></li>
 </ul></li>
 <li><a href="#plotting-tables-11-am---12-pm"><span class="toc-section-number">4</span> Plotting / Tables (11 AM - 12 PM)</a><ul>
@@ -687,20 +690,20 @@ paste(first, last)</code></pre>
 <p>The most common kind of random numbers that people want are uniform draws and normal draws.</p>
 <pre class="r"><code>#generate 10 U[0, 1] draws
 runif(10)</code></pre>
-<pre><code>##  [1] 0.44044260 0.78458594 0.01268175 0.82108162 0.25894916 0.75218612
-##  [7] 0.33798529 0.23404177 0.83829024 0.56368019</code></pre>
+<pre><code>##  [1] 0.4484506 0.9587040 0.3664082 0.4827379 0.2155542 0.1822516 0.3830479
+##  [8] 0.8747090 0.9134132 0.2033546</code></pre>
 <pre class="r"><code>#generate 10 U[3, 5] draws
 runif(10, min = 3, max = 5)</code></pre>
-<pre><code>##  [1] 4.168247 4.625197 3.243703 3.381987 3.462236 4.189317 3.010287
-##  [8] 3.207064 3.302874 4.154266</code></pre>
+<pre><code>##  [1] 3.527960 4.143425 4.772825 4.907874 3.065329 3.370358 4.683093
+##  [8] 4.392359 4.888491 4.841653</code></pre>
 <pre class="r"><code>#generate 10 N(0, 1) draws
 rnorm(10)</code></pre>
-<pre><code>##  [1]  0.8024428 -0.1175511 -0.9745676  0.5098124 -1.1486802 -1.8265395
-##  [7]  1.0000246 -0.8386195  0.8716707  1.8092451</code></pre>
+<pre><code>##  [1] -0.1867084 -1.3828251  0.4185049  0.6483878 -2.1352393  1.1911969
+##  [7] -2.1444211 -0.5332129 -0.8819970  0.2397389</code></pre>
 <pre class="r"><code>#generate 10 N(3, 5) draws
 rnorm(10, mean = 3, sd = 5)</code></pre>
-<pre><code>##  [1] -4.834577  3.550992 -8.444009  7.858619  6.337397  3.154061  1.603901
-##  [8]  3.029364 -3.951819 -2.169802</code></pre>
+<pre><code>##  [1]  0.04794121  3.07487600  3.47644844 -0.14977744  2.87537446
+##  [6]  7.65443650 -3.83322502 20.35715804  6.49058022 15.35827787</code></pre>
 <p>These examples highlight the common format of random number generators in R. To get random numbers from a distribution, there is probably a function named like <code>r</code><strong><code>dist</code></strong>, where <strong><code>dist</code></strong> is an abbreviation for the distribution (here, <strong>unif</strong>orm and <strong>norm</strong>al). The first argument is the number of draws; the rest of the arguments are parameters.</p>
 <p>Here is a complete table of all of the common distributions built in to R, and the function used to invoke their random number generator (RNG):</p>
 <table>
@@ -852,13 +855,13 @@ qnorm(c(.005, .025, .05))</code></pre>
 <p>As always, it’s easiest to see with some examples:</p>
 <pre class="r"><code>#A permutation of 1:5
 sample(5)</code></pre>
-<pre><code>## [1] 2 5 3 4 1</code></pre>
+<pre><code>## [1] 4 2 5 3 1</code></pre>
 <pre class="r"><code>#A size-3 subset of 1:5
 sample(5, 3)</code></pre>
-<pre><code>## [1] 5 3 2</code></pre>
+<pre><code>## [1] 5 4 1</code></pre>
 <pre class="r"><code>#A size-5 subset of 1:5, with replacement
 sample(5, 5, replace = TRUE)</code></pre>
-<pre><code>## [1] 2 3 3 2 4</code></pre>
+<pre><code>## [1] 5 2 3 3 2</code></pre>
 <pre class="r"><code>#A weighted sample of 1:5, heavily weighting 1
 sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></pre>
 <pre><code>## [1] 1 1 1 1 1</code></pre>
@@ -869,7 +872,7 @@ mean(flips == &quot;H&quot;)</code></pre>
 <pre><code>## [1] 0.5</code></pre>
 <pre class="r"><code>#Roll a pair of dice and add them
 sum(sample(6, 2, replace = TRUE))</code></pre>
-<pre><code>## [1] 6</code></pre>
+<pre><code>## [1] 9</code></pre>
 <pre class="r"><code>#create a deck of labeled cards:
 #  (I copy-pasted the text for the suits from
 #   Wikipedia, but we could have used S/H/D/C:
@@ -884,7 +887,7 @@ deck</code></pre>
 ## [45] &quot;7♣&quot;  &quot;8♣&quot;  &quot;9♣&quot;  &quot;10♣&quot; &quot;J♣&quot;  &quot;Q♣&quot;  &quot;K♣&quot;  &quot;A♣&quot;</code></pre>
 <pre class="r"><code>#Now draw a poker hand
 sample(deck, 5)</code></pre>
-<pre><code>## [1] &quot;4♥&quot; &quot;8♠&quot; &quot;J♠&quot; &quot;6♦&quot; &quot;A♠&quot;</code></pre>
+<pre><code>## [1] &quot;J♠&quot;  &quot;Q♣&quot;  &quot;10♥&quot; &quot;4♠&quot;  &quot;2♠&quot;</code></pre>
 </div>
 <div id="replicate" class="section level3">
 <h3><span class="header-section-number">2.6.3</span> <code>replicate</code></h3>
@@ -903,7 +906,7 @@ simulations &lt;-
 #How often does a flush happen?
 #  True frequency is 0.1965%
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.002</code></pre>
+<pre><code>## [1] 0.0012</code></pre>
 <pre class="r"><code>#What about a pair (just two cards match)?
 #  true frequency: 42%
 simulations &lt;- 
@@ -913,7 +916,7 @@ simulations &lt;-
     sum(duplicated(faces)) == 1 #one pair if there's exactly _one_ match
   })
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.4248</code></pre>
+<pre><code>## [1] 0.4206</code></pre>
 </div>
 <div id="set.seed" class="section level3">
 <h3><span class="header-section-number">2.6.4</span> <code>set.seed</code></h3>
@@ -1082,14 +1085,14 @@ x &lt;- rnorm(1000)
 r &lt;- lm(y ~ x)
 str(r)</code></pre>
 <pre><code>## List of 12
-##  $ coefficients : Named num [1:2] -0.0319 -0.0072
+##  $ coefficients : Named num [1:2] 0.017 0.0182
 ##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
-##  $ residuals    : Named num [1:1000] -0.125 0.436 0.998 -0.257 0.528 ...
+##  $ residuals    : Named num [1:1000] 0.0872 0.3451 -1.598 -0.1727 -0.3581 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ effects      : Named num [1:1000] 1.006 -0.218 1.003 -0.251 0.551 ...
+##  $ effects      : Named num [1:1000] -0.549 -0.563 -1.606 -0.176 -0.355 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;(Intercept)&quot; &quot;x&quot; &quot;&quot; &quot;&quot; ...
 ##  $ rank         : int 2
-##  $ fitted.values: Named num [1:1000] -0.0265 -0.0245 -0.0326 -0.0328 -0.0412 ...
+##  $ fitted.values: Named num [1:1000] 0.04022 0.02598 0.02617 0.01883 0.00858 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##  $ assign       : int [1:2] 0 1
 ##  $ qr           :List of 5
@@ -1098,7 +1101,7 @@ str(r)</code></pre>
 ##   .. .. ..$ : chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##   .. .. ..$ : chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
 ##   .. ..- attr(*, &quot;assign&quot;)= int [1:2] 0 1
-##   ..$ qraux: num [1:2] 1.03 1.03
+##   ..$ qraux: num [1:2] 1.03 1.01
 ##   ..$ pivot: int [1:2] 1 2
 ##   ..$ tol  : num 1e-07
 ##   ..$ rank : int 2
@@ -1121,8 +1124,8 @@ str(r)</code></pre>
 ##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
 ##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;y&quot; &quot;x&quot;
 ##  $ model        :'data.frame':   1000 obs. of  2 variables:
-##   ..$ y: num [1:1000] -0.152 0.411 0.965 -0.29 0.487 ...
-##   ..$ x: num [1:1000] -0.7466 -1.0277 0.0947 0.1213 1.2852 ...
+##   ..$ y: num [1:1000] 0.127 0.371 -1.572 -0.154 -0.35 ...
+##   ..$ x: num [1:1000] 1.279 0.495 0.505 0.101 -0.464 ...
 ##   ..- attr(*, &quot;terms&quot;)=Classes 'terms', 'formula' length 3 y ~ x
 ##   .. .. ..- attr(*, &quot;variables&quot;)= language list(y, x)
 ##   .. .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
@@ -1174,9 +1177,10 @@ list.files(include.dirs = TRUE) </code></pre>
 #  current folder, enter the folder after /).
 #  We use the full.names of the file for the next step.
 list.files(&quot;./data&quot;, full.names = TRUE)</code></pre>
-<pre><code>## [1] &quot;./data/employee_information.csv&quot;                        
-## [2] &quot;./data/README_SDP_Employee.txt&quot;                         
-## [3] &quot;./data/School Profiles Teacher Attendance 2013-2014.TXT&quot;</code></pre>
+<pre><code>## [1] &quot;./data/2015-2016 Enr Dem (Suppressed).xls&quot;              
+## [2] &quot;./data/employee_information.csv&quot;                        
+## [3] &quot;./data/README_SDP_Employee.txt&quot;                         
+## [4] &quot;./data/School Profiles Teacher Attendance 2013-2014.TXT&quot;</code></pre>
 <pre class="r"><code>#Now we see the data files. The one we're after
 #  currently is &quot;School Profiles Teacher Attendance 2013-2014.TXT&quot;
 #  To get it previewed, we send the command head to the system
@@ -2324,33 +2328,344 @@ attendance[is.na(school_name)] #fixed!</code></pre>
 ## 20:    4570   MEADE, GEN. GEORGE G. SCHOOL               86.4
 ## 21:    4350       RHODES ELEMENTARY SCHOOL               85.3
 ##     ULCS_NO                    school_name SCH_TEACHER_ATTEND</code></pre>
+<p>How fitting! Motivation High School appears to value teacher attendance very highly.</p>
+</div>
+</div>
+<div id="non-.csv-data-part-i-excel-files" class="section level2">
+<h2><span class="header-section-number">3.3</span> Non-.csv Data, Part I: Excel Files</h2>
+<p>Often, the world is cruel and we are unable to find the data that we want to use for our project in a standard character-separated format. When this situation arises, we have two options.</p>
+<p>The first is to simply convert that data into our favorite format and treat the new file as the master data file, never looking back.</p>
+<p>There are three major problems with this approach:</p>
+<ol style="list-style-type: decimal">
+<li>Processing time. It can be time-consuming to convert many files; this is a fixed cost, but often our time is better spent analyzing the data than toying with it and tinkering with the parameters of a data converter.</li>
+<li>Data fidelity. All data converters have their flaws. Encoding issues, unexpected data types, you name it. It’s almost impossible to tell when, in the process of converting your data, some observation’s entries have been mistakenly changed without your knowing.</li>
+<li>Software licenses. Some files are stored in program-specific binary file formats (SAS, Stata, even R all have specific file types). This is intended to make it really easy to work from session to session within that program, and re-loading a data environment is fast and simple. Moving to machines that don’t have that software installed, however, can be nightmarish.</li>
+</ol>
+<p>My preferred approach is to use R itself to read in file in <em>all</em> formats. Users of R have encountered all of our problems before, and many kind souls out there in the ether have been so generous as to donate their tailor-made solutions to the R community.</p>
+<p>Excel files are an example of one such foreign format. As you can imagine, Excel files are ubiquitous. It’s no surprise, then, that CRAN is <em>plastered</em> with different packages designed to load and interact with data created and stored in Excel formats. See <a href="http://stackoverflow.com/q/6099243/3576984">this Q&amp;A</a> for the gamut of options.</p>
+<p>Today we’ll cover just two options, since I have found them to be quite effective and have never needed any of the others. The first is the package <code>readxl</code>. It is designed to be streamlined and fast. It has few bells and whistles and is not very flexible. To handle more fringe/out-of-the-ordinary data files, there is <code>xlsx</code>. The main advantage I’ve found for <code>xlsx</code> is that it’s better at properly reading fields formatted as dates, which is a <a href="http://www.cpearson.com/excel/datetime.htm">complicated facet of how .xlsx files are stored</a>.</p>
+<p>On our own machines, we would install them like we would any other package:</p>
+<pre class="r"><code>#we can install multiple packages at once by
+#  passing a character vector to install.packages
+install.packages(c(&quot;xlsx&quot;, &quot;readxl&quot;))</code></pre>
+<div id="school-demographic-data" class="section level3">
+<h3><span class="header-section-number">3.3.1</span> School Demographic Data</h3>
+<p>Philly’s ODI also releases some Excel files summarizing some basic demographic information about each school. This data, as usual already on your machine, was downloaded from <a href="http://webgui.phila.k12.pa.us/offices/o/open-data-initiative/documents/enrollment-and-demographics_20160125.zip">here</a>.</p>
+<p>R doesn’t have any easy facility to preview the data in an Excel file, so we’ll just pause from R for now and check it out in Excel.</p>
+<p>Excuse us for a moment, R.</p>
+<p><code>&lt;&lt;R sips coffee&gt;&gt;</code></p>
+<p>As we can see, the data is a tad messy, but R has the strength to deal with it! Let’s go!</p>
+<pre class="r"><code>library(readxl)
+#As we saw, this file has many sheets. the read_excel function
+#  has an argument sheet which we use to specify the sheet we want
+#Also, as we saw, there's a bunch of extraneous rows at the top of the file.
+#  We use the skip argument to ignore them. But in so doing, we necessarily
+#  lose some information (namely, which columns correspond to Female and
+#  which correspond to Male).
+#To overcome this, we're going to supply
+#  the column names ourselves. This is also favorable since the column
+#  headers in the raw data file are plagued by spaces -- which makes
+#  them quite hard to deal with once they're brought into R.
+school_gender &lt;-
+  read_excel(&quot;./data/2015-2016 Enr Dem (Suppressed).xls&quot;, 
+             sheet = &quot;Gender&quot;, skip = 6,
+             #enter a blank for the first column, which
+             #  will be dropped anyway
+             col_names = c(&quot;&quot;, &quot;school_id&quot;, &quot;school_name&quot;, &quot;grade&quot;,
+                           &quot;total_enrolled&quot;, &quot;count_female&quot;,
+                           &quot;pct_female&quot;, &quot;count_male&quot;, &quot;pct_male&quot;))</code></pre>
+<div id="setdt" class="section level4">
+<h4><span class="header-section-number">3.3.1.1</span> <code>setDT</code></h4>
+<p>Now that we’ve ventured outside of the <code>data.table</code> world, we’ll have to deal with a minor annoyance – <code>data.frame</code>s.</p>
+<p><code>data.frame</code>s are R’s native data management class. I find them to be a pain to deal with; for example, if we <code>print</code> a <code>data.frame</code>, it will print the <em>entire</em> table, instead of truncating all but the beginning and end of the object, which is basically a useless overload of information. Also, most of the handy syntax that we’re starting to get used to from <code>data.table</code> is inaccessible/doesn’t work in <code>data.frame</code>s. <code>data.frame</code> syntax is ugly.</p>
+<p>Luckily for us, <code>data.table</code> has a perfect tool for people like us that are lost in the <code>data.frame</code> wilderness: <code>setDT</code>!</p>
+<p><code>setDT</code> will do its best to convert non-<code>data.table</code> objects to <code>data.table</code>s <em>by reference</em>, which means that there’s no copy being made. This is probably meaningless to you now, but just know that if you have a huge data set (millions of observations), making a copy of your data is something you should try and avoid doing at all costs, as it’s very time- and memory-consuming.</p>
+<pre class="r"><code>class(school_gender)</code></pre>
+<pre><code>## [1] &quot;tbl_df&quot;     &quot;tbl&quot;        &quot;data.frame&quot;</code></pre>
+<pre class="r"><code>#(usually, I just do this wrap this
+# around read_excel to do it all at once)
+setDT(school_gender)
+class(school_gender)</code></pre>
+<pre><code>## [1] &quot;data.table&quot; &quot;data.frame&quot;</code></pre>
+</div>
+<div id="forcing-numeric-lapply.sd-..." class="section level4">
+<h4><span class="header-section-number">3.3.1.2</span> Forcing numeric: <code>lapply(.SD, ...)</code></h4>
+<pre class="r"><code>print(school_gender, class = TRUE)</code></pre>
+<pre><code>##       school_id                  school_name      grade total_enrolled
+##           &lt;num&gt;                       &lt;char&gt;     &lt;char&gt;          &lt;num&gt;
+##    1:       101     John Bartram High School   9.000000            200
+##    2:       101     John Bartram High School  10.000000            197
+##    3:       101     John Bartram High School  11.000000            172
+##    4:       101     John Bartram High School  12.000000            141
+##   ---                                                                 
+## 1662:       878 Philadelphia Virtual Academy   9.000000             46
+## 1663:       878 Philadelphia Virtual Academy  10.000000             69
+## 1664:       878 Philadelphia Virtual Academy  11.000000             79
+## 1665:       878 Philadelphia Virtual Academy  12.000000             64
+## 1666:       878 Philadelphia Virtual Academy ALL GRADES            311
+##       count_female pct_female count_male pct_male
+##             &lt;char&gt;     &lt;char&gt;     &lt;char&gt;   &lt;char&gt;
+##    1:    70.000000   0.350000 130.000000 0.650000
+##    2:    86.000000   0.436548 111.000000 0.563452
+##    3:    78.000000   0.453488  94.000000 0.546512
+##    4:    63.000000   0.446809  78.000000 0.553191
+##   ---                                            
+## 1662:            s          s          s        s
+## 1663:    43.000000   0.623188  26.000000 0.376812
+## 1664:    47.000000   0.594937  32.000000 0.405063
+## 1665:    41.000000   0.640625  23.000000 0.359375
+## 1666:   191.000000   0.614148 120.000000 0.385852</code></pre>
+<p>We’ve got some issues to deal with.</p>
+<ol style="list-style-type: decimal">
+<li>There’s too much data here (for what we’ve got in mind) – we’re only interested in the school-wide demographics for now. So we’ve got to cut all the rows where <code>grade</code> is not <code>ALL GRADES</code> (we know how to do this already)</li>
+<li>A couple of columns that are clearly numeric are currently being stored as <code>character</code> – <code>count_female</code>, <code>pct_female</code>, <code>count_male</code>, <code>pct_male</code>. This is because some data has been suppressed, probably for privacy reasons when the sample size is too small (e.g., at Philadelphia Virtual Academy, it appears there are only 46 students, which would mean roughly 23 students of each gender – it’s common to hide data that comes from such small samples for privacy). We could have used the <code>na</code> argument in <code>read_excel</code> (setting it to <code>&quot;s&quot;</code> instead of the default <code>&quot;&quot;</code>), but cleaning up ex-post allows us to show some new tricks!</li>
+</ol>
+<pre class="r"><code>#subsetting
+school_gender &lt;- school_gender[grade == &quot;ALL GRADES&quot;]
+
+#forcing numeric -- note the warning telling us 
+#  there is some data loss because R doesn't know
+#  how to convert &quot;s&quot; to a number, so it forces it to be NA
+school_gender[ , count_female := as.numeric(count_female)]</code></pre>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+<pre class="r"><code>#repeat for the other columns
+school_gender[ , pct_female := as.numeric(pct_female)]</code></pre>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+<pre class="r"><code>school_gender[ , count_male := as.numeric(count_male)]</code></pre>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+<pre class="r"><code>school_gender[ , pct_male := as.numeric(pct_male)]</code></pre>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+<p>It’s kind of a pain to run basically the same line of code over and over again, isn’t it?</p>
+<p>Don’t worry, R has a simple way to automate this process for us, of course!</p>
+<p>We’ll need two more bits of knowledge about <code>data.table</code> before we proceed.</p>
+<p>First, there’s another <code>data.table</code> variable like <code>.N</code> that is useful to know. <code>.SD</code> (stands for <strong>S</strong>ubset of the <strong>D</strong>ata), like <code>.N</code>, is two things, depending on whether we doing a grouping operation using <code>by</code>. If we’re not using <code>by</code>, <code>.SD</code> is just our <code>data.table</code>. If we’re using <code>by</code>, there is a different <code>.SD</code> for every group (recall the idea of splitting the <code>data.table</code> into one group for each level of the <code>by</code> variable – each of the split sub-tables has its own <code>.SD</code>) Watch:</p>
+<pre class="r"><code>school_gender[ , .SD]</code></pre>
+<pre><code>##      school_id                                 school_name      grade
+##   1:       101                    John Bartram High School ALL GRADES
+##   2:       102               West Philadelphia High School ALL GRADES
+##   3:       103                   High School of the Future ALL GRADES
+##   4:       105 Paul Robeson High School for Human Services ALL GRADES
+##   5:       110                William L. Sayre High School ALL GRADES
+##  ---                                                                 
+## 214:       842                      Stephen Decatur School ALL GRADES
+## 215:       843                     Joseph Greenberg School ALL GRADES
+## 216:       844                   William H. Loesche School ALL GRADES
+## 217:       856                         The Workshop School ALL GRADES
+## 218:       878                Philadelphia Virtual Academy ALL GRADES
+##      total_enrolled count_female pct_female count_male pct_male
+##   1:            710          297   0.418310        413 0.581690
+##   2:            538          242   0.449814        296 0.550186
+##   3:            518          243   0.469112        275 0.530888
+##   4:            294          169   0.574830        125 0.425170
+##   5:            511          231   0.452055        280 0.547945
+##  ---                                                           
+## 214:           1030          478   0.464078        552 0.535922
+## 215:            738          368   0.498645        370 0.501355
+## 216:            782          368   0.470588        414 0.529412
+## 217:            207           79   0.381643        128 0.618357
+## 218:            311          191   0.614148        120 0.385852</code></pre>
+<p><code>.SD</code> is <em>itself</em> a <code>data.table</code>. That means we can use <code>[]</code> on it to treat it just like any other <code>data.table</code>:</p>
+<pre class="r"><code>#the same as school_gender[1:10]
+school_gender[ , .SD[1:10] ]</code></pre>
+<pre><code>##     school_id                                 school_name      grade
+##  1:       101                    John Bartram High School ALL GRADES
+##  2:       102               West Philadelphia High School ALL GRADES
+##  3:       103                   High School of the Future ALL GRADES
+##  4:       105 Paul Robeson High School for Human Services ALL GRADES
+##  5:       110                William L. Sayre High School ALL GRADES
+##  6:       113                    William T. Tilden School ALL GRADES
+##  7:       119                      Motivation High School ALL GRADES
+##  8:       120                           John Barry School ALL GRADES
+##  9:       123                    William C. Bryant School ALL GRADES
+## 10:       125                  Joseph W. Catharine School ALL GRADES
+##     total_enrolled count_female pct_female count_male pct_male
+##  1:            710          297   0.418310        413 0.581690
+##  2:            538          242   0.449814        296 0.550186
+##  3:            518          243   0.469112        275 0.530888
+##  4:            294          169   0.574830        125 0.425170
+##  5:            511          231   0.452055        280 0.547945
+##  6:            470          210   0.446809        260 0.553191
+##  7:            344          183   0.531977        161 0.468023
+##  8:            757          395   0.521797        362 0.478203
+##  9:            478          234   0.489540        244 0.510460
+## 10:            619          304   0.491115        315 0.508885</code></pre>
+<pre class="r"><code>#get the entire first row associated with each school_id
+school_gender[ , .SD[1], by = school_id]</code></pre>
+<pre><code>##      school_id                                 school_name      grade
+##   1:       101                    John Bartram High School ALL GRADES
+##   2:       102               West Philadelphia High School ALL GRADES
+##   3:       103                   High School of the Future ALL GRADES
+##   4:       105 Paul Robeson High School for Human Services ALL GRADES
+##   5:       110                William L. Sayre High School ALL GRADES
+##  ---                                                                 
+## 214:       842                      Stephen Decatur School ALL GRADES
+## 215:       843                     Joseph Greenberg School ALL GRADES
+## 216:       844                   William H. Loesche School ALL GRADES
+## 217:       856                         The Workshop School ALL GRADES
+## 218:       878                Philadelphia Virtual Academy ALL GRADES
+##      total_enrolled count_female pct_female count_male pct_male
+##   1:            710          297   0.418310        413 0.581690
+##   2:            538          242   0.449814        296 0.550186
+##   3:            518          243   0.469112        275 0.530888
+##   4:            294          169   0.574830        125 0.425170
+##   5:            511          231   0.452055        280 0.547945
+##  ---                                                           
+## 214:           1030          478   0.464078        552 0.535922
+## 215:            738          368   0.498645        370 0.501355
+## 216:            782          368   0.470588        414 0.529412
+## 217:            207           79   0.381643        128 0.618357
+## 218:            311          191   0.614148        120 0.385852</code></pre>
+<p>This is mainly useful in conjunction with another argument we can use within <code>[]</code> with <code>data.table</code>: <code>.SDcols</code>. <code>.SDcols</code> tells R which columns to include in the current operation:</p>
+<pre class="r"><code>school_gender[ , .SD, .SDcols = c(&quot;school_id&quot;, &quot;grade&quot;, &quot;total_enrolled&quot;)]</code></pre>
+<pre><code>##      school_id      grade total_enrolled
+##   1:       101 ALL GRADES            710
+##   2:       102 ALL GRADES            538
+##   3:       103 ALL GRADES            518
+##   4:       105 ALL GRADES            294
+##   5:       110 ALL GRADES            511
+##  ---                                    
+## 214:       842 ALL GRADES           1030
+## 215:       843 ALL GRADES            738
+## 216:       844 ALL GRADES            782
+## 217:       856 ALL GRADES            207
+## 218:       878 ALL GRADES            311</code></pre>
+<p>This is mainly useful for what we’re trying to do with <code>as.numeric</code>, where we want to apply the same function to many columns. Recall from earlier that the <code>*apply</code> functions are our friends when it comes to doing repetitive things. When we do <code>lapply(DT, sum)</code>, we apply <code>sum</code> to every column of <code>DT</code>. For <code>as.numeric</code>, it’s much the same:</p>
+<p>school_gende</p>
+<pre class="r"><code>#Troublesome. We don't want to convert
+#  most of the columns, and we go too far here
+school_gender[ , lapply(.SD, as.numeric)]</code></pre>
+<pre><code>## Warning in lapply(.SD, as.numeric): NAs introduced by coercion
+
+## Warning in lapply(.SD, as.numeric): NAs introduced by coercion</code></pre>
+<pre><code>##      school_id school_name grade total_enrolled count_female pct_female
+##   1:       101          NA    NA            710          297   0.418310
+##   2:       102          NA    NA            538          242   0.449814
+##   3:       103          NA    NA            518          243   0.469112
+##   4:       105          NA    NA            294          169   0.574830
+##   5:       110          NA    NA            511          231   0.452055
+##  ---                                                                   
+## 214:       842          NA    NA           1030          478   0.464078
+## 215:       843          NA    NA            738          368   0.498645
+## 216:       844          NA    NA            782          368   0.470588
+## 217:       856          NA    NA            207           79   0.381643
+## 218:       878          NA    NA            311          191   0.614148
+##      count_male pct_male
+##   1:        413 0.581690
+##   2:        296 0.550186
+##   3:        275 0.530888
+##   4:        125 0.425170
+##   5:        280 0.547945
+##  ---                    
+## 214:        552 0.535922
+## 215:        370 0.501355
+## 216:        414 0.529412
+## 217:        128 0.618357
+## 218:        120 0.385852</code></pre>
+<pre class="r"><code>#Use .SDcols to control which columns we affect
+school_gender[ , lapply(.SD, as.numeric), 
+               .SDcols = c(&quot;count_female&quot;, &quot;pct_female&quot;, 
+                           &quot;count_male&quot;, &quot;pct_male&quot;)]</code></pre>
+<pre><code>##      count_female pct_female count_male pct_male
+##   1:          297   0.418310        413 0.581690
+##   2:          242   0.449814        296 0.550186
+##   3:          243   0.469112        275 0.530888
+##   4:          169   0.574830        125 0.425170
+##   5:          231   0.452055        280 0.547945
+##  ---                                            
+## 214:          478   0.464078        552 0.535922
+## 215:          368   0.498645        370 0.501355
+## 216:          368   0.470588        414 0.529412
+## 217:           79   0.381643        128 0.618357
+## 218:          191   0.614148        120 0.385852</code></pre>
+<pre class="r"><code>#Great, we've converted the columns to numeric, right?
+#  No, not quite. We have done the calculation,
+#  but we haven't _assigned_ the output to anything.
+#  To do that, we need := again.
+print(school_gender, class = TRUE)</code></pre>
+<pre><code>##      school_id                                 school_name      grade
+##          &lt;num&gt;                                      &lt;char&gt;     &lt;char&gt;
+##   1:       101                    John Bartram High School ALL GRADES
+##   2:       102               West Philadelphia High School ALL GRADES
+##   3:       103                   High School of the Future ALL GRADES
+##   4:       105 Paul Robeson High School for Human Services ALL GRADES
+##  ---                                                                 
+## 214:       842                      Stephen Decatur School ALL GRADES
+## 215:       843                     Joseph Greenberg School ALL GRADES
+## 216:       844                   William H. Loesche School ALL GRADES
+## 217:       856                         The Workshop School ALL GRADES
+## 218:       878                Philadelphia Virtual Academy ALL GRADES
+##      total_enrolled count_female pct_female count_male pct_male
+##               &lt;num&gt;        &lt;num&gt;      &lt;num&gt;      &lt;num&gt;    &lt;num&gt;
+##   1:            710          297   0.418310        413 0.581690
+##   2:            538          242   0.449814        296 0.550186
+##   3:            518          243   0.469112        275 0.530888
+##   4:            294          169   0.574830        125 0.425170
+##  ---                                                           
+## 214:           1030          478   0.464078        552 0.535922
+## 215:            738          368   0.498645        370 0.501355
+## 216:            782          368   0.470588        414 0.529412
+## 217:            207           79   0.381643        128 0.618357
+## 218:            311          191   0.614148        120 0.385852</code></pre>
+<pre class="r"><code>num_cols &lt;- c(&quot;count_female&quot;, &quot;pct_female&quot;,
+              &quot;count_male&quot;, &quot;pct_male&quot;)
+#**NOTE** we have to surround num_cols on the left with
+#  parentheses so that data.table knows we're not
+#  trying to create a column called num_cols.
+school_gender[ , (num_cols) := lapply(.SD, as.numeric),
+               .SDcols = num_cols]
+print(school_gender, class = TRUE)</code></pre>
+<pre><code>##      school_id                                 school_name      grade
+##          &lt;num&gt;                                      &lt;char&gt;     &lt;char&gt;
+##   1:       101                    John Bartram High School ALL GRADES
+##   2:       102               West Philadelphia High School ALL GRADES
+##   3:       103                   High School of the Future ALL GRADES
+##   4:       105 Paul Robeson High School for Human Services ALL GRADES
+##  ---                                                                 
+## 214:       842                      Stephen Decatur School ALL GRADES
+## 215:       843                     Joseph Greenberg School ALL GRADES
+## 216:       844                   William H. Loesche School ALL GRADES
+## 217:       856                         The Workshop School ALL GRADES
+## 218:       878                Philadelphia Virtual Academy ALL GRADES
+##      total_enrolled count_female pct_female count_male pct_male
+##               &lt;num&gt;        &lt;num&gt;      &lt;num&gt;      &lt;num&gt;    &lt;num&gt;
+##   1:            710          297   0.418310        413 0.581690
+##   2:            538          242   0.449814        296 0.550186
+##   3:            518          243   0.469112        275 0.530888
+##   4:            294          169   0.574830        125 0.425170
+##  ---                                                           
+## 214:           1030          478   0.464078        552 0.535922
+## 215:            738          368   0.498645        370 0.501355
+## 216:            782          368   0.470588        414 0.529412
+## 217:            207           79   0.381643        128 0.618357
+## 218:            311          191   0.614148        120 0.385852</code></pre>
+</div>
 </div>
 </div>
 <div id="regressions" class="section level2">
-<h2><span class="header-section-number">3.3</span> Regressions</h2>
+<h2><span class="header-section-number">3.4</span> Regressions</h2>
 <div id="ols-lm-predictcoeftestsummary" class="section level3">
-<h3><span class="header-section-number">3.3.1</span> OLS (<code>lm</code>) / <code>predict</code>/<code>coeftest</code>/<code>summary</code></h3>
+<h3><span class="header-section-number">3.4.1</span> OLS (<code>lm</code>) / <code>predict</code>/<code>coeftest</code>/<code>summary</code></h3>
 </div>
 <div id="probitlogit-glm" class="section level3">
-<h3><span class="header-section-number">3.3.2</span> Probit/Logit (<code>glm</code>)</h3>
+<h3><span class="header-section-number">3.4.2</span> Probit/Logit (<code>glm</code>)</h3>
 </div>
 </div>
 <div id="reshaping" class="section level2">
-<h2><span class="header-section-number">3.4</span> Reshaping</h2>
+<h2><span class="header-section-number">3.5</span> Reshaping</h2>
 </div>
 <div id="string-data-regex" class="section level2">
-<h2><span class="header-section-number">3.5</span> String Data / regex</h2>
+<h2><span class="header-section-number">3.6</span> String Data / regex</h2>
 </div>
 <div id="non-.csv-data" class="section level2">
-<h2><span class="header-section-number">3.6</span> Non-.csv Data</h2>
+<h2><span class="header-section-number">3.7</span> Non-.csv Data</h2>
 <div id="sas-read_sas" class="section level3">
-<h3><span class="header-section-number">3.6.1</span> SAS: <code>read_sas</code></h3>
+<h3><span class="header-section-number">3.7.1</span> SAS: <code>read_sas</code></h3>
 </div>
 <div id="excel-readxl-xlsx" class="section level3">
-<h3><span class="header-section-number">3.6.2</span> Excel: <code>readxl</code> / <code>xlsx</code></h3>
+<h3><span class="header-section-number">3.7.2</span> Excel: <code>readxl</code> / <code>xlsx</code></h3>
 </div>
 <div id="fixed-width-read_fwf" class="section level3">
-<h3><span class="header-section-number">3.6.3</span> Fixed-width <code>read_fwf</code></h3>
+<h3><span class="header-section-number">3.7.3</span> Fixed-width <code>read_fwf</code></h3>
 </div>
 </div>
 </div>

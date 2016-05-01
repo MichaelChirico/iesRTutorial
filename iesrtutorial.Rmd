@@ -1444,7 +1444,7 @@ R doesn't have any easy facility to preview the data in an Excel file, so we'll 
 
 Excuse us for a moment, R.
 
-<<R sips coffee>>
+`<<R sips coffee>>`
 
 As we can see, the data is a tad messy, but R has the strength to deal with it! Let's go!
 
@@ -1452,10 +1452,25 @@ As we can see, the data is a tad messy, but R has the strength to deal with it! 
 library(readxl)
 #As we saw, this file has many sheets. the read_excel function
 #  has an argument sheet which we use to specify the sheet we want
+#Also, as we saw, there's a bunch of extraneous rows at the top of the file.
+#  We use the skip argument to ignore them. But in so doing, we necessarily
+#  lose some information (namely, which columns correspond to Female and
+#  which correspond to Male).
+#To overcome this, we're going to supply
+#  the column names ourselves. This is also favorable since the column
+#  headers in the raw data file are plagued by spaces -- which makes
+#  them quite hard to deal with once they're brought into R.
 school_gender <-
   read_excel("./data/2015-2016 Enr Dem (Suppressed).xls", 
-             sheet = "Gender", skip = 5)
+             sheet = "Gender", skip = 6,
+             #enter a blank for the first column, which
+             #  will be dropped anyway
+             col_names = c("", "school_id", "school_name", "grade",
+                           "total_enrolled", "count_female",
+                           "pct_female", "count_male", "pct_male"))
 ```
+
+#### `setDT`
 
 Now that we've ventured outside of the `data.table` world, we'll have to deal with a minor annoyance -- `data.frame`s.
 
@@ -1464,6 +1479,97 @@ Now that we've ventured outside of the `data.table` world, we'll have to deal wi
 Luckily for us, `data.table` has a perfect tool for people like us that are lost in the `data.frame` wilderness: `setDT`!
 
 `setDT` will do its best to convert non-`data.table` objects to `data.table`s _by reference_, which means that there's no copy being made. This is probably meaningless to you now, but just know that if you have a huge data set (millions of observations), making a copy of your data is something you should try and avoid doing at all costs, as it's very time- and memory-consuming. 
+
+```{r setDT}
+class(school_gender)
+#(usually, I just do this wrap this
+# around read_excel to do it all at once)
+setDT(school_gender)
+class(school_gender)
+```
+
+#### Forcing numeric: `lapply(.SD, ...)`
+
+```{r gender_preview}
+print(school_gender, class = TRUE)
+```
+
+We've got some issues to deal with.
+
+ 1. There's too much data here (for what we've got in mind) -- we're only interested in the school-wide demographics for now. So we've got to cut all the rows where `grade` is not `ALL GRADES` (we know how to do this already)
+ 2. A couple of columns that are clearly numeric are currently being stored as `character` -- `count_female`, `pct_female`, `count_male`, `pct_male`. This is because some data has been suppressed, probably for privacy reasons when the sample size is too small (e.g., at Philadelphia Virtual Academy, it appears there are only 46 students, which would mean roughly 23 students of each gender -- it's common to hide data that comes from such small samples for privacy). We could have used the `na` argument in `read_excel` (setting it to `"s"` instead of the default `""`), but cleaning up ex-post allows us to show some new tricks!
+ 
+ 
+```{r gender_cleanup}
+#subsetting
+school_gender <- school_gender[grade == "ALL GRADES"]
+
+#forcing numeric -- note the warning telling us 
+#  there is some data loss because R doesn't know
+#  how to convert "s" to a number, so it forces it to be NA
+school_gender[ , count_female := as.numeric(count_female)]
+
+#repeat for the other columns
+school_gender[ , pct_female := as.numeric(pct_female)]
+school_gender[ , count_male := as.numeric(count_male)]
+school_gender[ , pct_male := as.numeric(pct_male)]
+```
+
+It's kind of a pain to run basically the same line of code over and over again, isn't it?
+
+Don't worry, R has a simple way to automate this process for us, of course!
+
+We'll need two more bits of knowledge about `data.table` before we proceed.
+
+First, there's another `data.table` variable like `.N` that is useful to know. `.SD` (stands for **S**ubset of the **D**ata), like `.N`, is two things, depending on whether we doing a grouping operation using `by`. If we're not using `by`, `.SD` is just our `data.table`. If we're using `by`, there is a different `.SD` for every group (recall the idea of splitting the `data.table` into one group for each level of the `by` variable -- each of the split sub-tables has its own `.SD`) Watch:
+
+```{r .SD}
+school_gender[ , .SD]
+```
+
+`.SD` is _itself_ a `data.table`. That means we can use `[]` on it to treat it just like any other `data.table`:
+
+```{r .SD_subset}
+#the same as school_gender[1:10]
+school_gender[ , .SD[1:10] ]
+
+#get the entire first row associated with each school_id
+school_gender[ , .SD[1], by = school_id]
+```
+
+This is mainly useful in conjunction with another argument we can use within `[]` with `data.table`: `.SDcols`. `.SDcols` tells R which columns to include in the current operation:
+
+```{r .SDcols}
+school_gender[ , .SD, .SDcols = c("school_id", "grade", "total_enrolled")]
+```
+
+This is mainly useful for what we're trying to do with `as.numeric`, where we want to apply the same function to many columns. Recall from earlier that the `*apply` functions are our friends when it comes to doing repetitive things. When we do `lapply(DT, sum)`, we apply `sum` to every column of `DT`. For `as.numeric`, it's much the same:
+
+school_gende
+```{r lapply_SD}
+#Troublesome. We don't want to convert
+#  most of the columns, and we go too far here
+school_gender[ , lapply(.SD, as.numeric)]
+
+#Use .SDcols to control which columns we affect
+school_gender[ , lapply(.SD, as.numeric), 
+               .SDcols = c("count_female", "pct_female", 
+                           "count_male", "pct_male")]
+
+#Great, we've converted the columns to numeric, right?
+#  No, not quite. We have done the calculation,
+#  but we haven't _assigned_ the output to anything.
+#  To do that, we need := again.
+
+num_cols <- c("count_female", "pct_female",
+              "count_male", "pct_male")
+#**NOTE** we have to surround num_cols on the left with
+#  parentheses so that data.table knows we're not
+#  trying to create a column called num_cols.
+school_gender[ , (num_cols) := lapply(.SD, as.numeric),
+               .SDcols = num_cols]
+print(school_gender, class = TRUE)
+```
 
 ## Regressions
 
