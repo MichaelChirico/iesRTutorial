@@ -1545,7 +1545,6 @@ school_gender[ , .SD, .SDcols = c("school_id", "grade", "total_enrolled")]
 
 This is mainly useful for what we're trying to do with `as.numeric`, where we want to apply the same function to many columns. Recall from earlier that the `*apply` functions are our friends when it comes to doing repetitive things. When we do `lapply(DT, sum)`, we apply `sum` to every column of `DT`. For `as.numeric`, it's much the same:
 
-school_gende
 ```{r lapply_SD}
 #Troublesome. We don't want to convert
 #  most of the columns, and we go too far here
@@ -1570,6 +1569,8 @@ school_gender[ , (num_cols) := lapply(.SD, as.numeric),
                .SDcols = num_cols]
 print(school_gender, class = TRUE)
 ```
+
+#### 
 
 ## Regressions
 
