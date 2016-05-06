@@ -110,7 +110,7 @@ $(document).ready(function () {
 
 <h1 class="title">IES R Tutorial</h1>
 <h4 class="author"><em>Michael Chirico</em></h4>
-<h4 class="date"><em>Compiled May 05, 2016 at 21:09</em></h4>
+<h4 class="date"><em>Compiled May 06, 2016 at 19:22</em></h4>
 
 </div>
 
@@ -167,8 +167,10 @@ $(document).ready(function () {
 <li><a href="#school-demographic-data"><span class="toc-section-number">3.3.1</span> School Demographic Data</a></li>
 </ul></li>
 <li><a href="#regressions"><span class="toc-section-number">3.4</span> Regressions</a><ul>
-<li><a href="#ols-lm-predictcoeftestsummary"><span class="toc-section-number">3.4.1</span> OLS (<code>lm</code>) / <code>predict</code>/<code>coeftest</code>/<code>summary</code></a></li>
-<li><a href="#probitlogit-glm"><span class="toc-section-number">3.4.2</span> Probit/Logit (<code>glm</code>)</a></li>
+<li><a href="#ols"><span class="toc-section-number">3.4.1</span> OLS</a></li>
+<li><a href="#predictions-from-a-model"><span class="toc-section-number">3.4.2</span> Predictions from a model</a></li>
+<li><a href="#nontrivial-coefficient-tests"><span class="toc-section-number">3.4.3</span> Nontrivial coefficient tests</a></li>
+<li><a href="#probitlogit-glm"><span class="toc-section-number">3.4.4</span> Probit/Logit (<code>glm</code>)</a></li>
 </ul></li>
 <li><a href="#reshaping"><span class="toc-section-number">3.5</span> Reshaping</a></li>
 <li><a href="#string-data-regex"><span class="toc-section-number">3.6</span> String Data / regex</a></li>
@@ -690,20 +692,20 @@ paste(first, last)</code></pre>
 <p>The most common kind of random numbers that people want are uniform draws and normal draws.</p>
 <pre class="r"><code>#generate 10 U[0, 1] draws
 runif(10)</code></pre>
-<pre><code>##  [1] 0.85385260 0.51058884 0.93568976 0.03967597 0.53370344 0.98503295
-##  [7] 0.74125952 0.40569173 0.88729405 0.89682322</code></pre>
+<pre><code>##  [1] 0.92124233 0.67034603 0.54954479 0.05460017 0.79916032 0.21275844
+##  [7] 0.01215540 0.07972674 0.49625922 0.23353623</code></pre>
 <pre class="r"><code>#generate 10 U[3, 5] draws
 runif(10, min = 3, max = 5)</code></pre>
-<pre><code>##  [1] 3.792599 3.558766 3.628338 3.754679 4.707284 3.488482 4.275660
-##  [8] 4.382397 4.790437 3.674610</code></pre>
+<pre><code>##  [1] 4.342990 4.122645 3.144467 3.247296 3.013806 4.578875 4.324615
+##  [8] 3.794217 3.863348 4.464434</code></pre>
 <pre class="r"><code>#generate 10 N(0, 1) draws
 rnorm(10)</code></pre>
-<pre><code>##  [1] -0.04582084  1.62310904  0.54418907 -0.73578939  0.28602719
-##  [6]  0.70111505 -0.39656190 -0.37613680 -0.26661629 -0.25656246</code></pre>
+<pre><code>##  [1]  0.5738427 -0.4269242 -1.7481025  1.2576152  0.1333377  0.7162758
+##  [7] -0.1614234  0.8552500 -0.4666054  1.1764198</code></pre>
 <pre class="r"><code>#generate 10 N(3, 5) draws
 rnorm(10, mean = 3, sd = 5)</code></pre>
-<pre><code>##  [1]  2.1942649  2.2442607  1.6871189  1.3923098  7.4081042  6.8769115
-##  [7]  5.4610406  0.1349045  3.5884710 -0.4918636</code></pre>
+<pre><code>##  [1]  6.8833948 -2.0155374 11.9305573  3.3982970  4.7846327  4.5783594
+##  [7]  4.4561585  6.1752472 -0.9244330 -0.6825876</code></pre>
 <p>These examples highlight the common format of random number generators in R. To get random numbers from a distribution, there is probably a function named like <code>r</code><strong><code>dist</code></strong>, where <strong><code>dist</code></strong> is an abbreviation for the distribution (here, <strong>unif</strong>orm and <strong>norm</strong>al). The first argument is the number of draws; the rest of the arguments are parameters.</p>
 <p>Here is a complete table of all of the common distributions built in to R, and the function used to invoke their random number generator (RNG):</p>
 <table>
@@ -855,13 +857,13 @@ qnorm(c(.005, .025, .05))</code></pre>
 <p>As always, it’s easiest to see with some examples:</p>
 <pre class="r"><code>#A permutation of 1:5
 sample(5)</code></pre>
-<pre><code>## [1] 5 2 4 1 3</code></pre>
+<pre><code>## [1] 5 1 3 4 2</code></pre>
 <pre class="r"><code>#A size-3 subset of 1:5
 sample(5, 3)</code></pre>
-<pre><code>## [1] 5 1 2</code></pre>
+<pre><code>## [1] 4 3 1</code></pre>
 <pre class="r"><code>#A size-5 subset of 1:5, with replacement
 sample(5, 5, replace = TRUE)</code></pre>
-<pre><code>## [1] 4 1 2 3 4</code></pre>
+<pre><code>## [1] 3 1 3 4 1</code></pre>
 <pre class="r"><code>#A weighted sample of 1:5, heavily weighting 1
 sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></pre>
 <pre><code>## [1] 1 1 1 1 1</code></pre>
@@ -869,10 +871,10 @@ sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></
 <pre class="r"><code>#Flip 10 coins, get the percentage heads
 flips &lt;- sample(c(&quot;H&quot;, &quot;T&quot;), 10, replace = TRUE)
 mean(flips == &quot;H&quot;)</code></pre>
-<pre><code>## [1] 0.6</code></pre>
+<pre><code>## [1] 0.3</code></pre>
 <pre class="r"><code>#Roll a pair of dice and add them
 sum(sample(6, 2, replace = TRUE))</code></pre>
-<pre><code>## [1] 5</code></pre>
+<pre><code>## [1] 7</code></pre>
 <pre class="r"><code>#create a deck of labeled cards:
 #  (I copy-pasted the text for the suits from
 #   Wikipedia, but we could have used S/H/D/C:
@@ -887,7 +889,7 @@ deck</code></pre>
 ## [45] &quot;7♣&quot;  &quot;8♣&quot;  &quot;9♣&quot;  &quot;10♣&quot; &quot;J♣&quot;  &quot;Q♣&quot;  &quot;K♣&quot;  &quot;A♣&quot;</code></pre>
 <pre class="r"><code>#Now draw a poker hand
 sample(deck, 5)</code></pre>
-<pre><code>## [1] &quot;10♦&quot; &quot;5♠&quot;  &quot;J♣&quot;  &quot;5♥&quot;  &quot;3♦&quot;</code></pre>
+<pre><code>## [1] &quot;J♦&quot;  &quot;10♦&quot; &quot;A♣&quot;  &quot;8♥&quot;  &quot;A♦&quot;</code></pre>
 </div>
 <div id="replicate" class="section level3">
 <h3><span class="header-section-number">2.6.3</span> <code>replicate</code></h3>
@@ -906,7 +908,7 @@ simulations &lt;-
 #How often does a flush happen?
 #  True frequency is 0.1965%
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.0028</code></pre>
+<pre><code>## [1] 0.0022</code></pre>
 <pre class="r"><code>#What about a pair (just two cards match)?
 #  true frequency: 42%
 simulations &lt;- 
@@ -916,7 +918,7 @@ simulations &lt;-
     sum(duplicated(faces)) == 1 #one pair if there's exactly _one_ match
   })
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.4163</code></pre>
+<pre><code>## [1] 0.4215</code></pre>
 </div>
 <div id="set.seed" class="section level3">
 <h3><span class="header-section-number">2.6.4</span> <code>set.seed</code></h3>
@@ -1085,14 +1087,14 @@ x &lt;- rnorm(1000)
 r &lt;- lm(y ~ x)
 str(r)</code></pre>
 <pre><code>## List of 12
-##  $ coefficients : Named num [1:2] -0.00748 0.04922
+##  $ coefficients : Named num [1:2] 0.03214 0.00502
 ##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
-##  $ residuals    : Named num [1:1000] 0.648 0.921 -0.847 1.131 2.021 ...
+##  $ residuals    : Named num [1:1000] -0.725 -0.726 -0.202 -1.264 -0.609 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ effects      : Named num [1:1000] 0.261 -1.588 -0.873 1.096 2.076 ...
+##  $ effects      : Named num [1:1000] -1.02 0.16 -0.2 -1.253 -0.597 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;(Intercept)&quot; &quot;x&quot; &quot;&quot; &quot;&quot; ...
 ##  $ rank         : int 2
-##  $ fitted.values: Named num [1:1000] 0.06531 -0.00486 0.00348 0.0209 -0.13819 ...
+##  $ fitted.values: Named num [1:1000] 0.0319 0.0294 0.0368 0.0349 0.0344 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##  $ assign       : int [1:2] 0 1
 ##  $ qr           :List of 5
@@ -1101,7 +1103,7 @@ str(r)</code></pre>
 ##   .. .. ..$ : chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##   .. .. ..$ : chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
 ##   .. ..- attr(*, &quot;assign&quot;)= int [1:2] 0 1
-##   ..$ qraux: num [1:2] 1.03 1
+##   ..$ qraux: num [1:2] 1.03 1.02
 ##   ..$ pivot: int [1:2] 1 2
 ##   ..$ tol  : num 1e-07
 ##   ..$ rank : int 2
@@ -1124,8 +1126,8 @@ str(r)</code></pre>
 ##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
 ##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;y&quot; &quot;x&quot;
 ##  $ model        :'data.frame':   1000 obs. of  2 variables:
-##   ..$ y: num [1:1000] 0.713 0.917 -0.844 1.152 1.882 ...
-##   ..$ x: num [1:1000] 1.4787 0.0533 0.2228 0.5766 -2.6554 ...
+##   ..$ y: num [1:1000] -0.693 -0.697 -0.165 -1.229 -0.575 ...
+##   ..$ x: num [1:1000] -0.0507 -0.5458 0.9301 0.5413 0.4596 ...
 ##   ..- attr(*, &quot;terms&quot;)=Classes 'terms', 'formula' length 3 y ~ x
 ##   .. .. ..- attr(*, &quot;variables&quot;)= language list(y, x)
 ##   .. .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
@@ -2843,11 +2845,286 @@ teachers[setDT(read_excel(
 </div>
 <div id="regressions" class="section level2">
 <h2><span class="header-section-number">3.4</span> Regressions</h2>
-<div id="ols-lm-predictcoeftestsummary" class="section level3">
-<h3><span class="header-section-number">3.4.1</span> OLS (<code>lm</code>) / <code>predict</code>/<code>coeftest</code>/<code>summary</code></h3>
+<p>OK, enough data manipulation for now. Let’s get to some actual analysis, for cryin’ out loud!</p>
+<p>We of course don’t have any experimental or quasi-experimental data here, so we’ll only be able to tease out correlations from our data. But we do have enough data to illustrate the basics of typical regression techniques, so here we go!</p>
+<div id="ols" class="section level3">
+<h3><span class="header-section-number">3.4.1</span> OLS</h3>
+<p>Most linear regressions in R are handled by the <code>lm</code> function (stands for <strong>l</strong>inear <strong>m</strong>odel).</p>
+<p>Let’s run a very simple regression – the most basic regression testing what the gender pay gap is. Like any of the other typical functions we’ve been using, we run <code>lm</code> in <code>j</code> of our <code>data.table</code>.</p>
+<pre class="r"><code>##no frills regression
+teachers[ , lm(pay_rate ~ gender)]</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pay_rate ~ gender)
+## 
+## Coefficients:
+## (Intercept)      genderM  
+##     68624.9       -935.3</code></pre>
+<p>The basic output of <code>lm</code> tells us 1) the regression we ran and 2) the point estimates of the coefficients. This is nice, but I find it rather uninformative – crucially, the standard errors are missing. But fear not! We’re only seeing the surface of what <code>lm</code> does.</p>
+<pre class="r"><code>#now we assign the output of lm so
+#  we can explore it in a bit more detail
+gender_reg &lt;- teachers[ , lm(pay_rate ~ gender)]
+str(gender_reg)</code></pre>
+<pre><code>## List of 13
+##  $ coefficients : Named num [1:2] 68625 -935
+##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;genderM&quot;
+##  $ residuals    : Named num [1:6652] 7836 -21931 -23266 -919 -19680 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:6652] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
+##  $ effects      : Named num [1:6652] -5576090 -34041 -23198 -851 -19612 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:6652] &quot;(Intercept)&quot; &quot;genderM&quot; &quot;&quot; &quot;&quot; ...
+##  $ rank         : int 2
+##  $ fitted.values: Named num [1:6652] 68625 68625 68625 68625 68625 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:6652] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
+##  $ assign       : int [1:2] 0 1
+##  $ qr           :List of 5
+##   ..$ qr   : num [1:6652, 1:2] -81.5598 0.0123 0.0123 0.0123 0.0123 ...
+##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. ..$ : chr [1:6652] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
+##   .. .. ..$ : chr [1:2] &quot;(Intercept)&quot; &quot;genderM&quot;
+##   .. ..- attr(*, &quot;assign&quot;)= int [1:2] 0 1
+##   .. ..- attr(*, &quot;contrasts&quot;)=List of 1
+##   .. .. ..$ gender: chr &quot;contr.treatment&quot;
+##   ..$ qraux: num [1:2] 1.01 1.01
+##   ..$ pivot: int [1:2] 1 2
+##   ..$ tol  : num 1e-07
+##   ..$ rank : int 2
+##   ..- attr(*, &quot;class&quot;)= chr &quot;qr&quot;
+##  $ df.residual  : int 6650
+##  $ contrasts    :List of 1
+##   ..$ gender: chr &quot;contr.treatment&quot;
+##  $ xlevels      :List of 1
+##   ..$ gender: chr [1:2] &quot;F&quot; &quot;M&quot;
+##  $ call         : language lm(formula = pay_rate ~ gender)
+##  $ terms        :Classes 'terms', 'formula' length 3 pay_rate ~ gender
+##   .. ..- attr(*, &quot;variables&quot;)= language list(pay_rate, gender)
+##   .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
+##   .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. .. ..$ : chr [1:2] &quot;pay_rate&quot; &quot;gender&quot;
+##   .. .. .. ..$ : chr &quot;gender&quot;
+##   .. ..- attr(*, &quot;term.labels&quot;)= chr &quot;gender&quot;
+##   .. ..- attr(*, &quot;order&quot;)= int 1
+##   .. ..- attr(*, &quot;intercept&quot;)= int 1
+##   .. ..- attr(*, &quot;response&quot;)= int 1
+##   .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: 0x2387b10&gt; 
+##   .. ..- attr(*, &quot;predvars&quot;)= language list(pay_rate, gender)
+##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;character&quot;
+##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;pay_rate&quot; &quot;gender&quot;
+##  $ model        :'data.frame':   6652 obs. of  2 variables:
+##   ..$ pay_rate: int [1:6652] 76461 46694 45359 67706 48945 49615 65121 83382 75850 59532 ...
+##   ..$ gender  : chr [1:6652] &quot;F&quot; &quot;F&quot; &quot;F&quot; &quot;F&quot; ...
+##   ..- attr(*, &quot;terms&quot;)=Classes 'terms', 'formula' length 3 pay_rate ~ gender
+##   .. .. ..- attr(*, &quot;variables&quot;)= language list(pay_rate, gender)
+##   .. .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
+##   .. .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. .. .. ..$ : chr [1:2] &quot;pay_rate&quot; &quot;gender&quot;
+##   .. .. .. .. ..$ : chr &quot;gender&quot;
+##   .. .. ..- attr(*, &quot;term.labels&quot;)= chr &quot;gender&quot;
+##   .. .. ..- attr(*, &quot;order&quot;)= int 1
+##   .. .. ..- attr(*, &quot;intercept&quot;)= int 1
+##   .. .. ..- attr(*, &quot;response&quot;)= int 1
+##   .. .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: 0x2387b10&gt; 
+##   .. .. ..- attr(*, &quot;predvars&quot;)= language list(pay_rate, gender)
+##   .. .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;character&quot;
+##   .. .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;pay_rate&quot; &quot;gender&quot;
+##  - attr(*, &quot;class&quot;)= chr &quot;lm&quot;</code></pre>
+<p>We can see from <code>str</code> that <code>lm</code> is a <code>list</code> with a long set of components. The output is a bit information overload; we can hone in on some important details by tinkering with our <code>gender_reg</code> object some more:</p>
+<pre class="r"><code>names(gender_reg)</code></pre>
+<pre><code>##  [1] &quot;coefficients&quot;  &quot;residuals&quot;     &quot;effects&quot;       &quot;rank&quot;         
+##  [5] &quot;fitted.values&quot; &quot;assign&quot;        &quot;qr&quot;            &quot;df.residual&quot;  
+##  [9] &quot;contrasts&quot;     &quot;xlevels&quot;       &quot;call&quot;          &quot;terms&quot;        
+## [13] &quot;model&quot;</code></pre>
+<p>Our <code>gender_reg</code> object is actually pretty complicate! Just by running <code>lm</code>, we’re given back all sorts of essential results about the relationship between <code>pay_rate</code> and <code>gender</code>:</p>
+<ul>
+<li><code>coefficients</code> are of course the coefficients of the regression. We can access them with <code>gender_reg$coefficients</code>.</li>
+<li><code>residuals</code> are of course the residuals – <code>actual - predicted</code> value for each observation.</li>
+<li><code>effects</code> are “the uncorrelated single-degree-of-freedom values obtained by projecting the data onto the successive orthogonal subspaces generated by the QR decomposition during the fitting process.” (I have no idea what this means)</li>
+<li><code>rank</code> should be equal to the number of coefficients (including the intercept), unless there is a multicollinearity problem.</li>
+<li><code>fitted.values</code> are the <code>y_hat</code>, the predicted <code>pay_rate</code> produced by the model for each observation.</li>
+<li><code>assign</code> helps map the matrix of regressors to the formula (I’ve never used this)</li>
+<li><code>qr</code> is the QR decomposition matrix associated with the regression (I’ve never used this)</li>
+<li><code>df.residual</code> is residual degrees of freedom (<code>= n - k</code>), where <code>n</code> is the total observations and <code>k</code> is the number of regressors</li>
+<li><code>contrasts</code> tell which contrasts were used (contrasts are levels of discrete variables)</li>
+<li><code>xlevels</code> gives the levels of the factors (discrete variables) that we included – for <code>gender_reg</code>, this is <code>F</code> and <code>M</code>, e.g.</li>
+<li><code>call</code> stores the regression we ran as a call to <code>lm</code></li>
+<li><code>terms</code> gives a bunch of information about the variables we included in the regression – what they are, which are factors, which is the intercept, etc.</li>
+<li><code>model</code> gives the X matrix (predictor matrix)</li>
+</ul>
+<p>It’s wonderful to know that R keeps track of all of this stuff for us, but what about the real meat of our regression – the stars! For this, we’ll use the <code>summary</code> function, which has a method for the output of <code>lm</code> that gives a nice, easily-digested summary of the model we ran:</p>
+<pre class="r"><code>summary(gender_reg)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pay_rate ~ gender)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -68625 -10239   1517   8771  22361 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  68624.9      203.6 337.040   &lt;2e-16 ***
+## genderM       -935.3      388.6  -2.407   0.0161 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 14140 on 6650 degrees of freedom
+## Multiple R-squared:  0.0008702,  Adjusted R-squared:  0.00072 
+## F-statistic: 5.792 on 1 and 6650 DF,  p-value: 0.01613</code></pre>
+<p>This calls attention to some summary statistics about the residuals (5-number-summary, as well as residual standard erro), the predictive power (R squared, multiple R squared, F statistic), but most importantly, it prints the standard error of each coefficient, and the associated two-sided t test results for each coefficient.</p>
+<p>Here, we can see that men are paid on average significantly less (at alpha = .05) than are women among Philadelphia teachers, by about $1,000.</p>
+<p>We spent some time going over the details, so let’s summarize quickly with a comparison to Stata. Here’s the boiled-down version of getting a regression summary in R:</p>
+<pre class="r"><code>teachers[ , summary(lm(pay_rate ~ gender))]</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pay_rate ~ gender)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -68625 -10239   1517   8771  22361 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  68624.9      203.6 337.040   &lt;2e-16 ***
+## genderM       -935.3      388.6  -2.407   0.0161 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 14140 on 6650 degrees of freedom
+## Multiple R-squared:  0.0008702,  Adjusted R-squared:  0.00072 
+## F-statistic: 5.792 on 1 and 6650 DF,  p-value: 0.01613</code></pre>
+<p>In Stata, to do what we just did, one would simply run <code>reg pay_rate gender</code>. Hard to get simpler than that! My sales pitch in favor of R is only that it’s not <em>that</em> much more complicated, and as we saw above, R gives us at-hand access to a slew of summary statistics about the regression that are a bit less transparent to access in Stata.</p>
+<div id="other-covariates" class="section level4">
+<h4><span class="header-section-number">3.4.1.1</span> Other covariates</h4>
+<p>It’s not a stretch to expand our regression to include other covariates to try and tame their influence. Perfect covariates here would be experience and certification, but sadly we’re not so lucky. But we do have a bunch of other school-level covariates we can include. Let’s try a few:</p>
+<pre class="r"><code>#skipping right to the summary
+teachers[ , summary(lm(pay_rate ~ gender + school_pct_male + school_pct_black))]</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pay_rate ~ gender + school_pct_male + school_pct_black)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -69929 -10025   1259   9614  24684 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       66136.6     1904.8  34.722  &lt; 2e-16 ***
+## genderM            -513.0      397.8  -1.290   0.1972    
+## school_pct_male    8317.6     3626.9   2.293   0.0219 *  
+## school_pct_black  -4014.2      588.1  -6.826 9.56e-12 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 14060 on 6312 degrees of freedom
+##   (336 observations deleted due to missingness)
+## Multiple R-squared:  0.008304,   Adjusted R-squared:  0.007833 
+## F-statistic: 17.62 on 3 and 6312 DF,  p-value: 2.188e-11</code></pre>
+<p>Note that we lost a lot of observations because <code>school_pct_male</code> and <code>school_pct_black</code> are frequently missing. This was included in the summary output: <code>(336 observations deleted due to missingness)</code>.</p>
+<p>How do we interpret the results of this regression? The most naive possible conclusion is that mostly-black schools pay their teachers less – i.e., that there’s somehow a causal relationship between student makeup and the wages offered to teachers.</p>
+<p>But we know that the teachers’ contract is fixed district-wide, so each school has no power whatsoever (well, not quite…) over what its teachers are paid. Instead, we’re witnessing the direct result of selection bias. We can get into this more later when we explore plotting.</p>
+</div>
+<div id="interactions" class="section level4">
+<h4><span class="header-section-number">3.4.1.2</span> Interactions</h4>
+<p>Stata handles interactions with the <code>#</code> operator. R, by contrast, uses <code>*</code>. So if we wanted to explore the interaction between <code>gender</code> and <code>school_pct_male</code> (i.e., to allow the slope of <code>school_pct_male</code> to differ by gender), we’d simply run:</p>
+<pre class="r"><code>#In Stata: reg pay_rate gender#school_pct_white
+teachers[ , summary(lm(pay_rate ~ gender*school_pct_white))]</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pay_rate ~ gender * school_pct_white)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -72526  -9521   3577   7368  21002 
+## 
+## Coefficients:
+##                          Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)               68943.1      453.4 152.044   &lt;2e-16 ***
+## genderM                     770.6      880.4   0.875   0.3814    
+## school_pct_white           4297.2     1515.3   2.836   0.0046 ** 
+## genderM:school_pct_white  -3852.0     3205.6  -1.202   0.2296    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 13740 on 3330 degrees of freedom
+##   (3318 observations deleted due to missingness)
+## Multiple R-squared:  0.002439,   Adjusted R-squared:  0.001541 
+## F-statistic: 2.714 on 3 and 3330 DF,  p-value: 0.04332</code></pre>
+<p>The output <code>genderM:school_pct_white</code> is the interaction term – it’s the difference slope of the linear relationship between salary and student gender for female and male teachers. Specifically, the expected pay change for a female teacher from a one-percentage-point increase in the percentage of male students at her school is 43 (we divide by 100 since <code>school_pct_white</code> is measured in proportions, not percentages); for men, the expected pay change is 43 + -39 = 4.</p>
+<p>This is not significant, meaning that the relationship between school whiteness, gender, and pay mainly play out through student ethnicity.</p>
+</div>
+<div id="functions-of-variables" class="section level4">
+<h4><span class="header-section-number">3.4.1.3</span> Functions of variables</h4>
+<p>One of my big pet peeves in Stata is the inability to run something like <code>reg y log(x)</code> – we’re forced to first <em>create</em> a <code>logx</code> variable like <code>gen logx = log(x)</code>. Now we’ve got two objects in memory that are basically the same information! A waste of memory, in addition to being a pain to remember to do this all the time.</p>
+<p>R does not suffer from this inanity. We can simply use functions within the formula specification:</p>
+<pre class="r"><code>#Let's try!
+teachers[ , summary(lm(log(pay_rate) ~ gender))]</code></pre>
+<pre><code>## Error in lm.fit(x, y, offset = offset, singular.ok = singular.ok, ...): NA/NaN/Inf in 'y'</code></pre>
+<pre class="r"><code>#Whoops. Turns out we still have some teachers
+#  who are stored as having pay rate 0:
+teachers[pay_rate == 0, .N]</code></pre>
+<pre><code>## [1] 31</code></pre>
+<pre class="r"><code>#So we need to exclude them because log(0) is -Inf:
+teachers[pay_rate&gt;0, summary(lm(log(pay_rate) ~ gender))]</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log(pay_rate) ~ gender)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.76603 -0.12744  0.04124  0.14091  0.30451 
+## 
+## Coefficients:
+##              Estimate Std. Error  t value Pr(&gt;|t|)    
+## (Intercept) 11.121710   0.002995 3713.032  &lt; 2e-16 ***
+## genderM     -0.018088   0.005708   -3.169  0.00154 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.2075 on 6619 degrees of freedom
+## Multiple R-squared:  0.001515,   Adjusted R-squared:  0.001364 
+## F-statistic: 10.04 on 1 and 6619 DF,  p-value: 0.001538</code></pre>
+<p>It’s a bit harder to interpret the coefficients in a regression with logs and discrete covariates, but the rule is still roughly that the coefficients are percentages. So men are paid about 2% less on average in Philly.</p>
+</div>
+<div id="more-functions-of-variables" class="section level4">
+<h4><span class="header-section-number">3.4.1.4</span> More functions of variables</h4>
+<p>What if we wanted to control not for the <em>combined</em> percentage of black and hispanic students at the school?</p>
+<p>In Stata, we’d have to do something like <code>gen black_hisp = school_pct_black + school_pct_hispanic</code>. And from what we’ve seen so far, <code>lm(pay_rate ~ school_pct_black + school_pct_hispanic)</code> will give us <em>separate</em> coefficients for black and hispanic groups.</p>
+<p>To get variables like this (most commonly, involving simple arithmetic operations like <code>+</code> or <code>*</code>), there’s the special <code>I</code> function for regression formulas. Basically, we surround some operation done on our variables with <code>I()</code>, and whatever results from that will be considered as a single covariate. Watch:</p>
+<pre class="r"><code>teachers[ , summary(lm(pay_rate ~ gender + 
+                         I(school_pct_black + school_pct_hispanic)))]</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = pay_rate ~ gender + I(school_pct_black + school_pct_hispanic))
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -71223  -9740   1986   9112  23446 
+## 
+## Coefficients:
+##                                           Estimate Std. Error t value
+## (Intercept)                                73646.2      602.5 122.243
+## genderM                                     -278.9      458.3  -0.609
+## I(school_pct_black + school_pct_hispanic)  -6876.7      859.7  -7.999
+##                                           Pr(&gt;|t|)    
+## (Intercept)                                &lt; 2e-16 ***
+## genderM                                      0.543    
+## I(school_pct_black + school_pct_hispanic) 1.59e-15 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 13770 on 4509 degrees of freedom
+##   (2140 observations deleted due to missingness)
+## Multiple R-squared:  0.01422,    Adjusted R-squared:  0.01378 
+## F-statistic: 32.52 on 2 and 4509 DF,  p-value: 9.465e-15</code></pre>
+</div>
+</div>
+<div id="predictions-from-a-model" class="section level3">
+<h3><span class="header-section-number">3.4.2</span> Predictions from a model</h3>
+</div>
+<div id="nontrivial-coefficient-tests" class="section level3">
+<h3><span class="header-section-number">3.4.3</span> Nontrivial coefficient tests</h3>
 </div>
 <div id="probitlogit-glm" class="section level3">
-<h3><span class="header-section-number">3.4.2</span> Probit/Logit (<code>glm</code>)</h3>
+<h3><span class="header-section-number">3.4.4</span> Probit/Logit (<code>glm</code>)</h3>
 </div>
 </div>
 <div id="reshaping" class="section level2">
