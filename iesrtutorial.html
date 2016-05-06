@@ -110,7 +110,7 @@ $(document).ready(function () {
 
 <h1 class="title">IES R Tutorial</h1>
 <h4 class="author"><em>Michael Chirico</em></h4>
-<h4 class="date"><em>Compiled May 01, 2016 at 19:23</em></h4>
+<h4 class="date"><em>Compiled May 05, 2016 at 21:09</em></h4>
 
 </div>
 
@@ -690,20 +690,20 @@ paste(first, last)</code></pre>
 <p>The most common kind of random numbers that people want are uniform draws and normal draws.</p>
 <pre class="r"><code>#generate 10 U[0, 1] draws
 runif(10)</code></pre>
-<pre><code>##  [1] 0.4484506 0.9587040 0.3664082 0.4827379 0.2155542 0.1822516 0.3830479
-##  [8] 0.8747090 0.9134132 0.2033546</code></pre>
+<pre><code>##  [1] 0.85385260 0.51058884 0.93568976 0.03967597 0.53370344 0.98503295
+##  [7] 0.74125952 0.40569173 0.88729405 0.89682322</code></pre>
 <pre class="r"><code>#generate 10 U[3, 5] draws
 runif(10, min = 3, max = 5)</code></pre>
-<pre><code>##  [1] 3.527960 4.143425 4.772825 4.907874 3.065329 3.370358 4.683093
-##  [8] 4.392359 4.888491 4.841653</code></pre>
+<pre><code>##  [1] 3.792599 3.558766 3.628338 3.754679 4.707284 3.488482 4.275660
+##  [8] 4.382397 4.790437 3.674610</code></pre>
 <pre class="r"><code>#generate 10 N(0, 1) draws
 rnorm(10)</code></pre>
-<pre><code>##  [1] -0.1867084 -1.3828251  0.4185049  0.6483878 -2.1352393  1.1911969
-##  [7] -2.1444211 -0.5332129 -0.8819970  0.2397389</code></pre>
+<pre><code>##  [1] -0.04582084  1.62310904  0.54418907 -0.73578939  0.28602719
+##  [6]  0.70111505 -0.39656190 -0.37613680 -0.26661629 -0.25656246</code></pre>
 <pre class="r"><code>#generate 10 N(3, 5) draws
 rnorm(10, mean = 3, sd = 5)</code></pre>
-<pre><code>##  [1]  0.04794121  3.07487600  3.47644844 -0.14977744  2.87537446
-##  [6]  7.65443650 -3.83322502 20.35715804  6.49058022 15.35827787</code></pre>
+<pre><code>##  [1]  2.1942649  2.2442607  1.6871189  1.3923098  7.4081042  6.8769115
+##  [7]  5.4610406  0.1349045  3.5884710 -0.4918636</code></pre>
 <p>These examples highlight the common format of random number generators in R. To get random numbers from a distribution, there is probably a function named like <code>r</code><strong><code>dist</code></strong>, where <strong><code>dist</code></strong> is an abbreviation for the distribution (here, <strong>unif</strong>orm and <strong>norm</strong>al). The first argument is the number of draws; the rest of the arguments are parameters.</p>
 <p>Here is a complete table of all of the common distributions built in to R, and the function used to invoke their random number generator (RNG):</p>
 <table>
@@ -855,13 +855,13 @@ qnorm(c(.005, .025, .05))</code></pre>
 <p>As always, it’s easiest to see with some examples:</p>
 <pre class="r"><code>#A permutation of 1:5
 sample(5)</code></pre>
-<pre><code>## [1] 4 2 5 3 1</code></pre>
+<pre><code>## [1] 5 2 4 1 3</code></pre>
 <pre class="r"><code>#A size-3 subset of 1:5
 sample(5, 3)</code></pre>
-<pre><code>## [1] 5 4 1</code></pre>
+<pre><code>## [1] 5 1 2</code></pre>
 <pre class="r"><code>#A size-5 subset of 1:5, with replacement
 sample(5, 5, replace = TRUE)</code></pre>
-<pre><code>## [1] 5 2 3 3 2</code></pre>
+<pre><code>## [1] 4 1 2 3 4</code></pre>
 <pre class="r"><code>#A weighted sample of 1:5, heavily weighting 1
 sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></pre>
 <pre><code>## [1] 1 1 1 1 1</code></pre>
@@ -869,10 +869,10 @@ sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></
 <pre class="r"><code>#Flip 10 coins, get the percentage heads
 flips &lt;- sample(c(&quot;H&quot;, &quot;T&quot;), 10, replace = TRUE)
 mean(flips == &quot;H&quot;)</code></pre>
-<pre><code>## [1] 0.5</code></pre>
+<pre><code>## [1] 0.6</code></pre>
 <pre class="r"><code>#Roll a pair of dice and add them
 sum(sample(6, 2, replace = TRUE))</code></pre>
-<pre><code>## [1] 9</code></pre>
+<pre><code>## [1] 5</code></pre>
 <pre class="r"><code>#create a deck of labeled cards:
 #  (I copy-pasted the text for the suits from
 #   Wikipedia, but we could have used S/H/D/C:
@@ -887,7 +887,7 @@ deck</code></pre>
 ## [45] &quot;7♣&quot;  &quot;8♣&quot;  &quot;9♣&quot;  &quot;10♣&quot; &quot;J♣&quot;  &quot;Q♣&quot;  &quot;K♣&quot;  &quot;A♣&quot;</code></pre>
 <pre class="r"><code>#Now draw a poker hand
 sample(deck, 5)</code></pre>
-<pre><code>## [1] &quot;J♠&quot;  &quot;Q♣&quot;  &quot;10♥&quot; &quot;4♠&quot;  &quot;2♠&quot;</code></pre>
+<pre><code>## [1] &quot;10♦&quot; &quot;5♠&quot;  &quot;J♣&quot;  &quot;5♥&quot;  &quot;3♦&quot;</code></pre>
 </div>
 <div id="replicate" class="section level3">
 <h3><span class="header-section-number">2.6.3</span> <code>replicate</code></h3>
@@ -906,7 +906,7 @@ simulations &lt;-
 #How often does a flush happen?
 #  True frequency is 0.1965%
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.0012</code></pre>
+<pre><code>## [1] 0.0028</code></pre>
 <pre class="r"><code>#What about a pair (just two cards match)?
 #  true frequency: 42%
 simulations &lt;- 
@@ -916,7 +916,7 @@ simulations &lt;-
     sum(duplicated(faces)) == 1 #one pair if there's exactly _one_ match
   })
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.4206</code></pre>
+<pre><code>## [1] 0.4163</code></pre>
 </div>
 <div id="set.seed" class="section level3">
 <h3><span class="header-section-number">2.6.4</span> <code>set.seed</code></h3>
@@ -1085,14 +1085,14 @@ x &lt;- rnorm(1000)
 r &lt;- lm(y ~ x)
 str(r)</code></pre>
 <pre><code>## List of 12
-##  $ coefficients : Named num [1:2] 0.017 0.0182
+##  $ coefficients : Named num [1:2] -0.00748 0.04922
 ##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
-##  $ residuals    : Named num [1:1000] 0.0872 0.3451 -1.598 -0.1727 -0.3581 ...
+##  $ residuals    : Named num [1:1000] 0.648 0.921 -0.847 1.131 2.021 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ effects      : Named num [1:1000] -0.549 -0.563 -1.606 -0.176 -0.355 ...
+##  $ effects      : Named num [1:1000] 0.261 -1.588 -0.873 1.096 2.076 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;(Intercept)&quot; &quot;x&quot; &quot;&quot; &quot;&quot; ...
 ##  $ rank         : int 2
-##  $ fitted.values: Named num [1:1000] 0.04022 0.02598 0.02617 0.01883 0.00858 ...
+##  $ fitted.values: Named num [1:1000] 0.06531 -0.00486 0.00348 0.0209 -0.13819 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##  $ assign       : int [1:2] 0 1
 ##  $ qr           :List of 5
@@ -1101,7 +1101,7 @@ str(r)</code></pre>
 ##   .. .. ..$ : chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##   .. .. ..$ : chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
 ##   .. ..- attr(*, &quot;assign&quot;)= int [1:2] 0 1
-##   ..$ qraux: num [1:2] 1.03 1.01
+##   ..$ qraux: num [1:2] 1.03 1
 ##   ..$ pivot: int [1:2] 1 2
 ##   ..$ tol  : num 1e-07
 ##   ..$ rank : int 2
@@ -1124,8 +1124,8 @@ str(r)</code></pre>
 ##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
 ##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;y&quot; &quot;x&quot;
 ##  $ model        :'data.frame':   1000 obs. of  2 variables:
-##   ..$ y: num [1:1000] 0.127 0.371 -1.572 -0.154 -0.35 ...
-##   ..$ x: num [1:1000] 1.279 0.495 0.505 0.101 -0.464 ...
+##   ..$ y: num [1:1000] 0.713 0.917 -0.844 1.152 1.882 ...
+##   ..$ x: num [1:1000] 1.4787 0.0533 0.2228 0.5766 -2.6554 ...
 ##   ..- attr(*, &quot;terms&quot;)=Classes 'terms', 'formula' length 3 y ~ x
 ##   .. .. ..- attr(*, &quot;variables&quot;)= language list(y, x)
 ##   .. .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
@@ -1188,6 +1188,7 @@ list.files(&quot;./data&quot;, full.names = TRUE)</code></pre>
 #  file name has spaces, which is a pain)
 command = paste0('head ', '&quot;./data/School Profiles Teacher Attendance 2013-2014.TXT&quot;')</code></pre>
 <pre class="r"><code>system(command)</code></pre>
+<pre><code>## [1] &quot;/home/michael/Documents/iesrtutorial&quot;</code></pre>
 <pre><code>## ULCS_NO,SCHOOL_YEAR,SCH_TEACHER_ATTEND,SDP_TEACHER_ATTEND,SCHOOL_ID
 ## &quot;8350&quot;,&quot;2013-2014&quot;,92.7,93.4,&quot;835&quot;
 ## &quot;7320&quot;,&quot;2013-2014&quot;,95,93.4,&quot;732&quot;
@@ -1571,6 +1572,10 @@ salaries[ , table(pay_rate_type, organization_level)]</code></pre>
 <p>Carrying this out will introduce a few new things:</p>
 <ul>
 <li>Grouping. We’re going to <em>group by <code>title_description</code></em>, and count observations in each group. If I remember correctly, in Stata, this would be like <code>by title_description: count</code>. When <code>data.table</code> does this, you should think of your <code>data.table</code> being split into a whole bunch of smaller <code>data.table</code>s, each of which has all of the observations for exactly one level of <code>title_description</code>.</li>
+</ul>
+<p>Here’s an illustration:</p>
+<p><img src="data:image/png;base64,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" title="grouping split" alt="group_split" /></p>
+<ul>
 <li><code>.N</code>. <code>data.table</code> uses the abbreviation <code>.N</code> to stand for “number of observations”. It is defined <em>locally</em>, within each group, so all of the many <code>data.table</code>s mentioned above has its own <code>.N</code>. This is basically like <code>count</code> in Stata.</li>
 <li><code>order</code>. We can arrange the rows of a table by using <code>order</code> in the first argument (<code>i</code>); use a minus sign (<code>-</code>) to go in decreasing order, otherwise it’s increasing order (like we saw with <code>sort</code>).</li>
 <li>Chaining. We can tack on more and more <code>[]</code> to any given <code>data.table</code> operation to hone or continue or adjust our outcomes beyond what we could do in a single call to <code>[]</code>. The general syntax is <code>DT[...][...][...][...]</code>, where each <code>[...]</code> consists of doing some manipulation/subset/aggregation, etc.</li>
@@ -2374,6 +2379,8 @@ school_gender &lt;-
              col_names = c(&quot;&quot;, &quot;school_id&quot;, &quot;school_name&quot;, &quot;grade&quot;,
                            &quot;total_enrolled&quot;, &quot;count_female&quot;,
                            &quot;pct_female&quot;, &quot;count_male&quot;, &quot;pct_male&quot;))</code></pre>
+<pre><code>## Warning in read_xls(path, sheet, col_names, col_types, na, skip): Found
+## blank columns: 1</code></pre>
 <div id="setdt" class="section level4">
 <h4><span class="header-section-number">3.3.1.1</span> <code>setDT</code></h4>
 <p>Now that we’ve ventured outside of the <code>data.table</code> world, we’ll have to deal with a minor annoyance – <code>data.frame</code>s.</p>
@@ -2530,7 +2537,6 @@ school_gender[ , .SD[1], by = school_id]</code></pre>
 ## 217:       856 ALL GRADES            207
 ## 218:       878 ALL GRADES            311</code></pre>
 <p>This is mainly useful for what we’re trying to do with <code>as.numeric</code>, where we want to apply the same function to many columns. Recall from earlier that the <code>*apply</code> functions are our friends when it comes to doing repetitive things. When we do <code>lapply(DT, sum)</code>, we apply <code>sum</code> to every column of <code>DT</code>. For <code>as.numeric</code>, it’s much the same:</p>
-<p>school_gende</p>
 <pre class="r"><code>#Troublesome. We don't want to convert
 #  most of the columns, and we go too far here
 school_gender[ , lapply(.SD, as.numeric)]</code></pre>
@@ -2581,32 +2587,8 @@ school_gender[ , lapply(.SD, as.numeric),
 #  No, not quite. We have done the calculation,
 #  but we haven't _assigned_ the output to anything.
 #  To do that, we need := again.
-print(school_gender, class = TRUE)</code></pre>
-<pre><code>##      school_id                                 school_name      grade
-##          &lt;num&gt;                                      &lt;char&gt;     &lt;char&gt;
-##   1:       101                    John Bartram High School ALL GRADES
-##   2:       102               West Philadelphia High School ALL GRADES
-##   3:       103                   High School of the Future ALL GRADES
-##   4:       105 Paul Robeson High School for Human Services ALL GRADES
-##  ---                                                                 
-## 214:       842                      Stephen Decatur School ALL GRADES
-## 215:       843                     Joseph Greenberg School ALL GRADES
-## 216:       844                   William H. Loesche School ALL GRADES
-## 217:       856                         The Workshop School ALL GRADES
-## 218:       878                Philadelphia Virtual Academy ALL GRADES
-##      total_enrolled count_female pct_female count_male pct_male
-##               &lt;num&gt;        &lt;num&gt;      &lt;num&gt;      &lt;num&gt;    &lt;num&gt;
-##   1:            710          297   0.418310        413 0.581690
-##   2:            538          242   0.449814        296 0.550186
-##   3:            518          243   0.469112        275 0.530888
-##   4:            294          169   0.574830        125 0.425170
-##  ---                                                           
-## 214:           1030          478   0.464078        552 0.535922
-## 215:            738          368   0.498645        370 0.501355
-## 216:            782          368   0.470588        414 0.529412
-## 217:            207           79   0.381643        128 0.618357
-## 218:            311          191   0.614148        120 0.385852</code></pre>
-<pre class="r"><code>num_cols &lt;- c(&quot;count_female&quot;, &quot;pct_female&quot;,
+
+num_cols &lt;- c(&quot;count_female&quot;, &quot;pct_female&quot;,
               &quot;count_male&quot;, &quot;pct_male&quot;)
 #**NOTE** we have to surround num_cols on the left with
 #  parentheses so that data.table knows we're not
@@ -2638,6 +2620,224 @@ print(school_gender, class = TRUE)</code></pre>
 ## 216:            782          368   0.470588        414 0.529412
 ## 217:            207           79   0.381643        128 0.618357
 ## 218:            311          191   0.614148        120 0.385852</code></pre>
+</div>
+<div id="merging-and-repeating" class="section level4">
+<h4><span class="header-section-number">3.3.1.3</span> Merging, and Repeating</h4>
+<p>Now, we can add this data to our teacher data file from earlier. How? A merge of course!</p>
+<p>First, unfortunately, the school codes in <code>school_gender</code> are missing the trailing 0, so we have to fix this.</p>
+<pre class="r"><code>school_gender[ , school_id := paste0(school_id, &quot;0&quot;)]
+
+teachers[school_gender, 
+         school_pct_male := i.pct_male, 
+         on = c(home_organization = &quot;school_id&quot;)]</code></pre>
+<p>The school demographics Excel file also contains data on ELL status, IEP status, ethnicity, and economic disadvantage. The approach to adding this is basically the same, so let’s do it all at once.</p>
+<pre class="r"><code>#For conciseness, we'll do all of the data manipulation we did
+#  in addition to reading in the gender sheet all at once here
+school_ell &lt;- 
+  setDT(read_excel(&quot;./data/2015-2016 Enr Dem (Suppressed).xls&quot;, 
+                   sheet = &quot;ELL&quot;, skip = 6,
+                   col_names = c(&quot;&quot;, &quot;school_id&quot;, &quot;school_name&quot;, &quot;grade&quot;,
+                                 &quot;total_enrolled&quot;, &quot;count_ell&quot;, &quot;pct_ell&quot;, 
+                                 &quot;count_non_ell&quot;, &quot;pct_non_ell&quot;))
+        )[grade == &quot;ALL GRADES&quot;
+          #we're only going to keep pct_ell, so only convert that;
+          #  also convert school code
+          ][ , c(&quot;school_id&quot;, &quot;pct_ell&quot;) := 
+               .(paste0(school_id, &quot;0&quot;), as.numeric(pct_ell))]</code></pre>
+<pre><code>## DEFINEDNAME: 21 00 00 01 0b 00 00 00 03 00 00 00 00 00 00 0d 3b 01 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 05 00 00 00 00 00 00 0d 3b 03 00 05 00 05 00 01 00 12 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 02 00 00 00 00 00 00 0d 3b 00 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 04 00 00 00 00 00 00 0d 3b 02 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 03 00 00 00 00 00 00 0d 3b 01 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 05 00 00 00 00 00 00 0d 3b 03 00 05 00 05 00 01 00 12 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 02 00 00 00 00 00 00 0d 3b 00 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 04 00 00 00 00 00 00 0d 3b 02 00 05 00 05 00 01 00 08 00</code></pre>
+<pre><code>## Warning in read_xls(path, sheet, col_names, col_types, na, skip): Found
+## blank columns: 1</code></pre>
+<pre><code>## DEFINEDNAME: 21 00 00 01 0b 00 00 00 03 00 00 00 00 00 00 0d 3b 01 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 05 00 00 00 00 00 00 0d 3b 03 00 05 00 05 00 01 00 12 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 02 00 00 00 00 00 00 0d 3b 00 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 04 00 00 00 00 00 00 0d 3b 02 00 05 00 05 00 01 00 08 00</code></pre>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+<pre class="r"><code>#note: ELL status is commonly missing
+school_ell[is.na(pct_ell), .N]</code></pre>
+<pre><code>## [1] 104</code></pre>
+<pre class="r"><code>#merge
+teachers[school_ell, 
+         school_pct_ell := i.pct_ell,
+         on = c(home_organization = &quot;school_id&quot;)]
+
+##NOW: IEP
+## Note: since all we're doing is selecting a column, we don't
+##   even have to store the Excel sheet as a new data set --
+##   we can pass the intermediat result directly to the
+##   merge with teachers, like so:
+teachers[setDT(read_excel(
+  &quot;./data/2015-2016 Enr Dem (Suppressed).xls&quot;, 
+  sheet = &quot;IEP&quot;, skip = 6,
+  col_names = c(&quot;&quot;, &quot;school_id&quot;, &quot;school_name&quot;, &quot;grade&quot;,
+                &quot;total_enrolled&quot;, &quot;count_iep&quot;, &quot;pct_iep&quot;, 
+                &quot;count_non_iep&quot;, &quot;pct_non_iep&quot;))
+        )[grade == &quot;ALL GRADES&quot;
+          ][ , c(&quot;school_id&quot;, &quot;pct_iep&quot;) := 
+               .(paste0(school_id, &quot;0&quot;), as.numeric(pct_iep))],
+  school_pct_iep := i.pct_iep, 
+  on = c(home_organization = &quot;school_id&quot;)]</code></pre>
+<pre><code>## DEFINEDNAME: 21 00 00 01 0b 00 00 00 03 00 00 00 00 00 00 0d 3b 01 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 05 00 00 00 00 00 00 0d 3b 03 00 05 00 05 00 01 00 12 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 02 00 00 00 00 00 00 0d 3b 00 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 04 00 00 00 00 00 00 0d 3b 02 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 03 00 00 00 00 00 00 0d 3b 01 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 05 00 00 00 00 00 00 0d 3b 03 00 05 00 05 00 01 00 12 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 02 00 00 00 00 00 00 0d 3b 00 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 04 00 00 00 00 00 00 0d 3b 02 00 05 00 05 00 01 00 08 00</code></pre>
+<pre><code>## Warning in read_xls(path, sheet, col_names, col_types, na, skip): Found
+## blank columns: 1</code></pre>
+<pre><code>## DEFINEDNAME: 21 00 00 01 0b 00 00 00 03 00 00 00 00 00 00 0d 3b 01 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 05 00 00 00 00 00 00 0d 3b 03 00 05 00 05 00 01 00 12 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 02 00 00 00 00 00 00 0d 3b 00 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 04 00 00 00 00 00 00 0d 3b 02 00 05 00 05 00 01 00 08 00</code></pre>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+<pre class="r"><code>##NOW: Ethnicity
+##  Ethnicity is not binary, so things will be a little bit more involved.
+##  we'll use the `:=`() form of assignment here. Basically, we can
+##  treat := like a function (surrounded by backticks ``), since, 
+##  technically, it IS a function
+teachers[setDT(read_excel(
+  &quot;./data/2015-2016 Enr Dem (Suppressed).xls&quot;, 
+  sheet = &quot;Ethnicity&quot;, skip = 6,
+  col_names = c(&quot;&quot;, &quot;school_id&quot;, &quot;school_name&quot;, 
+                &quot;grade&quot;, &quot;total_enrolled&quot;, 
+                &quot;count_amerindian&quot;, &quot;pct_amerindian&quot;, 
+                &quot;count_asian&quot;, &quot;pct_asian&quot;, 
+                &quot;count_black&quot;, &quot;pct_black&quot;,
+                &quot;count_hispanic&quot;, &quot;pct_hispanic&quot;, 
+                &quot;count_multi&quot;, &quot;pct_multi&quot;, 
+                &quot;count_pacific&quot;, &quot;pct_pacific&quot;,
+                &quot;count_white&quot;, &quot;pct_white&quot;))
+        )[grade == &quot;ALL GRADES&quot;
+          ][ , c(&quot;school_id&quot;,
+                 paste0(&quot;pct_&quot;, c(&quot;asian&quot;, &quot;black&quot;, 
+                                  &quot;hispanic&quot;, &quot;white&quot;))) := 
+               #we could do this with lapply, but it looks ugly...
+               .(paste0(school_id, &quot;0&quot;), as.numeric(pct_asian),
+                 as.numeric(pct_black), as.numeric(pct_hispanic),
+                 as.numeric(pct_white))],
+  `:=`(school_pct_asian = i.pct_asian,
+       school_pct_black = i.pct_black,
+       school_pct_hispanic = i.pct_hispanic,
+       school_pct_white = i.pct_white),
+  on = c(home_organization = &quot;school_id&quot;)]</code></pre>
+<pre><code>## DEFINEDNAME: 21 00 00 01 0b 00 00 00 03 00 00 00 00 00 00 0d 3b 01 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 05 00 00 00 00 00 00 0d 3b 03 00 05 00 05 00 01 00 12 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 02 00 00 00 00 00 00 0d 3b 00 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 04 00 00 00 00 00 00 0d 3b 02 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 03 00 00 00 00 00 00 0d 3b 01 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 05 00 00 00 00 00 00 0d 3b 03 00 05 00 05 00 01 00 12 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 02 00 00 00 00 00 00 0d 3b 00 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 04 00 00 00 00 00 00 0d 3b 02 00 05 00 05 00 01 00 08 00</code></pre>
+<pre><code>## Warning in read_xls(path, sheet, col_names, col_types, na, skip): Found
+## blank columns: 1</code></pre>
+<pre><code>## DEFINEDNAME: 21 00 00 01 0b 00 00 00 03 00 00 00 00 00 00 0d 3b 01 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 05 00 00 00 00 00 00 0d 3b 03 00 05 00 05 00 01 00 12 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 02 00 00 00 00 00 00 0d 3b 00 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 04 00 00 00 00 00 00 0d 3b 02 00 05 00 05 00 01 00 08 00</code></pre>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+<pre><code>## Warning: NAs introduced by coercion
+
+## Warning: NAs introduced by coercion
+
+## Warning: NAs introduced by coercion</code></pre>
+<pre class="r"><code>#Whew, what a mess! If you prefer, of course, you
+#  can always do this step by step.
+
+#Lastly, economically disadvantaged.
+#  this sheet is formatted a bit differently,
+#  so our merge must adapt accordingly.
+#  In particular, there are more blank columns.
+teachers[setDT(read_excel(
+  &quot;./data/2015-2016 Enr Dem (Suppressed).xls&quot;, 
+  sheet = &quot;Econ Disadv&quot;, skip = 6,
+  col_names = c(&quot;&quot;, &quot;school_id&quot;, &quot;school_name&quot;, 
+                &quot;grade&quot;, &quot;pct_disadv&quot;, rep(&quot;&quot;, 4)))
+        )[ , school_id := paste0(school_id, &quot;0&quot;)],
+  school_pct_disadv := 100 * i.pct_disadv,
+  on = c(home_organization = &quot;school_id&quot;)]</code></pre>
+<pre><code>## DEFINEDNAME: 21 00 00 01 0b 00 00 00 03 00 00 00 00 00 00 0d 3b 01 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 05 00 00 00 00 00 00 0d 3b 03 00 05 00 05 00 01 00 12 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 02 00 00 00 00 00 00 0d 3b 00 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 04 00 00 00 00 00 00 0d 3b 02 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 03 00 00 00 00 00 00 0d 3b 01 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 05 00 00 00 00 00 00 0d 3b 03 00 05 00 05 00 01 00 12 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 02 00 00 00 00 00 00 0d 3b 00 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 04 00 00 00 00 00 00 0d 3b 02 00 05 00 05 00 01 00 08 00</code></pre>
+<pre><code>## Warning in read_xls(path, sheet, col_names, col_types, na, skip): Found
+## blank columns: 1,6,7,8,9</code></pre>
+<pre><code>## DEFINEDNAME: 21 00 00 01 0b 00 00 00 03 00 00 00 00 00 00 0d 3b 01 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 05 00 00 00 00 00 00 0d 3b 03 00 05 00 05 00 01 00 12 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 02 00 00 00 00 00 00 0d 3b 00 00 05 00 05 00 01 00 08 00 
+## DEFINEDNAME: 21 00 00 01 0b 00 00 00 04 00 00 00 00 00 00 0d 3b 02 00 05 00 05 00 01 00 08 00</code></pre>
+<pre class="r"><code>teachers</code></pre>
+<pre><code>##          last_name first_name pay_rate_type pay_rate title_description
+##    1:       ABBOTT      JOYCE      SALARIED    76461 TEACHER,FULL TIME
+##    2:     ABDALLAH JUWAYRIYAH      SALARIED    46694 TEACHER,FULL TIME
+##    3:  ABDEL-JALIL    GHADEER      SALARIED    45359 TEACHER,FULL TIME
+##    4:  ABDUL BASIT    BARBARA      SALARIED    67706 TEACHER,FULL TIME
+##    5: ABDUL-LATEEF     VILLIA      SALARIED    48945 TEACHER,FULL TIME
+##   ---                                                                 
+## 6648:      ZUNGOLO    WILLIAM      SALARIED    90051 TEACHER,FULL TIME
+## 6649:        ZWICK      KEVIN      SALARIED    46694 TEACHER,FULL TIME
+## 6650:       ZWOLAK       PAUL      SALARIED    54364 TEACHER,FULL TIME
+## 6651:    ZYCHOWICZ       LISA      SALARIED    67706 TEACHER,FULL TIME
+## 6652: ZYGMUND-FELT      ALLYN      SALARIED    90051 TEACHER,FULL TIME
+##       home_organization home_organization_description organization_level
+##    1:              1290       HAMILTON, ANDREW SCHOOL  ELEMENTARY SCHOOL
+##    2:              1470           LOCKE, ALAIN SCHOOL  ELEMENTARY SCHOOL
+##    3:              7440         TAYLOR, BAYARD SCHOOL  ELEMENTARY SCHOOL
+##    4:              7530         ROWEN, WILLIAM SCHOOL  ELEMENTARY SCHOOL
+##    5:              1010     BARTRAM, JOHN HIGH SCHOOL        HIGH SCHOOL
+##   ---                                                                   
+## 6648:              8390     FITZPATRICK, A. L. SCHOOL  ELEMENTARY SCHOOL
+## 6649:              8300                MAYFAIR SCHOOL  ELEMENTARY SCHOOL
+## 6650:              2290      FRANKLIN LEARNING CENTER        HIGH SCHOOL
+## 6651:              8420       DECATUR, STEPHEN SCHOOL  ELEMENTARY SCHOOL
+## 6652:              7100  COOKE, JAY ELEMENTARY SCHOOL  ELEMENTARY SCHOOL
+##       type_of_representation gender run_date  male school_pct_male
+##    1:            PFT-TEACHER      F 4/1/2016 FALSE        0.518072
+##    2:            PFT-TEACHER      F 4/1/2016 FALSE        0.502146
+##    3:            PFT-TEACHER      F 4/1/2016 FALSE        0.464029
+##    4:            PFT-TEACHER      F 4/1/2016 FALSE        0.502868
+##    5:            PFT-TEACHER      F 4/1/2016 FALSE        0.581690
+##   ---                                                             
+## 6648:            PFT-TEACHER      M 4/1/2016  TRUE        0.522134
+## 6649:            PFT-TEACHER      M 4/1/2016  TRUE        0.523733
+## 6650:            PFT-TEACHER      M 4/1/2016  TRUE        0.403207
+## 6651:            PFT-TEACHER      F 4/1/2016 FALSE        0.535922
+## 6652:            PFT-TEACHER      F 4/1/2016 FALSE        0.516899
+##       school_pct_ell school_pct_iep school_pct_asian school_pct_black
+##    1:             NA       0.185886               NA         0.893287
+##    2:       0.077253       0.111588         0.053648         0.796137
+##    3:       0.210432       0.088129               NA         0.176259
+##    4:             NA       0.124283               NA         0.927342
+##    5:       0.067606       0.263380               NA         0.929577
+##   ---                                                                
+## 6648:       0.061294       0.145289         0.044268         0.187287
+## 6649:       0.140788       0.098150         0.211585         0.132743
+## 6650:       0.159221       0.061856         0.114548         0.505155
+## 6651:       0.054369       0.127184         0.053398         0.153398
+## 6652:       0.091451       0.121272               NA         0.819085
+##       school_pct_hispanic school_pct_white school_pct_disadv
+##    1:                  NA               NA         100.00000
+##    2:                  NA               NA         100.00000
+##    3:            0.726619               NA         100.00000
+##    4:                  NA               NA         100.00000
+##    5:                  NA               NA         100.00000
+##   ---                                                       
+## 6648:            0.107832         0.547106          77.72985
+## 6649:            0.209171         0.348351          91.26307
+## 6650:            0.230241         0.119129          89.62199
+## 6651:            0.093204         0.577670          65.70874
+## 6652:            0.083499               NA         100.00000</code></pre>
 </div>
 </div>
 </div>

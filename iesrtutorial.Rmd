@@ -907,6 +907,7 @@ system(command)
 ```{r system_eval, echo = FALSE}
 #See: http://stackoverflow.com/questions/27388964
 #  seems I have to jump through hoops to get system to work with knitr
+getwd()
 cat(system(command, intern = TRUE), sep = "\n")
 ```
 
@@ -1089,7 +1090,12 @@ Approach:
  
 Carrying this out will introduce a few new things:
 
- - Grouping. We're going to *group by `title_description`*, and count observations in each group. If I remember correctly, in Stata, this would be like `by title_description: count`. When `data.table` does this, you should think of your `data.table` being split into a whole bunch of smaller `data.table`s, each of which has all of the observations for exactly one level of `title_description`. 
+ - Grouping. We're going to *group by `title_description`*, and count observations in each group. If I remember correctly, in Stata, this would be like `by title_description: count`. When `data.table` does this, you should think of your `data.table` being split into a whole bunch of smaller `data.table`s, each of which has all of the observations for exactly one level of `title_description`.
+ 
+ Here's an illustration:
+ 
+ ![group_split](http://i.imgur.com/LUpLn1V.png "grouping split")
+ 
  - `.N`. `data.table` uses the abbreviation `.N` to stand for "number of observations". It is defined _locally_, within each group, so all of the many `data.table`s mentioned above has its own `.N`. This is basically like `count` in Stata.
  - `order`. We can arrange the rows of a table by using `order` in the first argument (`i`); use a minus sign (`-`) to go in decreasing order, otherwise it's increasing order (like we saw with `sort`).
  - Chaining. We can tack on more and more `[]` to any given `data.table` operation to hone or continue or adjust our outcomes beyond what we could do in a single call to `[]`. The general syntax is `DT[...][...][...][...]`, where each `[...]` consists of doing some manipulation/subset/aggregation, etc.
@@ -1570,7 +1576,112 @@ school_gender[ , (num_cols) := lapply(.SD, as.numeric),
 print(school_gender, class = TRUE)
 ```
 
-#### 
+#### Merging, and Repeating
+
+Now, we can add this data to our teacher data file from earlier. How? A merge of course!
+
+First, unfortunately, the school codes in `school_gender` are missing the trailing 0, so we have to fix this.
+
+```{r merge_gender}
+school_gender[ , school_id := paste0(school_id, "0")]
+
+teachers[school_gender, 
+         school_pct_male := i.pct_male, 
+         on = c(home_organization = "school_id")]
+```
+
+The school demographics Excel file also contains data on ELL status, IEP status, ethnicity, and economic disadvantage. The approach to adding this is basically the same, so let's do it all at once.
+
+```{r other_demos}
+#For conciseness, we'll do all of the data manipulation we did
+#  in addition to reading in the gender sheet all at once here
+school_ell <- 
+  setDT(read_excel("./data/2015-2016 Enr Dem (Suppressed).xls", 
+                   sheet = "ELL", skip = 6,
+                   col_names = c("", "school_id", "school_name", "grade",
+                                 "total_enrolled", "count_ell", "pct_ell", 
+                                 "count_non_ell", "pct_non_ell"))
+        )[grade == "ALL GRADES"
+          #we're only going to keep pct_ell, so only convert that;
+          #  also convert school code
+          ][ , c("school_id", "pct_ell") := 
+               .(paste0(school_id, "0"), as.numeric(pct_ell))]
+
+#note: ELL status is commonly missing
+school_ell[is.na(pct_ell), .N]
+
+#merge
+teachers[school_ell, 
+         school_pct_ell := i.pct_ell,
+         on = c(home_organization = "school_id")]
+
+##NOW: IEP
+## Note: since all we're doing is selecting a column, we don't
+##   even have to store the Excel sheet as a new data set --
+##   we can pass the intermediat result directly to the
+##   merge with teachers, like so:
+teachers[setDT(read_excel(
+  "./data/2015-2016 Enr Dem (Suppressed).xls", 
+  sheet = "IEP", skip = 6,
+  col_names = c("", "school_id", "school_name", "grade",
+                "total_enrolled", "count_iep", "pct_iep", 
+                "count_non_iep", "pct_non_iep"))
+        )[grade == "ALL GRADES"
+          ][ , c("school_id", "pct_iep") := 
+               .(paste0(school_id, "0"), as.numeric(pct_iep))],
+  school_pct_iep := i.pct_iep, 
+  on = c(home_organization = "school_id")]
+
+##NOW: Ethnicity
+##  Ethnicity is not binary, so things will be a little bit more involved.
+##  we'll use the `:=`() form of assignment here. Basically, we can
+##  treat := like a function (surrounded by backticks ``), since, 
+##  technically, it IS a function
+teachers[setDT(read_excel(
+  "./data/2015-2016 Enr Dem (Suppressed).xls", 
+  sheet = "Ethnicity", skip = 6,
+  col_names = c("", "school_id", "school_name", 
+                "grade", "total_enrolled", 
+                "count_amerindian", "pct_amerindian", 
+                "count_asian", "pct_asian", 
+                "count_black", "pct_black",
+                "count_hispanic", "pct_hispanic", 
+                "count_multi", "pct_multi", 
+                "count_pacific", "pct_pacific",
+                "count_white", "pct_white"))
+        )[grade == "ALL GRADES"
+          ][ , c("school_id",
+                 paste0("pct_", c("asian", "black", 
+                                  "hispanic", "white"))) := 
+               #we could do this with lapply, but it looks ugly...
+               .(paste0(school_id, "0"), as.numeric(pct_asian),
+                 as.numeric(pct_black), as.numeric(pct_hispanic),
+                 as.numeric(pct_white))],
+  `:=`(school_pct_asian = i.pct_asian,
+       school_pct_black = i.pct_black,
+       school_pct_hispanic = i.pct_hispanic,
+       school_pct_white = i.pct_white),
+  on = c(home_organization = "school_id")]
+
+#Whew, what a mess! If you prefer, of course, you
+#  can always do this step by step.
+
+#Lastly, economically disadvantaged.
+#  this sheet is formatted a bit differently,
+#  so our merge must adapt accordingly.
+#  In particular, there are more blank columns.
+teachers[setDT(read_excel(
+  "./data/2015-2016 Enr Dem (Suppressed).xls", 
+  sheet = "Econ Disadv", skip = 6,
+  col_names = c("", "school_id", "school_name", 
+                "grade", "pct_disadv", rep("", 4)))
+        )[ , school_id := paste0(school_id, "0")],
+  school_pct_disadv := 100 * i.pct_disadv,
+  on = c(home_organization = "school_id")]
+
+teachers
+```
+
 
 ## Regressions
 
