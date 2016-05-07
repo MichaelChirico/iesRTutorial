@@ -1816,9 +1816,86 @@ teachers[ , summary(lm(pay_rate ~ gender +
 
 ### Predictions from a model
 
-### Nontrivial coefficient tests
+One of the most common things to do with a fitted regression is to use it for in- or out-of-sample predictions. For this, R has the `predict` function, which takes as its first argument the result of a model (e.g., `lm`), and as its second argument a new `data.table`.
 
-### Probit/Logit (`glm`)
+Any prediction is model dependent; we'll compare the predictions that come out of a few different relevant specifications.
+
+```{r predict_models}
+#Model 1: Simplest linear specification
+reg1 <- 
+  teachers[ , lm(pay_rate ~ gender + school_pct_male +
+                   school_pct_black + school_pct_disadv)]
+
+#Model 2: Some interactions
+reg2 <- 
+    teachers[ , lm(pay_rate ~ gender*school_pct_disadv + 
+                     school_pct_male + school_pct_black)]
+
+#Model 3: Full interactions
+reg3 <- 
+    teachers[ , lm(pay_rate ~ gender*school_pct_disadv* 
+                     school_pct_male*school_pct_black)]
+```
+
+Let's try to predict the wages of a teacher who is male and at a school with 70% male, 40% black students, and 80% economically disadvantaged students with each model.
+
+```{r predictions}
+#declare new data to use for prediction
+predict_table <- data.table(gender = "M", school_pct_male = .7,
+                            school_pct_black = .4,
+                            school_pct_disadv = .8)
+
+#prediction from Model 1
+predict(reg1, predict_table)
+
+#prediction from Model 2
+predict(reg2, predict_table)
+
+#prediction from Model 3
+predict(reg3, predict_table)
+```
+
+#### Many predictions
+
+This will be more useful when we get to plotting, but often in more complicated models we want to trace out the marginal effect of a variable on our prediction, holding other regressors constant -- is the relationship monotonic? Increasing?
+
+For this, we simply provide more than one row in the `predict_table` that we supply, e.g.:
+
+```{r predict_many}
+#explore the relationship between % male students
+#  and teacher pay
+predict_table <- 
+  data.table(gender = "M", 
+             school_pct_male =
+               #only use 10 points for now for
+               #  simplicity since we're
+               #  not plotting
+               seq(.5, 1, length.out = 10),
+             school_pct_black = .4,
+             school_pct_disadv = .8)
+
+#Since all of these models are linear, 
+#  we know for sure the relationship
+#  is monotonic, and we can predict
+#  the change from step to step because
+#  we know the coefficient on school_pct_male
+predict(reg1, predict_table)
+```
+
+#### Prediction intervals
+
+Point estimates are rarely the only thing we care about -- as important are reasonable ranges in which our predictions might fall. We may predict wages of $75,000, but it would hardly call our model into question if we found actual wages of $75,001 for that person. Prediction intervals are a way of coupling our predictions with a range of estimates that are consistent with our model.
+
+To this end, `predict` also has a few other arguments we can use to produce prediction intervals, e.g., `interval` and `level`, which tell the type of interval we want and the "alpha" to use, respectively:
+
+```{r predict_interval}
+predict(reg1, predict_table,
+        interval = "prediction", level = .95)
+```
+
+That the intervals are so wide shows just how poor our chosen covariates are at predicting teachers' wages.
+
+### Probit/Logit
 
 ## Reshaping
 
@@ -1832,7 +1909,7 @@ teachers[ , summary(lm(pay_rate ~ gender +
 
 ### Fixed-width `read_fwf`
 
-# Plotting / Tables (11 AM - 12 PM)
+# Plotting (11 AM - 12 PM)
 
 ## Descriptive Tables
 

@@ -110,7 +110,7 @@ $(document).ready(function () {
 
 <h1 class="title">IES R Tutorial</h1>
 <h4 class="author"><em>Michael Chirico</em></h4>
-<h4 class="date"><em>Compiled May 06, 2016 at 19:22</em></h4>
+<h4 class="date"><em>Compiled May 06, 2016 at 22:29</em></h4>
 
 </div>
 
@@ -169,8 +169,7 @@ $(document).ready(function () {
 <li><a href="#regressions"><span class="toc-section-number">3.4</span> Regressions</a><ul>
 <li><a href="#ols"><span class="toc-section-number">3.4.1</span> OLS</a></li>
 <li><a href="#predictions-from-a-model"><span class="toc-section-number">3.4.2</span> Predictions from a model</a></li>
-<li><a href="#nontrivial-coefficient-tests"><span class="toc-section-number">3.4.3</span> Nontrivial coefficient tests</a></li>
-<li><a href="#probitlogit-glm"><span class="toc-section-number">3.4.4</span> Probit/Logit (<code>glm</code>)</a></li>
+<li><a href="#probitlogit"><span class="toc-section-number">3.4.3</span> Probit/Logit</a></li>
 </ul></li>
 <li><a href="#reshaping"><span class="toc-section-number">3.5</span> Reshaping</a></li>
 <li><a href="#string-data-regex"><span class="toc-section-number">3.6</span> String Data / regex</a></li>
@@ -692,20 +691,20 @@ paste(first, last)</code></pre>
 <p>The most common kind of random numbers that people want are uniform draws and normal draws.</p>
 <pre class="r"><code>#generate 10 U[0, 1] draws
 runif(10)</code></pre>
-<pre><code>##  [1] 0.92124233 0.67034603 0.54954479 0.05460017 0.79916032 0.21275844
-##  [7] 0.01215540 0.07972674 0.49625922 0.23353623</code></pre>
+<pre><code>##  [1] 0.02593567 0.06328577 0.13993136 0.18919829 0.07585272 0.57556844
+##  [7] 0.70748396 0.27706358 0.65860195 0.52312636</code></pre>
 <pre class="r"><code>#generate 10 U[3, 5] draws
 runif(10, min = 3, max = 5)</code></pre>
-<pre><code>##  [1] 4.342990 4.122645 3.144467 3.247296 3.013806 4.578875 4.324615
-##  [8] 3.794217 3.863348 4.464434</code></pre>
+<pre><code>##  [1] 4.513428 4.588704 4.521375 3.663042 3.923237 4.066588 3.706170
+##  [8] 4.928821 4.229531 3.627730</code></pre>
 <pre class="r"><code>#generate 10 N(0, 1) draws
 rnorm(10)</code></pre>
-<pre><code>##  [1]  0.5738427 -0.4269242 -1.7481025  1.2576152  0.1333377  0.7162758
-##  [7] -0.1614234  0.8552500 -0.4666054  1.1764198</code></pre>
+<pre><code>##  [1] -0.1717892 -1.0519802  0.5063833 -2.2954223  1.9691136 -1.4055093
+##  [7]  0.9650866 -0.3455005 -0.8371752 -0.4980433</code></pre>
 <pre class="r"><code>#generate 10 N(3, 5) draws
 rnorm(10, mean = 3, sd = 5)</code></pre>
-<pre><code>##  [1]  6.8833948 -2.0155374 11.9305573  3.3982970  4.7846327  4.5783594
-##  [7]  4.4561585  6.1752472 -0.9244330 -0.6825876</code></pre>
+<pre><code>##  [1]  4.45933149  1.10598941  0.23124667  4.79251595  7.75359063
+##  [6] -8.89962517  3.28246868 -0.07410339  0.82463897 -0.62670553</code></pre>
 <p>These examples highlight the common format of random number generators in R. To get random numbers from a distribution, there is probably a function named like <code>r</code><strong><code>dist</code></strong>, where <strong><code>dist</code></strong> is an abbreviation for the distribution (here, <strong>unif</strong>orm and <strong>norm</strong>al). The first argument is the number of draws; the rest of the arguments are parameters.</p>
 <p>Here is a complete table of all of the common distributions built in to R, and the function used to invoke their random number generator (RNG):</p>
 <table>
@@ -857,24 +856,24 @@ qnorm(c(.005, .025, .05))</code></pre>
 <p>As always, it’s easiest to see with some examples:</p>
 <pre class="r"><code>#A permutation of 1:5
 sample(5)</code></pre>
-<pre><code>## [1] 5 1 3 4 2</code></pre>
+<pre><code>## [1] 2 5 3 1 4</code></pre>
 <pre class="r"><code>#A size-3 subset of 1:5
 sample(5, 3)</code></pre>
-<pre><code>## [1] 4 3 1</code></pre>
+<pre><code>## [1] 4 1 2</code></pre>
 <pre class="r"><code>#A size-5 subset of 1:5, with replacement
 sample(5, 5, replace = TRUE)</code></pre>
-<pre><code>## [1] 3 1 3 4 1</code></pre>
+<pre><code>## [1] 2 1 2 1 2</code></pre>
 <pre class="r"><code>#A weighted sample of 1:5, heavily weighting 1
 sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></pre>
-<pre><code>## [1] 1 1 1 1 1</code></pre>
+<pre><code>## [1] 1 5 1 1 1</code></pre>
 <p>We can use the basic tools here to run basic randomization exercises, like rolling dice, flipping coins, or drawing cards from a deck:</p>
 <pre class="r"><code>#Flip 10 coins, get the percentage heads
 flips &lt;- sample(c(&quot;H&quot;, &quot;T&quot;), 10, replace = TRUE)
 mean(flips == &quot;H&quot;)</code></pre>
-<pre><code>## [1] 0.3</code></pre>
+<pre><code>## [1] 0.4</code></pre>
 <pre class="r"><code>#Roll a pair of dice and add them
 sum(sample(6, 2, replace = TRUE))</code></pre>
-<pre><code>## [1] 7</code></pre>
+<pre><code>## [1] 10</code></pre>
 <pre class="r"><code>#create a deck of labeled cards:
 #  (I copy-pasted the text for the suits from
 #   Wikipedia, but we could have used S/H/D/C:
@@ -889,7 +888,7 @@ deck</code></pre>
 ## [45] &quot;7♣&quot;  &quot;8♣&quot;  &quot;9♣&quot;  &quot;10♣&quot; &quot;J♣&quot;  &quot;Q♣&quot;  &quot;K♣&quot;  &quot;A♣&quot;</code></pre>
 <pre class="r"><code>#Now draw a poker hand
 sample(deck, 5)</code></pre>
-<pre><code>## [1] &quot;J♦&quot;  &quot;10♦&quot; &quot;A♣&quot;  &quot;8♥&quot;  &quot;A♦&quot;</code></pre>
+<pre><code>## [1] &quot;8♣&quot; &quot;5♦&quot; &quot;A♣&quot; &quot;6♠&quot; &quot;5♥&quot;</code></pre>
 </div>
 <div id="replicate" class="section level3">
 <h3><span class="header-section-number">2.6.3</span> <code>replicate</code></h3>
@@ -908,7 +907,7 @@ simulations &lt;-
 #How often does a flush happen?
 #  True frequency is 0.1965%
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.0022</code></pre>
+<pre><code>## [1] 0.0017</code></pre>
 <pre class="r"><code>#What about a pair (just two cards match)?
 #  true frequency: 42%
 simulations &lt;- 
@@ -918,7 +917,7 @@ simulations &lt;-
     sum(duplicated(faces)) == 1 #one pair if there's exactly _one_ match
   })
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.4215</code></pre>
+<pre><code>## [1] 0.428</code></pre>
 </div>
 <div id="set.seed" class="section level3">
 <h3><span class="header-section-number">2.6.4</span> <code>set.seed</code></h3>
@@ -1087,14 +1086,14 @@ x &lt;- rnorm(1000)
 r &lt;- lm(y ~ x)
 str(r)</code></pre>
 <pre><code>## List of 12
-##  $ coefficients : Named num [1:2] 0.03214 0.00502
+##  $ coefficients : Named num [1:2] -0.0097 -0.00405
 ##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
-##  $ residuals    : Named num [1:1000] -0.725 -0.726 -0.202 -1.264 -0.609 ...
+##  $ residuals    : Named num [1:1000] 1.668 -1.115 -1.149 0.636 -1.874 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ effects      : Named num [1:1000] -1.02 0.16 -0.2 -1.253 -0.597 ...
+##  $ effects      : Named num [1:1000] 0.305 0.128 -1.17 0.524 -1.962 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;(Intercept)&quot; &quot;x&quot; &quot;&quot; &quot;&quot; ...
 ##  $ rank         : int 2
-##  $ fitted.values: Named num [1:1000] 0.0319 0.0294 0.0368 0.0349 0.0344 ...
+##  $ fitted.values: Named num [1:1000] -0.01477 -0.01389 -0.01324 -0.00289 -0.00554 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##  $ assign       : int [1:2] 0 1
 ##  $ qr           :List of 5
@@ -1103,7 +1102,7 @@ str(r)</code></pre>
 ##   .. .. ..$ : chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##   .. .. ..$ : chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
 ##   .. ..- attr(*, &quot;assign&quot;)= int [1:2] 0 1
-##   ..$ qraux: num [1:2] 1.03 1.02
+##   ..$ qraux: num [1:2] 1.03 1.03
 ##   ..$ pivot: int [1:2] 1 2
 ##   ..$ tol  : num 1e-07
 ##   ..$ rank : int 2
@@ -1126,8 +1125,8 @@ str(r)</code></pre>
 ##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
 ##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;y&quot; &quot;x&quot;
 ##  $ model        :'data.frame':   1000 obs. of  2 variables:
-##   ..$ y: num [1:1000] -0.693 -0.697 -0.165 -1.229 -0.575 ...
-##   ..$ x: num [1:1000] -0.0507 -0.5458 0.9301 0.5413 0.4596 ...
+##   ..$ y: num [1:1000] 1.653 -1.129 -1.162 0.633 -1.879 ...
+##   ..$ x: num [1:1000] 1.253 1.035 0.873 -1.681 -1.027 ...
 ##   ..- attr(*, &quot;terms&quot;)=Classes 'terms', 'formula' length 3 y ~ x
 ##   .. .. ..- attr(*, &quot;variables&quot;)= language list(y, x)
 ##   .. .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
@@ -2905,7 +2904,7 @@ str(gender_reg)</code></pre>
 ##   .. ..- attr(*, &quot;order&quot;)= int 1
 ##   .. ..- attr(*, &quot;intercept&quot;)= int 1
 ##   .. ..- attr(*, &quot;response&quot;)= int 1
-##   .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: 0x2387b10&gt; 
+##   .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: 0x28116e8&gt; 
 ##   .. ..- attr(*, &quot;predvars&quot;)= language list(pay_rate, gender)
 ##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;character&quot;
 ##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;pay_rate&quot; &quot;gender&quot;
@@ -2922,7 +2921,7 @@ str(gender_reg)</code></pre>
 ##   .. .. ..- attr(*, &quot;order&quot;)= int 1
 ##   .. .. ..- attr(*, &quot;intercept&quot;)= int 1
 ##   .. .. ..- attr(*, &quot;response&quot;)= int 1
-##   .. .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: 0x2387b10&gt; 
+##   .. .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: 0x28116e8&gt; 
 ##   .. .. ..- attr(*, &quot;predvars&quot;)= language list(pay_rate, gender)
 ##   .. .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;character&quot;
 ##   .. .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;pay_rate&quot; &quot;gender&quot;
@@ -3119,12 +3118,89 @@ teachers[pay_rate&gt;0, summary(lm(log(pay_rate) ~ gender))]</code></pre>
 </div>
 <div id="predictions-from-a-model" class="section level3">
 <h3><span class="header-section-number">3.4.2</span> Predictions from a model</h3>
+<p>One of the most common things to do with a fitted regression is to use it for in- or out-of-sample predictions. For this, R has the <code>predict</code> function, which takes as its first argument the result of a model (e.g., <code>lm</code>), and as its second argument a new <code>data.table</code>.</p>
+<p>Any prediction is model dependent; we’ll compare the predictions that come out of a few different relevant specifications.</p>
+<pre class="r"><code>#Model 1: Simplest linear specification
+reg1 &lt;- 
+  teachers[ , lm(pay_rate ~ gender + school_pct_male +
+                   school_pct_black + school_pct_disadv)]
+
+#Model 2: Some interactions
+reg2 &lt;- 
+    teachers[ , lm(pay_rate ~ gender*school_pct_disadv + 
+                     school_pct_male + school_pct_black)]
+
+#Model 3: Full interactions
+reg3 &lt;- 
+    teachers[ , lm(pay_rate ~ gender*school_pct_disadv* 
+                     school_pct_male*school_pct_black)]</code></pre>
+<p>Let’s try to predict the wages of a teacher who is male and at a school with 70% male, 40% black students, and 80% economically disadvantaged students with each model.</p>
+<pre class="r"><code>#declare new data to use for prediction
+predict_table &lt;- data.table(gender = &quot;M&quot;, school_pct_male = .7,
+                            school_pct_black = .4,
+                            school_pct_disadv = .8)
+
+#prediction from Model 1
+predict(reg1, predict_table)</code></pre>
+<pre><code>##        1 
+## 77028.89</code></pre>
+<pre class="r"><code>#prediction from Model 2
+predict(reg2, predict_table)</code></pre>
+<pre><code>##       1 
+## 76675.7</code></pre>
+<pre class="r"><code>#prediction from Model 3
+predict(reg3, predict_table)</code></pre>
+<pre><code>##       1 
+## 73401.6</code></pre>
+<div id="many-predictions" class="section level4">
+<h4><span class="header-section-number">3.4.2.1</span> Many predictions</h4>
+<p>This will be more useful when we get to plotting, but often in more complicated models we want to trace out the marginal effect of a variable on our prediction, holding other regressors constant – is the relationship monotonic? Increasing?</p>
+<p>For this, we simply provide more than one row in the <code>predict_table</code> that we supply, e.g.:</p>
+<pre class="r"><code>#explore the relationship between % male students
+#  and teacher pay
+predict_table &lt;- 
+  data.table(gender = &quot;M&quot;, 
+             school_pct_male =
+               #only use 10 points for now for
+               #  simplicity since we're
+               #  not plotting
+               seq(.5, 1, length.out = 10),
+             school_pct_black = .4,
+             school_pct_disadv = .8)
+
+#Since all of these models are linear, 
+#  we know for sure the relationship
+#  is monotonic, and we can predict
+#  the change from step to step because
+#  we know the coefficient on school_pct_male
+predict(reg1, predict_table)</code></pre>
+<pre><code>##        1        2        3        4        5        6        7        8 
+## 74441.11 75159.94 75878.77 76597.59 77316.42 78035.24 78754.07 79472.90 
+##        9       10 
+## 80191.72 80910.55</code></pre>
 </div>
-<div id="nontrivial-coefficient-tests" class="section level3">
-<h3><span class="header-section-number">3.4.3</span> Nontrivial coefficient tests</h3>
+<div id="prediction-intervals" class="section level4">
+<h4><span class="header-section-number">3.4.2.2</span> Prediction intervals</h4>
+<p>Point estimates are rarely the only thing we care about – as important are reasonable ranges in which our predictions might fall. We may predict wages of $75,000, but it would hardly call our model into question if we found actual wages of $75,001 for that person. Prediction intervals are a way of coupling our predictions with a range of estimates that are consistent with our model.</p>
+<p>To this end, <code>predict</code> also has a few other arguments we can use to produce prediction intervals, e.g., <code>interval</code> and <code>level</code>, which tell the type of interval we want and the “alpha” to use, respectively:</p>
+<pre class="r"><code>predict(reg1, predict_table,
+        interval = &quot;prediction&quot;, level = .95)</code></pre>
+<pre><code>##         fit      lwr      upr
+## 1  74441.11 46800.92 102081.3
+## 2  75159.94 47509.83 102810.0
+## 3  75878.77 48212.76 103544.8
+## 4  76597.59 48909.71 104285.5
+## 5  77316.42 49600.70 105032.1
+## 6  78035.24 50285.75 105784.7
+## 7  78754.07 50964.87 106543.3
+## 8  79472.90 51638.10 107307.7
+## 9  80191.72 52305.46 108078.0
+## 10 80910.55 52966.98 108854.1</code></pre>
+<p>That the intervals are so wide shows just how poor our chosen covariates are at predicting teachers’ wages.</p>
 </div>
-<div id="probitlogit-glm" class="section level3">
-<h3><span class="header-section-number">3.4.4</span> Probit/Logit (<code>glm</code>)</h3>
+</div>
+<div id="probitlogit" class="section level3">
+<h3><span class="header-section-number">3.4.3</span> Probit/Logit</h3>
 </div>
 </div>
 <div id="reshaping" class="section level2">
