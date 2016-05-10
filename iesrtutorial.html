@@ -110,7 +110,7 @@ $(document).ready(function () {
 
 <h1 class="title">IES R Tutorial</h1>
 <h4 class="author"><em>Michael Chirico</em></h4>
-<h4 class="date"><em>Compiled May 06, 2016 at 22:29</em></h4>
+<h4 class="date"><em>Compiled May 10, 2016 at 00:35</em></h4>
 
 </div>
 
@@ -175,11 +175,10 @@ $(document).ready(function () {
 <li><a href="#string-data-regex"><span class="toc-section-number">3.6</span> String Data / regex</a></li>
 <li><a href="#non-.csv-data"><span class="toc-section-number">3.7</span> Non-.csv Data</a><ul>
 <li><a href="#sas-read_sas"><span class="toc-section-number">3.7.1</span> SAS: <code>read_sas</code></a></li>
-<li><a href="#excel-readxl-xlsx"><span class="toc-section-number">3.7.2</span> Excel: <code>readxl</code> / <code>xlsx</code></a></li>
-<li><a href="#fixed-width-read_fwf"><span class="toc-section-number">3.7.3</span> Fixed-width <code>read_fwf</code></a></li>
+<li><a href="#fixed-width-read_fwf"><span class="toc-section-number">3.7.2</span> Fixed-width <code>read_fwf</code></a></li>
 </ul></li>
 </ul></li>
-<li><a href="#plotting-tables-11-am---12-pm"><span class="toc-section-number">4</span> Plotting / Tables (11 AM - 12 PM)</a><ul>
+<li><a href="#plotting-11-am---12-pm"><span class="toc-section-number">4</span> Plotting (11 AM - 12 PM)</a><ul>
 <li><a href="#descriptive-tables"><span class="toc-section-number">4.1</span> Descriptive Tables</a></li>
 <li><a href="#regression-tables-texregxtable"><span class="toc-section-number">4.2</span> Regression Tables: <code>texreg</code>/<code>xtable</code></a></li>
 <li><a href="#base-plots"><span class="toc-section-number">4.3</span> <code>base</code> Plots</a></li>
@@ -191,9 +190,10 @@ $(document).ready(function () {
 <li><a href="#dynamicinteractive-output-shiny-430-pm---530-pm"><span class="toc-section-number">8</span> Dynamic/Interactive Output: <code>shiny</code> (4:30 PM - 5:30 PM)</a></li>
 <li><a href="#appendix"><span class="toc-section-number">9</span> Appendix</a><ul>
 <li><a href="#data-cleaning"><span class="toc-section-number">9.1</span> Data Cleaning</a></li>
-<li><a href="#source-code"><span class="toc-section-number">9.2</span> Source Code</a></li>
-<li><a href="#package-development"><span class="toc-section-number">9.3</span> Package development</a></li>
-<li><a href="#advanced-types"><span class="toc-section-number">9.4</span> Advanced types</a></li>
+<li><a href="#parallelization"><span class="toc-section-number">9.2</span> Parallelization</a></li>
+<li><a href="#source-code"><span class="toc-section-number">9.3</span> Source Code</a></li>
+<li><a href="#package-development"><span class="toc-section-number">9.4</span> Package development</a></li>
+<li><a href="#advanced-types"><span class="toc-section-number">9.5</span> Advanced types</a></li>
 </ul></li>
 </ul>
 </div>
@@ -691,20 +691,20 @@ paste(first, last)</code></pre>
 <p>The most common kind of random numbers that people want are uniform draws and normal draws.</p>
 <pre class="r"><code>#generate 10 U[0, 1] draws
 runif(10)</code></pre>
-<pre><code>##  [1] 0.02593567 0.06328577 0.13993136 0.18919829 0.07585272 0.57556844
-##  [7] 0.70748396 0.27706358 0.65860195 0.52312636</code></pre>
+<pre><code>##  [1] 0.2661151 0.5470388 0.8538530 0.6601233 0.2082490 0.5328628 0.2382517
+##  [8] 0.5865554 0.7045621 0.7447533</code></pre>
 <pre class="r"><code>#generate 10 U[3, 5] draws
 runif(10, min = 3, max = 5)</code></pre>
-<pre><code>##  [1] 4.513428 4.588704 4.521375 3.663042 3.923237 4.066588 3.706170
-##  [8] 4.928821 4.229531 3.627730</code></pre>
+<pre><code>##  [1] 3.087699 4.627508 4.830471 4.950350 3.959840 4.841079 4.386204
+##  [8] 4.438730 3.547815 4.274836</code></pre>
 <pre class="r"><code>#generate 10 N(0, 1) draws
 rnorm(10)</code></pre>
-<pre><code>##  [1] -0.1717892 -1.0519802  0.5063833 -2.2954223  1.9691136 -1.4055093
-##  [7]  0.9650866 -0.3455005 -0.8371752 -0.4980433</code></pre>
+<pre><code>##  [1]  0.0002614841 -0.0766816105  0.2820712118 -0.0673649394  2.3605753785
+##  [6] -0.1455430387 -0.7444287365 -0.1286736440 -1.9303419287  0.2249640763</code></pre>
 <pre class="r"><code>#generate 10 N(3, 5) draws
 rnorm(10, mean = 3, sd = 5)</code></pre>
-<pre><code>##  [1]  4.45933149  1.10598941  0.23124667  4.79251595  7.75359063
-##  [6] -8.89962517  3.28246868 -0.07410339  0.82463897 -0.62670553</code></pre>
+<pre><code>##  [1]  1.329743 10.802494 -4.466919 11.937551  9.865062  3.524319  2.028806
+##  [8] -4.861941  3.928506  5.797340</code></pre>
 <p>These examples highlight the common format of random number generators in R. To get random numbers from a distribution, there is probably a function named like <code>r</code><strong><code>dist</code></strong>, where <strong><code>dist</code></strong> is an abbreviation for the distribution (here, <strong>unif</strong>orm and <strong>norm</strong>al). The first argument is the number of draws; the rest of the arguments are parameters.</p>
 <p>Here is a complete table of all of the common distributions built in to R, and the function used to invoke their random number generator (RNG):</p>
 <table>
@@ -856,24 +856,24 @@ qnorm(c(.005, .025, .05))</code></pre>
 <p>As always, it’s easiest to see with some examples:</p>
 <pre class="r"><code>#A permutation of 1:5
 sample(5)</code></pre>
-<pre><code>## [1] 2 5 3 1 4</code></pre>
+<pre><code>## [1] 4 3 1 2 5</code></pre>
 <pre class="r"><code>#A size-3 subset of 1:5
 sample(5, 3)</code></pre>
-<pre><code>## [1] 4 1 2</code></pre>
+<pre><code>## [1] 3 2 4</code></pre>
 <pre class="r"><code>#A size-5 subset of 1:5, with replacement
 sample(5, 5, replace = TRUE)</code></pre>
-<pre><code>## [1] 2 1 2 1 2</code></pre>
+<pre><code>## [1] 5 5 2 5 4</code></pre>
 <pre class="r"><code>#A weighted sample of 1:5, heavily weighting 1
 sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></pre>
-<pre><code>## [1] 1 5 1 1 1</code></pre>
+<pre><code>## [1] 1 1 1 1 1</code></pre>
 <p>We can use the basic tools here to run basic randomization exercises, like rolling dice, flipping coins, or drawing cards from a deck:</p>
 <pre class="r"><code>#Flip 10 coins, get the percentage heads
 flips &lt;- sample(c(&quot;H&quot;, &quot;T&quot;), 10, replace = TRUE)
 mean(flips == &quot;H&quot;)</code></pre>
-<pre><code>## [1] 0.4</code></pre>
+<pre><code>## [1] 0.3</code></pre>
 <pre class="r"><code>#Roll a pair of dice and add them
 sum(sample(6, 2, replace = TRUE))</code></pre>
-<pre><code>## [1] 10</code></pre>
+<pre><code>## [1] 7</code></pre>
 <pre class="r"><code>#create a deck of labeled cards:
 #  (I copy-pasted the text for the suits from
 #   Wikipedia, but we could have used S/H/D/C:
@@ -888,7 +888,7 @@ deck</code></pre>
 ## [45] &quot;7♣&quot;  &quot;8♣&quot;  &quot;9♣&quot;  &quot;10♣&quot; &quot;J♣&quot;  &quot;Q♣&quot;  &quot;K♣&quot;  &quot;A♣&quot;</code></pre>
 <pre class="r"><code>#Now draw a poker hand
 sample(deck, 5)</code></pre>
-<pre><code>## [1] &quot;8♣&quot; &quot;5♦&quot; &quot;A♣&quot; &quot;6♠&quot; &quot;5♥&quot;</code></pre>
+<pre><code>## [1] &quot;A♠&quot; &quot;2♥&quot; &quot;Q♣&quot; &quot;2♣&quot; &quot;4♣&quot;</code></pre>
 </div>
 <div id="replicate" class="section level3">
 <h3><span class="header-section-number">2.6.3</span> <code>replicate</code></h3>
@@ -907,7 +907,7 @@ simulations &lt;-
 #How often does a flush happen?
 #  True frequency is 0.1965%
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.0017</code></pre>
+<pre><code>## [1] 0.0019</code></pre>
 <pre class="r"><code>#What about a pair (just two cards match)?
 #  true frequency: 42%
 simulations &lt;- 
@@ -917,7 +917,7 @@ simulations &lt;-
     sum(duplicated(faces)) == 1 #one pair if there's exactly _one_ match
   })
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.428</code></pre>
+<pre><code>## [1] 0.4242</code></pre>
 </div>
 <div id="set.seed" class="section level3">
 <h3><span class="header-section-number">2.6.4</span> <code>set.seed</code></h3>
@@ -1086,14 +1086,14 @@ x &lt;- rnorm(1000)
 r &lt;- lm(y ~ x)
 str(r)</code></pre>
 <pre><code>## List of 12
-##  $ coefficients : Named num [1:2] -0.0097 -0.00405
+##  $ coefficients : Named num [1:2] -0.04653 -0.00429
 ##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
-##  $ residuals    : Named num [1:1000] 1.668 -1.115 -1.149 0.636 -1.874 ...
+##  $ residuals    : Named num [1:1000] 0.7981 -0.3993 -1.0337 -1.0255 0.0431 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ effects      : Named num [1:1000] 0.305 0.128 -1.17 0.524 -1.962 ...
+##  $ effects      : Named num [1:1000] 1.474 -0.1363 -1.0678 -1.0543 0.0108 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;(Intercept)&quot; &quot;x&quot; &quot;&quot; &quot;&quot; ...
 ##  $ rank         : int 2
-##  $ fitted.values: Named num [1:1000] -0.01477 -0.01389 -0.01324 -0.00289 -0.00554 ...
+##  $ fitted.values: Named num [1:1000] -0.0441 -0.0363 -0.0499 -0.048 -0.0492 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##  $ assign       : int [1:2] 0 1
 ##  $ qr           :List of 5
@@ -1102,7 +1102,7 @@ str(r)</code></pre>
 ##   .. .. ..$ : chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##   .. .. ..$ : chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
 ##   .. ..- attr(*, &quot;assign&quot;)= int [1:2] 0 1
-##   ..$ qraux: num [1:2] 1.03 1.03
+##   ..$ qraux: num [1:2] 1.03 1.08
 ##   ..$ pivot: int [1:2] 1 2
 ##   ..$ tol  : num 1e-07
 ##   ..$ rank : int 2
@@ -1125,8 +1125,8 @@ str(r)</code></pre>
 ##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
 ##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;y&quot; &quot;x&quot;
 ##  $ model        :'data.frame':   1000 obs. of  2 variables:
-##   ..$ y: num [1:1000] 1.653 -1.129 -1.162 0.633 -1.879 ...
-##   ..$ x: num [1:1000] 1.253 1.035 0.873 -1.681 -1.027 ...
+##   ..$ y: num [1:1000] 0.754 -0.4356 -1.0836 -1.0735 -0.0061 ...
+##   ..$ x: num [1:1000] -0.567 -2.387 0.773 0.35 0.633 ...
 ##   ..- attr(*, &quot;terms&quot;)=Classes 'terms', 'formula' length 3 y ~ x
 ##   .. .. ..- attr(*, &quot;variables&quot;)= language list(y, x)
 ##   .. .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
@@ -2904,7 +2904,7 @@ str(gender_reg)</code></pre>
 ##   .. ..- attr(*, &quot;order&quot;)= int 1
 ##   .. ..- attr(*, &quot;intercept&quot;)= int 1
 ##   .. ..- attr(*, &quot;response&quot;)= int 1
-##   .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: 0x28116e8&gt; 
+##   .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: 0x3e40c80&gt; 
 ##   .. ..- attr(*, &quot;predvars&quot;)= language list(pay_rate, gender)
 ##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;character&quot;
 ##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;pay_rate&quot; &quot;gender&quot;
@@ -2921,7 +2921,7 @@ str(gender_reg)</code></pre>
 ##   .. .. ..- attr(*, &quot;order&quot;)= int 1
 ##   .. .. ..- attr(*, &quot;intercept&quot;)= int 1
 ##   .. .. ..- attr(*, &quot;response&quot;)= int 1
-##   .. .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: 0x28116e8&gt; 
+##   .. .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: 0x3e40c80&gt; 
 ##   .. .. ..- attr(*, &quot;predvars&quot;)= language list(pay_rate, gender)
 ##   .. .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;character&quot;
 ##   .. .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;pay_rate&quot; &quot;gender&quot;
@@ -3201,6 +3201,108 @@ predict(reg1, predict_table)</code></pre>
 </div>
 <div id="probitlogit" class="section level3">
 <h3><span class="header-section-number">3.4.3</span> Probit/Logit</h3>
+<p>The next most common form of regression analysis is logit/probit, for when we’re interested in understanding predictors of a binary dependent variable. I’ve never heard a compelling empirical reason for using one over the other; logistic is far more common, probably because it provides odds ratios, which are infinitely more interpretable than are the plain coefficients of either logit or probit models. But the difference in R between running logit and probit is trivial, so we’ll cover both here.</p>
+<p>To avoid simply re-hashing what we did in the previous section and inducing a room more rife with glaze than Krispy Kreme, let’s focus on a new variable for our left-hand side.</p>
+<p>Noticing that most schools are 100% economically disadvantaged, I wonder, are there certain characteristics which help predict that a teacher is at a school with less than full “poverty”?</p>
+<p>We’ll define “less than full poverty” as <code>school_pct_disadv &lt; 100</code>, which is true for <code>teachers[school_pct_disadv &lt; 100, .N]</code> = 1666 teachers (and <code>unique(teachers, by = &quot;home_organization&quot;)[school_pct_disadv &lt; 100, .N]</code> = 52 schools).</p>
+<p>The workhorse of binary-dependent-variable models in R is <code>glm</code>. This stands for <strong>g</strong>eneralized <strong>l</strong>inear <strong>m</strong>odels. Generalized linear models subsume OLS and incorporate several regression models which can be related to OLS by a “link function”, including logit, probit and Poisson regression. See <a href="https://en.wikipedia.org/wiki/Generalized_linear_model">Wikipedia</a> for more.</p>
+<p><code>glm</code> works basically like <code>lm</code> – its first argument is specified in exactly the same way (specifically, with an object of class <code>formula</code>), but we also have to include a second argument – <code>family</code>. This is basically specifying to <code>glm</code> the type of link function that you’ve got in mind for your regression. There is a multitude of options – <code>Gamma</code>, <code>inverse.gaussian</code>, <code>poisson</code>, <code>quasipoisson</code>, etc. (see <code>?family</code>), but the most common and important is <code>binomial</code>.</p>
+<p>Technically, what we pass to the <code>family</code> argument is a <code>function</code> – meaning most importantly that <em>it itself accepts arguments</em>! Specifically, the <code>binomial</code> function accepts one important argument, <code>link</code>. By default, this is <code>&quot;logit&quot;</code>, meaning that the default for <code>family = binomial</code> is to run a logistic regression. There are two other options – <code>family = &quot;probit&quot;</code> (probit regression) and <code>family = &quot;cauchit&quot;</code> (which uses a Cauchy CDF, if you know what that is).</p>
+<p>Let’s see this in action and run our first logit and probits:</p>
+<pre class="r"><code>#We could define our own &quot;poverty&quot; variable,
+#  but instead we'll illustrate again another
+#  way to use the I function in formulas
+logit &lt;- teachers[ , glm(I(school_pct_disadv &lt; 100) ~ 
+                           pay_rate + gender + school_pct_male, 
+                         family = binomial)]
+
+summary(logit)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = I(school_pct_disadv &lt; 100) ~ pay_rate + gender + 
+##     school_pct_male, family = binomial)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.5236  -0.7773  -0.6549   0.5844   2.3622  
+## 
+## Coefficients:
+##                   Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)      3.072e+00  3.590e-01   8.556  &lt; 2e-16 ***
+## pay_rate         1.922e-05  2.240e-06   8.579  &lt; 2e-16 ***
+## genderM          3.649e-01  6.554e-02   5.568 2.58e-08 ***
+## school_pct_male -1.080e+01  6.429e-01 -16.795  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 7216.1  on 6363  degrees of freedom
+## Residual deviance: 6793.8  on 6360  degrees of freedom
+##   (288 observations deleted due to missingness)
+## AIC: 6801.8
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>#run a probit instead by specifying the link
+#  argument in the binomial function
+probit &lt;- teachers[ , glm(I(school_pct_disadv &lt; 100) ~ 
+                            pay_rate + gender + school_pct_male, 
+                          family = binomial(link = &quot;probit&quot;))]
+
+
+summary(probit)                  </code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = I(school_pct_disadv &lt; 100) ~ pay_rate + gender + 
+##     school_pct_male, family = binomial(link = &quot;probit&quot;))
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.4922  -0.7824  -0.6595   0.5984   2.4259  
+## 
+## Coefficients:
+##                   Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)      1.809e+00  2.082e-01   8.686  &lt; 2e-16 ***
+## pay_rate         1.104e-05  1.287e-06   8.579  &lt; 2e-16 ***
+## genderM          2.212e-01  3.866e-02   5.721 1.06e-08 ***
+## school_pct_male -6.357e+00  3.705e-01 -17.160  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 7216.1  on 6363  degrees of freedom
+## Residual deviance: 6800.8  on 6360  degrees of freedom
+##   (288 observations deleted due to missingness)
+## AIC: 6808.8
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>We can’t compare coefficients between the models, except for their signs. The signs and significance both agree (as we would hope), and again seem to be telling us stuff we may have surmised – high-poverty schools have lower-wage teachers, have fewer male teachers, and have more male students.</p>
+<p>To compare the models, we can look at the predicted probability of being in a low-poverty district for a typical teacher. We’ll define a typical teacher as having the <em>median</em> pay rate; we’ll plug in the <em>percentage of male teachers</em> to the coefficient on <code>gender</code>; and we’ll plug in the <em>average</em> percentage of male students.</p>
+<p>I’m unaware of a way to tell R to use a percentage instead of 0/1 in <code>predict</code>, so we have to get our predictions by hand. Luckily this isn’t so bad:</p>
+<pre class="r"><code>#here is the &quot;typical teacher&quot;; we
+#  include 1 first to stand for the
+#  intercept term
+typical &lt;- teachers[!is.na(school_pct_male),
+                    c(1, median(pay_rate), mean(gender == &quot;M&quot;),
+                      mean(school_pct_male))]
+
+#prediction from the logit model; recall that 
+#  the interpretation of logit is that:
+#  P[y = 1 | X] = F(X'B)
+#  where X are our predictors, F is the link
+#  function CDF, and B is the coefficient vector
+
+#In the case of logistic regression, F is the
+#  logistic CDF:
+plogis(sum(logit$coefficients * typical))</code></pre>
+<pre><code>## [1] 0.2446419</code></pre>
+<pre class="r"><code>#In the case of probit, F is the normal CDF:
+pnorm(sum(probit$coefficients * typical))</code></pre>
+<pre><code>## [1] 0.2480797</code></pre>
+<pre class="r"><code>#For comparison, the overall average in the sample is:
+teachers[ , mean(school_pct_disadv &lt; 100)]</code></pre>
+<pre><code>## [1] NA</code></pre>
 </div>
 </div>
 <div id="reshaping" class="section level2">
@@ -3214,16 +3316,13 @@ predict(reg1, predict_table)</code></pre>
 <div id="sas-read_sas" class="section level3">
 <h3><span class="header-section-number">3.7.1</span> SAS: <code>read_sas</code></h3>
 </div>
-<div id="excel-readxl-xlsx" class="section level3">
-<h3><span class="header-section-number">3.7.2</span> Excel: <code>readxl</code> / <code>xlsx</code></h3>
-</div>
 <div id="fixed-width-read_fwf" class="section level3">
-<h3><span class="header-section-number">3.7.3</span> Fixed-width <code>read_fwf</code></h3>
+<h3><span class="header-section-number">3.7.2</span> Fixed-width <code>read_fwf</code></h3>
 </div>
 </div>
 </div>
-<div id="plotting-tables-11-am---12-pm" class="section level1">
-<h1><span class="header-section-number">4</span> Plotting / Tables (11 AM - 12 PM)</h1>
+<div id="plotting-11-am---12-pm" class="section level1">
+<h1><span class="header-section-number">4</span> Plotting (11 AM - 12 PM)</h1>
 <div id="descriptive-tables" class="section level2">
 <h2><span class="header-section-number">4.1</span> Descriptive Tables</h2>
 </div>
@@ -3260,14 +3359,17 @@ predict(reg1, predict_table)</code></pre>
 <div id="data-cleaning" class="section level2">
 <h2><span class="header-section-number">9.1</span> Data Cleaning</h2>
 </div>
+<div id="parallelization" class="section level2">
+<h2><span class="header-section-number">9.2</span> Parallelization</h2>
+</div>
 <div id="source-code" class="section level2">
-<h2><span class="header-section-number">9.2</span> Source Code</h2>
+<h2><span class="header-section-number">9.3</span> Source Code</h2>
 </div>
 <div id="package-development" class="section level2">
-<h2><span class="header-section-number">9.3</span> Package development</h2>
+<h2><span class="header-section-number">9.4</span> Package development</h2>
 </div>
 <div id="advanced-types" class="section level2">
-<h2><span class="header-section-number">9.4</span> Advanced types</h2>
+<h2><span class="header-section-number">9.5</span> Advanced types</h2>
 </div>
 </div>
 

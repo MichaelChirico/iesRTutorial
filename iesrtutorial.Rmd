@@ -1897,6 +1897,73 @@ That the intervals are so wide shows just how poor our chosen covariates are at 
 
 ### Probit/Logit
 
+The next most common form of regression analysis is logit/probit, for when we're interested in understanding predictors of a binary dependent variable. I've never heard a compelling empirical reason for using one over the other; logistic is far more common, probably because it provides odds ratios, which are infinitely more interpretable than are the plain coefficients of either logit or probit models. But the difference in R between running logit and probit is trivial, so we'll cover both here.
+
+To avoid simply re-hashing what we did in the previous section and inducing a room more rife with glaze than Krispy Kreme, let's focus on a new variable for our left-hand side. 
+
+Noticing that most schools are 100% economically disadvantaged, I wonder, are there certain characteristics which help predict that a teacher is at a school with less than full "poverty"?
+
+We'll define "less than full poverty" as `school_pct_disadv < 100`, which is true for `teachers[school_pct_disadv < 100, .N]` = `r teachers[school_pct_disadv < 100, .N]` teachers (and `unique(teachers, by = "home_organization")[school_pct_disadv < 100, .N]` = `r unique(teachers, by = "home_organization")[school_pct_disadv < 100, .N]` schools).
+
+The workhorse of binary-dependent-variable models in R is `glm`. This stands for **g**eneralized **l**inear **m**odels. Generalized linear models subsume OLS and incorporate several regression models which can be related to OLS by a "link function", including logit, probit and Poisson regression. See [Wikipedia](https://en.wikipedia.org/wiki/Generalized_linear_model) for more.
+
+`glm` works basically like `lm` -- its first argument is specified in exactly the same way (specifically, with an object of class `formula`), but we also have to include a second argument -- `family`. This is basically specifying to `glm` the type of link function that you've got in mind for your regression. There is a multitude of options -- `Gamma`, `inverse.gaussian`, `poisson`, `quasipoisson`, etc. (see `?family`), but the most common and important is `binomial`.
+
+Technically, what we pass to the `family` argument is a `function` -- meaning most importantly that _it itself accepts arguments_! Specifically, the `binomial` function accepts one important argument, `link`. By default, this is `"logit"`, meaning that the default for `family = binomial` is to run a logistic regression. There are two other options -- `family = "probit"` (probit regression) and `family = "cauchit"` (which uses a Cauchy CDF, if you know what that is).
+
+Let's see this in action and run our first logit and probits:
+
+```{r logit_probit}
+#We could define our own "poverty" variable,
+#  but instead we'll illustrate again another
+#  way to use the I function in formulas
+logit <- teachers[ , glm(I(school_pct_disadv < 100) ~ 
+                           pay_rate + gender + school_pct_male, 
+                         family = binomial)]
+
+summary(logit)
+
+#run a probit instead by specifying the link
+#  argument in the binomial function
+probit <- teachers[ , glm(I(school_pct_disadv < 100) ~ 
+                            pay_rate + gender + school_pct_male, 
+                          family = binomial(link = "probit"))]
+
+
+summary(probit)                  
+```
+
+We can't compare coefficients between the models, except for their signs. The signs and significance both agree (as we would hope), and again seem to be telling us stuff we may have surmised -- high-poverty schools have lower-wage teachers, have fewer male teachers, and have more male students.
+
+To compare the models, we can look at the predicted probability of being in a low-poverty district for a typical teacher. We'll define a typical teacher as having the _median_ pay rate; we'll plug in the _percentage of male teachers_ to the coefficient on `gender`; and we'll plug in the _average_ percentage of male students.
+
+I'm unaware of a way to tell R to use a percentage instead of 0/1 in `predict`, so we have to get our predictions by hand. Luckily this isn't so bad:
+
+```{r predict_glm}
+#here is the "typical teacher"; we
+#  include 1 first to stand for the
+#  intercept term
+typical <- teachers[!is.na(school_pct_male),
+                    c(1, median(pay_rate), mean(gender == "M"),
+                      mean(school_pct_male))]
+
+#prediction from the logit model; recall that 
+#  the interpretation of logit is that:
+#  P[y = 1 | X] = F(X'B)
+#  where X are our predictors, F is the link
+#  function CDF, and B is the coefficient vector
+
+#In the case of logistic regression, F is the
+#  logistic CDF:
+plogis(sum(logit$coefficients * typical))
+
+#In the case of probit, F is the normal CDF:
+pnorm(sum(probit$coefficients * typical))
+
+#For comparison, the overall average in the sample is:
+teachers[ , mean(school_pct_disadv < 100)]
+```
+
 ## Reshaping
 
 ## String Data / regex
@@ -1904,8 +1971,6 @@ That the intervals are so wide shows just how poor our chosen covariates are at 
 ## Non-.csv Data
 
 ### SAS: `read_sas`
-
-### Excel: `readxl` / `xlsx`
 
 ### Fixed-width `read_fwf`
 
@@ -1942,6 +2007,8 @@ That the intervals are so wide shows just how poor our chosen covariates are at 
 `setkey`
 
 ## Data Cleaning
+
+## Parallelization
 
 ## Source Code
 
