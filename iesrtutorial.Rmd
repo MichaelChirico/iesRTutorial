@@ -1961,12 +1961,385 @@ plogis(sum(logit$coefficients * typical))
 pnorm(sum(probit$coefficients * typical))
 
 #For comparison, the overall average in the sample is:
-teachers[ , mean(school_pct_disadv < 100)]
+teachers[ , mean(school_pct_disadv < 100, na.rm = TRUE)]
 ```
 
 ## Reshaping
 
+Let's read the full demographic file on student gender again. This is just a copy-paste of what we did above.
+
+```{r excel_gender_redux, warning = FALSE, results = "hide"}
+school_gender <-
+  setDT(read_excel("./data/2015-2016 Enr Dem (Suppressed).xls", 
+                   sheet = "Gender", skip = 6,
+                   col_names = c("", "school_id", "school_name", "grade",
+                                 "total_enrolled", "count_female",
+                                 "pct_female", "count_male", "pct_male")))
+```
+```{r print_gender}
+school_gender
+
+#Note that grade is pretty poorly formatted.
+#  Let's fix that quickly. I'll explain what's
+#  going on here later when we go into
+#  regular expressions in a bit more depth.
+#  Basically, we're deleting the decimal and everything after it.
+school_gender[grade != "ALL GRADES", 
+              grade := paste0("GRADE_", gsub("\\..*", "", grade))][]
+```
+
+Above, we were focused only on school-level demographic data, so we threw away a lot of information.
+
+In certain settings, we may be more focused on grade-level outcomes (if, for example, we knew the _grade_ that each teacher taught, primarily, than we might want to associate the grade-level demographics to each teacher).
+
+All of this information is here in the file we've got, but it's in a slightly unfortunate format -- there are many rows associated with each school. It's much easier to merge a `data.table` where each school is found in one, and only one, row. 
+
+### Long to Wide: `dcast`
+
+To accomplish this in Stata we would use `reshape wide`, like `reshape wide stub, i(i) j(j)`.
+
+In R, we use the `dcast` function (I believe this means **d**ata **cast**, with the idea that we're casting data "out and to the side" by going from long to wide). There are three main arguments to `dcast`: `data` (the `data.table` to be reshaped), `formula` (a specification of how to reshape, akin to the `i(i)` and `j(j)` in Stata), and `value.var` (the equivalent of `stub` in Stata).
+
+It can be confusing to wrap your head around which arguments go where; here is an illustration to help orient your thinking about a given problem:
+
+![Dcast Illustration](http://i.imgur.com/TbHd96c.png "dcast_chart")
+
+Basically, the variables that we want to end up as rows, we put on the _left_ of the formula (**L**eft-**H**and **S**ide), and those that we want to end up as columns we put on the _right_ of the formula. `value.var` is(are) the variable(s) dictating what comes from each LHS/RHS pair in the data.
+
+Let's reshape the gender demographics data so that there is only one row associated with each school:
+
+```{r reshape_gender}
+school_gender_wide <- 
+  dcast(school_gender, school_id ~ grade, value.var = "pct_male")
+school_gender_wide
+```
+
+We now have all of the grades as columns in the output. Note how much data is missing -- this shows that most schools only cover a small range of grades. The grades are also out of order -- they've been alphabetized, and `"GRADE 10"` comes before `"GRADE 2"` alphabetically. We can fix this by using `factor`s; we may get into that later.
+
+Note that we've lost a lot of information that was in or data originally -- the data on student counts, the name of the school, etc. We can keep this sort of thing by using `dcast` more flexibly:
+
+```{r reshape_gender_extra}
+#keep school name by adding it as an ID
+#  variable; since school_name is the same
+#  for every school_id, this will not
+#  change our output.
+dcast(school_gender, school_id + school_name ~ grade, value.var = "pct_male")
+
+#keep the count of male students; for brevity,
+#  we'll also exclude a bunch of grades to the
+#  output is not as space-consuming
+dcast(school_gender[grade %in% paste0("GRADE_", 1:6)],
+      school_id ~ grade, value.var = c("pct_male", "count_male"))
+```
+
+### Wide to Long: `melt`
+
+As often as we're given data in long form that we prefer in wide form, we're presented with data in _wide_ form that we'd prefer in _long_ form. Stata uses similar terminology for both -- `reshape wide` for the former and `reshape long` for the latter, but R uses a different word -- `dcast` for the former and `melt` for the latter. I picture the data set made of wax and melting away into a longer form.
+
+`melt` also takes three main arguments -- `data` (same as before), `id.vars` (same as LHS above), and `measure.vars` (basically RHS above). `measure.vars` can be a bit tricky, and there are a few ways to use it. First we can specify the column names explicitly. Second, we can specify a pattern matched by the names of the columns we'd like. Last, we can use column numbers (this isn't recommended, so I won't demonstrate it). This gets slightly more complicated when we want to split into more than one new column.
+
+Let's try this with our `school_gender` data. We'll stack the genders on top of each other and create a single column for student counts, then another for percentages (basically doubling the number of rows in the table).
+
+```{r gender_melt}
+#First, using explicit column names
+melt(school_gender, 
+     id.vars = c("school_id", "grade"), 
+     measure.vars = c("count_male", "count_female"))
+
+#It's usually more concise to use the patterns
+#  convenience "function"; the syntax for this
+#  generally involves regular expressions, so
+#  I'll hold off on demonstrating the full
+#  power of this approach for now. 
+melt(school_gender, 
+     id.vars = c("school_id", "grade"), 
+     measure.vars = patterns("count"))
+
+#A bit more careful about the output to make
+#  it a bit more understandable
+melt(school_gender, 
+     id.vars = c("school_id", "grade"), 
+     measure.vars = patterns("count"),
+     variable.name = "gender",
+     value.name = "count")
+```
+
+We can extend this approach to handle reshaping both `count` and `pct` like so:
+
+```{r gender_melt_both}
+#Admittedly a bit tough to tell whether variable = 1
+#  corresponds to Male or Female
+melt(school_gender,
+     id.vars = c("school_id", "grade"),
+     measure.vars = patterns("count", "pct"))
+
+#If we want to use the explicitly-name approach
+#  of before, we have to keep all associated columns
+#  as one item of a list -- here, the first
+#  item of the list is for counts, and the second
+#  item of the list is for percentages.
+#Advantage: we know for sure that count_male
+#  and pct_male correspond to variable = 1
+melt(school_gender,
+     id.vars = c("school_id", "grade"),
+     measure.vars = list(c("count_male", "count_female"),
+                         c("pct_male", "pct_female")))
+
+#We can again specify value.name to facilitate understanding
+melt(school_gender,
+     id.vars = c("school_id", "grade"),
+     measure.vars = list(c("count_male", "count_female"),
+                         c("pct_male", "pct_female")),
+     value.name = c("count", "pct"))
+```
+
 ## String Data / regex
+
+String data is ubiquitous. And it is ubiquitously messy. Typos, transpositions, inconsistent abbreviations, strange character encodings, arbitrary punctuation... there's no end to the nightmares that can be caused to a data analyst forced to work with string data.
+
+The most powerful tool that a data analyst can have in their belt to attack such data is a facility with _regular expressions_.
+
+Basically, regular expressions are a language for talking to and manipulating string data. Have you ever wondered how many words in English fit some certain pattern? Regular expressions are your best friend.
+
+What are all the words in the English language that have the five vowels in order? I used the [Regex Dictionary](http://www.visca.com/regexdict/) to search for the pattern `a.*e.*i.*o.*u.*` (we'll cover what this means momentarily) and got the following list:
+
+`abstemious, adventitious, amentiferous, anemophilous, arenicolous, argentiferous, arsenious, arteriovenous, autoecious, cavernicolous, facetious, garnetiferous, sacrilegious, theater-in-the-round`
+
+Just like that, instantly! Regular expressions is basically a programming language in and of itself. They can be accessed through most other programs -- Stata, Excel, SAS, MATLAB, Python, you name it. Here we'll obviously focus on their use in R.
+
+To just introduce some of the most common things used in regex, I'll just do a bunch of quick examples demonstrating a certain type of pattern on a single string; then at the end we'll quickly apply this to some of our school data.
+
+### `gsub`, `grep`, `grepl`, `strsplit`
+
+These four are the workhorse functions of using regular expressions in R. They each serve a distinct purpose, and I'll try and use all four in this brief overview a couple of different times.
+
+ 1. `gsub` is used for **sub**stitution of patterns. Want to delete all numbers? Cut certain strings from names? This is your friend. A quick side note on etymology -- the "g" in `gsub` stands for **g**lobal. There is a rarely-used alternative to `gsub`, `sub`, which will replace only the first match of the supplied pattern... I've only ever used it once, just something to keep in mind.
+ 2. `grep` (an obscure acronym for **g**lobal **r**egular **e**xpression **p**rint, though I only ever say "grep") has two purposes. The first identifies if elements of a string match a pattern, and then returns the indices of the vector corresponding to matches. The second (with setting the argument `value = TRUE`) returns _the matched strings themselves_.
+ 3. `grepl` (the "l" stands for **l**ogical) is used to simply test for existence of the pattern in strings. If the pattern is matched, we get `TRUE`, otherwise `FALSE`.
+
+### Simple, Exact Substring Matching
+
+The most common regular expression is simply an _exact_ sequence of letters. Suppose we wanted to find all the people named Bob. Then we might do:
+
+```{r find_bob}
+strings <- c("Bob Dylan", "Johnny Cash", "Bob Marley", "Janis Joplin")
+
+#note the order of arguments!!
+#  this is a pet peeve of mine, as I'd expect
+#  strings to go first.
+grep("Bob", strings, value = TRUE)
+
+firsts <- c("Bob", "Johnny", "Bob", "Janis")
+lasts <- c("Dylan", "Cash", "Marley", "Joplin")
+#We might use grep without value = TRUE to
+#  find the last names of all Bobs:
+grep("Bob", strings)
+
+lasts[grep("Bob", strings)]
+
+mons <- c("January", "February", "March", "April",
+          "May", "June", "July", "August",
+          "September", "October", "November", "December")
+
+#Which months can we eat oysters?
+grep("r", mons)
+```
+
+### Beginning/End Anchors: `^` and `$`
+
+Sometimes we want to be sure we're matching a pattern from the beginning or end of a string. Regex uses two symbols to represent these: `^` (beginning) and `$` (end).
+
+Let's try it out:
+
+```{r regex_beg_end}
+strings <- c("Bob Dylan", "Johnny Cash",
+             "Bob Marley", "Janis Joplin",
+             "Billy-Bob Thornton")
+
+#Just matching Bob will give us the last
+#  string as well:
+grep("Bob", strings, value = TRUE)
+
+#To exclude this, we can force Bob
+#  to have come from the beginning
+#  of the string:
+grep("^Bob", strings, value = TRUE)
+
+states <- 
+  c("Alabama", "Alaska", "Arizona", "Arkansas",
+    "California", "Colorado", "Connecticut",
+    "Delaware", "Florida", "Georgia", "Hawaii",
+    "Idaho", "Illinois", "Indiana", "Iowa",
+    "Kansas", "Kentucky", "Louisiana", "Maine",
+    "Maryland", "Massachusetts", "Michigan",
+    "Minnesota", "Mississippi", "Missouri",
+    "Montana", "Nebraska", "Nevada", "New Hampshire", 
+    "New Jersey", "New Mexico", "New York", 
+    "North Carolina", "North Dakota", "Ohio", 
+    "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", 
+    "South Carolina", "South Dakota", "Tennessee", 
+    "Texas", "Utah", "Vermont", "Virginia", "Washington", 
+    "West Virginia", "Wisconsin", "Wyoming")
+
+#Which states start with New?
+grep("^New", states, value = TRUE)
+
+#Which states DON'T end with a?
+states[!grepl("a$", states)]
+
+#We could also have used another
+#  argument of grep, invert,
+#  to accomplish the same thing as
+#  x[!grepl("pattern", x)]
+grep("a$", states, value = TRUE, invert = TRUE)
+```
+
+### Multiple Possibilities: `|`
+
+As typically in programming, we can use `|` to mean "or". `|` separates patterns. Let's try it out:
+
+```{r regex_or}
+#Let's get states starting with directional names
+grep("North|South|East|West", states, value = TRUE)
+```
+
+### White Space: `\\s`
+
+White space comes in many forms. Obviously the most common is a simple space. But also included in this are other sorts of blank characters that may show up unexpectedly in our data, like tabs (`\t`), newlines (`\n`), a carriage return (`\r`), a form feed (`\f`), etc. (like I said, string data is messy).
+
+In regex in R, `\\s` matches _all_ of these (those who have seen regex before should note that we need two backslashes because the backslash itself needs to be escaped in an R string). For those interested in web scraping, unfortunately, it appears that `\\s` does _not_ match `&nbsp;`; we'll return to this later.
+
+```{r regex_whitespace}
+#Which states have a space of any sort?
+grep("\\s", states, value = TRUE)
+```
+
+
+### Wildcard: `.`
+
+Sometimes, we don't care _what_ character is in a certain place, just that it's there. This type of pattern is called a wildcard, and it's denoted in regex by `.`.
+
+Actually, it's rare to use it by itself, but it'll come up a lot when we have more tools. The only thing I can think of for this alone is cheating on crosswords. Suppose we wanted to fill in a crossword answer that had the pattern `L _ V _ _ _ _ _ _`. As long as we know it's one word, we can go to the Regex dictionary and search the pattern: `l.v......` and we'll get the full list of possible answers: `lava-lava, lavaliere, leviathan, Levitical, Leviticus, liverleaf, liverwort, liveryman, livestock`. We'll use this more soon.
+
+### Quantifiers: `*`, `+`, `?`, `{m(, n)}`
+
+The most common appearance of `.` from the last section is as `.*`. We saw this when I found all the pan-vowel words in the introduction to this section.
+
+`*` is a quantifier -- it quantifies the piece of the pattern directly before it. In particular, `*` says to match the thing before it _0 or more times_. So `.*` means "match _anything_ at least 0 times." So the regex in the introduction, `a.*e.*i.*o.*u` means match "'a' followed by _anything any number of times_ followed by 'e' followed by _anything any number of times_ followed by 'i' followed by _anything any number of times_ followed by 'o' followed by _anything any number of times_ followed by 'u'".
+
+Here are all the possible quantifiers:
+
+ 1. `*`: Match _at least 0 times_
+ 2. `+`: Match _at least 1 time_
+ 3. `?`: Match _exactly_ 0 or 1 time.
+ 4. `{m}`: Match _exactly_ `m` times.
+ 5. `{m,n}`: Match _between_ `m` and `n` times, inclusive. If `n` is blank, it's _at least_ `m` times.
+ 
+ Some demonstration:
+ 
+ 
+```{r regex_quantifiers}
+#What states have a doubled s?
+grep("s{2}", states, value = TRUE)
+
+#Which states have an a in them
+#  between the first and the last letter?
+#  (first letter is excluded because
+#   we're only looking for lowercase a)
+grep("a.+", states, value = TRUE)
+
+flips <-
+  c("HTHHHTHHHTH",
+    "THTTHTTHHTH",
+    "THTHTHHTHHHT",
+    "THTHTTTHTTHTTT")
+
+#Which sequences of coin flips had
+#  at least 3 heads in a row?
+grepl("H{3, }", flips)
+
+#Let's match the middle initial K, possibly
+#  followed by some punctuation
+grepl("\\sK.?", c("Johnson, Mary K",
+                  "Hobbes, Calvin K.",
+                  "Martin, George R. R."))
+```
+
+### Group Matching: `[]`
+
+`[]` is used for a less inclusive version of `.`. We specify the characters that we're OK with inside of `[]` and they'll be matched. Most commonly, this is used for matching _any letter_ or _any number_. To do this, we use `-` inside `[]` to mean "through", like `[A-Z]` (A through Z):
+
+```{r regex_group}
+#Let's match ANY middle initial
+nms <- c("Johnson, Mary K",
+         "Hobbes, Calvin K.",
+         "Martin, George R. R.", "Obama, Barack",
+         "Prince, The Artist Formerly Known As")
+grepl("\\s[A-Z]\\.?$", nms)
+
+#If we want to find anyone with a period, 
+#  we have to be careful. This won't work:
+grepl(".", nms)
+
+#We CAN put a period inside a group:
+grepl("[.]", nms)
+
+#OR we can escape it with \\:
+grepl("\\.", nms)
+
+#Let's remove all digits from some addresses
+gsub("[0-9]", "", c("3718 Locust Walk",
+                    "219 S 41st Street",
+                    "1600 Pennsylvania Ave NW"))
+
+#Whoops, we took away too much there!
+#  We also missed the leading white space
+#  Let's try again:
+gsub("^[0-9]*\\s*", "", c("3718 Locust Walk",
+                          "219 S 41st Street",
+                          "1600 Pennsylvania Ave NW"))
+```
+
+#### Specials in Grouping: `[:punct:]`, `[:alnum:]`
+
+Also within `[]` we can refer to certain sets of characters with special shorthands. The two most useful are `[:punct:]` to refer to all punctuation (well, most -- specifically, `[:punct:]` matches all of `[-[]\;',./!@#%&*()_{}::"?]`), and `[:alnum:]` to refer to all alphanumeric characters (i.e., `[:alnum:]` is the same as `[A-Za-z0-9]`). (There are also `[:upper:]`, `[:lower:]`, `[:digit:]`, and `[:alpha:]`, but all of these are longer to write out than just writing `A-Z`, `a-z`, `0-9`, and `a-zA-Z`, respectively)
+
+```{r regex_punct_alnum}
+#get rid of all punctuation
+gsub("[[:punct:]]", "", "John C. Willington, Jr.")
+
+#get rid of all alphanumeric characters
+gsub("[[:alnum:]]", "", "John C. Willington, Jr.")
+```
+
+#### Negative Group Matching: `[^]`
+
+We can specify a group of characters _not_ to match by starting the matching group with `[^` instead of `[`.
+
+```{r regex_group_not}
+#Keep only digits
+gsub("[^0-9]", "", c("3718 Locust Walk",
+                     "219 S 41st Street",
+                     "1600 Pennsylvania Ave NW"))
+```
+
+### Awesome Tools for Practicing
+
+I think that's enough for today. Some other common things to look up:
+
+* `()` to denote matched groups, along with `\\1`, `\\2`, etc.
+* Look-ahead and look-behind, both positive and negative, using `perl = TRUE`
+* `\\U` and `\\L` to force letters upper- or lower-case within regex
+
+Besides that, regex is all about playing around extensively with your actual data.
+
+And staring at a regex cheat sheet! I have this printed and pasted above my desk:
+
+https://www.cheatography.com/davechild/cheat-sheets/regular-expressions/
+
+I also frequently visit this website, which allows you to test regexes and breaks down the pattern step-by-step with explanations and pretty colors:
+
+https://regex101.com/
 
 ## Non-.csv Data
 

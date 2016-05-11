@@ -110,7 +110,7 @@ $(document).ready(function () {
 
 <h1 class="title">IES R Tutorial</h1>
 <h4 class="author"><em>Michael Chirico</em></h4>
-<h4 class="date"><em>Compiled May 10, 2016 at 00:35</em></h4>
+<h4 class="date"><em>Compiled May 10, 2016 at 23:09</em></h4>
 
 </div>
 
@@ -171,8 +171,21 @@ $(document).ready(function () {
 <li><a href="#predictions-from-a-model"><span class="toc-section-number">3.4.2</span> Predictions from a model</a></li>
 <li><a href="#probitlogit"><span class="toc-section-number">3.4.3</span> Probit/Logit</a></li>
 </ul></li>
-<li><a href="#reshaping"><span class="toc-section-number">3.5</span> Reshaping</a></li>
-<li><a href="#string-data-regex"><span class="toc-section-number">3.6</span> String Data / regex</a></li>
+<li><a href="#reshaping"><span class="toc-section-number">3.5</span> Reshaping</a><ul>
+<li><a href="#long-to-wide-dcast"><span class="toc-section-number">3.5.1</span> Long to Wide: <code>dcast</code></a></li>
+<li><a href="#wide-to-long-melt"><span class="toc-section-number">3.5.2</span> Wide to Long: <code>melt</code></a></li>
+</ul></li>
+<li><a href="#string-data-regex"><span class="toc-section-number">3.6</span> String Data / regex</a><ul>
+<li><a href="#gsub-grep-grepl-strsplit"><span class="toc-section-number">3.6.1</span> <code>gsub</code>, <code>grep</code>, <code>grepl</code>, <code>strsplit</code></a></li>
+<li><a href="#simple-exact-substring-matching"><span class="toc-section-number">3.6.2</span> Simple, Exact Substring Matching</a></li>
+<li><a href="#beginningend-anchors-and"><span class="toc-section-number">3.6.3</span> Beginning/End Anchors: <code>^</code> and <code>$</code></a></li>
+<li><a href="#multiple-possibilities"><span class="toc-section-number">3.6.4</span> Multiple Possibilities: <code>|</code></a></li>
+<li><a href="#white-space-s"><span class="toc-section-number">3.6.5</span> White Space: <code>\\s</code></a></li>
+<li><a href="#wildcard-."><span class="toc-section-number">3.6.6</span> Wildcard: <code>.</code></a></li>
+<li><a href="#quantifiers-m-n"><span class="toc-section-number">3.6.7</span> Quantifiers: <code>*</code>, <code>+</code>, <code>?</code>, <code>{m(, n)}</code></a></li>
+<li><a href="#group-matching"><span class="toc-section-number">3.6.8</span> Group Matching: <code>[]</code></a></li>
+<li><a href="#awesome-tools-for-practicing"><span class="toc-section-number">3.6.9</span> Awesome Tools for Practicing</a></li>
+</ul></li>
 <li><a href="#non-.csv-data"><span class="toc-section-number">3.7</span> Non-.csv Data</a><ul>
 <li><a href="#sas-read_sas"><span class="toc-section-number">3.7.1</span> SAS: <code>read_sas</code></a></li>
 <li><a href="#fixed-width-read_fwf"><span class="toc-section-number">3.7.2</span> Fixed-width <code>read_fwf</code></a></li>
@@ -691,20 +704,20 @@ paste(first, last)</code></pre>
 <p>The most common kind of random numbers that people want are uniform draws and normal draws.</p>
 <pre class="r"><code>#generate 10 U[0, 1] draws
 runif(10)</code></pre>
-<pre><code>##  [1] 0.2661151 0.5470388 0.8538530 0.6601233 0.2082490 0.5328628 0.2382517
-##  [8] 0.5865554 0.7045621 0.7447533</code></pre>
+<pre><code>##  [1] 0.1840809 0.8194316 0.8304861 0.7839395 0.9660871 0.7076991 0.7874585
+##  [8] 0.8567685 0.4096445 0.6738868</code></pre>
 <pre class="r"><code>#generate 10 U[3, 5] draws
 runif(10, min = 3, max = 5)</code></pre>
-<pre><code>##  [1] 3.087699 4.627508 4.830471 4.950350 3.959840 4.841079 4.386204
-##  [8] 4.438730 3.547815 4.274836</code></pre>
+<pre><code>##  [1] 3.876585 3.727956 3.576922 3.801298 4.494085 4.492675 3.254823
+##  [8] 3.021292 4.126861 3.864706</code></pre>
 <pre class="r"><code>#generate 10 N(0, 1) draws
 rnorm(10)</code></pre>
-<pre><code>##  [1]  0.0002614841 -0.0766816105  0.2820712118 -0.0673649394  2.3605753785
-##  [6] -0.1455430387 -0.7444287365 -0.1286736440 -1.9303419287  0.2249640763</code></pre>
+<pre><code>##  [1]  0.9508258  0.4114534  1.1859292 -0.1463913  0.3848013  0.2807693
+##  [7]  0.5795629 -0.3533204 -0.5627931  3.1083002</code></pre>
 <pre class="r"><code>#generate 10 N(3, 5) draws
 rnorm(10, mean = 3, sd = 5)</code></pre>
-<pre><code>##  [1]  1.329743 10.802494 -4.466919 11.937551  9.865062  3.524319  2.028806
-##  [8] -4.861941  3.928506  5.797340</code></pre>
+<pre><code>##  [1] -2.7974700  3.2442619  5.7026183  4.1893584  3.9174875  6.7643044
+##  [7]  0.7350857  5.5254742  6.7786057 -5.0258051</code></pre>
 <p>These examples highlight the common format of random number generators in R. To get random numbers from a distribution, there is probably a function named like <code>r</code><strong><code>dist</code></strong>, where <strong><code>dist</code></strong> is an abbreviation for the distribution (here, <strong>unif</strong>orm and <strong>norm</strong>al). The first argument is the number of draws; the rest of the arguments are parameters.</p>
 <p>Here is a complete table of all of the common distributions built in to R, and the function used to invoke their random number generator (RNG):</p>
 <table>
@@ -859,10 +872,10 @@ sample(5)</code></pre>
 <pre><code>## [1] 4 3 1 2 5</code></pre>
 <pre class="r"><code>#A size-3 subset of 1:5
 sample(5, 3)</code></pre>
-<pre><code>## [1] 3 2 4</code></pre>
+<pre><code>## [1] 1 3 2</code></pre>
 <pre class="r"><code>#A size-5 subset of 1:5, with replacement
 sample(5, 5, replace = TRUE)</code></pre>
-<pre><code>## [1] 5 5 2 5 4</code></pre>
+<pre><code>## [1] 1 3 3 5 1</code></pre>
 <pre class="r"><code>#A weighted sample of 1:5, heavily weighting 1
 sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></pre>
 <pre><code>## [1] 1 1 1 1 1</code></pre>
@@ -870,10 +883,10 @@ sample(5, 5, replace = TRUE, prob = c(.99, .0025, .0025, .0025, .0025))</code></
 <pre class="r"><code>#Flip 10 coins, get the percentage heads
 flips &lt;- sample(c(&quot;H&quot;, &quot;T&quot;), 10, replace = TRUE)
 mean(flips == &quot;H&quot;)</code></pre>
-<pre><code>## [1] 0.3</code></pre>
+<pre><code>## [1] 0.4</code></pre>
 <pre class="r"><code>#Roll a pair of dice and add them
 sum(sample(6, 2, replace = TRUE))</code></pre>
-<pre><code>## [1] 7</code></pre>
+<pre><code>## [1] 2</code></pre>
 <pre class="r"><code>#create a deck of labeled cards:
 #  (I copy-pasted the text for the suits from
 #   Wikipedia, but we could have used S/H/D/C:
@@ -888,7 +901,7 @@ deck</code></pre>
 ## [45] &quot;7♣&quot;  &quot;8♣&quot;  &quot;9♣&quot;  &quot;10♣&quot; &quot;J♣&quot;  &quot;Q♣&quot;  &quot;K♣&quot;  &quot;A♣&quot;</code></pre>
 <pre class="r"><code>#Now draw a poker hand
 sample(deck, 5)</code></pre>
-<pre><code>## [1] &quot;A♠&quot; &quot;2♥&quot; &quot;Q♣&quot; &quot;2♣&quot; &quot;4♣&quot;</code></pre>
+<pre><code>## [1] &quot;5♦&quot; &quot;8♠&quot; &quot;K♠&quot; &quot;Q♥&quot; &quot;2♠&quot;</code></pre>
 </div>
 <div id="replicate" class="section level3">
 <h3><span class="header-section-number">2.6.3</span> <code>replicate</code></h3>
@@ -907,7 +920,7 @@ simulations &lt;-
 #How often does a flush happen?
 #  True frequency is 0.1965%
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.0019</code></pre>
+<pre><code>## [1] 0.0025</code></pre>
 <pre class="r"><code>#What about a pair (just two cards match)?
 #  true frequency: 42%
 simulations &lt;- 
@@ -917,7 +930,7 @@ simulations &lt;-
     sum(duplicated(faces)) == 1 #one pair if there's exactly _one_ match
   })
 mean(simulations)</code></pre>
-<pre><code>## [1] 0.4242</code></pre>
+<pre><code>## [1] 0.4246</code></pre>
 </div>
 <div id="set.seed" class="section level3">
 <h3><span class="header-section-number">2.6.4</span> <code>set.seed</code></h3>
@@ -1086,14 +1099,14 @@ x &lt;- rnorm(1000)
 r &lt;- lm(y ~ x)
 str(r)</code></pre>
 <pre><code>## List of 12
-##  $ coefficients : Named num [1:2] -0.04653 -0.00429
+##  $ coefficients : Named num [1:2] 0.0192 -0.0297
 ##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
-##  $ residuals    : Named num [1:1000] 0.7981 -0.3993 -1.0337 -1.0255 0.0431 ...
+##  $ residuals    : Named num [1:1000] 0.473 -0.444 -0.304 0.529 -0.691 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ effects      : Named num [1:1000] 1.474 -0.1363 -1.0678 -1.0543 0.0108 ...
+##  $ effects      : Named num [1:1000] -0.605 -0.958 -0.33 0.512 -0.73 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;(Intercept)&quot; &quot;x&quot; &quot;&quot; &quot;&quot; ...
 ##  $ rank         : int 2
-##  $ fitted.values: Named num [1:1000] -0.0441 -0.0363 -0.0499 -0.048 -0.0492 ...
+##  $ fitted.values: Named num [1:1000] 0.02351 0.03651 -0.00474 0.01427 -0.03276 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##  $ assign       : int [1:2] 0 1
 ##  $ qr           :List of 5
@@ -1102,7 +1115,7 @@ str(r)</code></pre>
 ##   .. .. ..$ : chr [1:1000] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##   .. .. ..$ : chr [1:2] &quot;(Intercept)&quot; &quot;x&quot;
 ##   .. ..- attr(*, &quot;assign&quot;)= int [1:2] 0 1
-##   ..$ qraux: num [1:2] 1.03 1.08
+##   ..$ qraux: num [1:2] 1.03 1.02
 ##   ..$ pivot: int [1:2] 1 2
 ##   ..$ tol  : num 1e-07
 ##   ..$ rank : int 2
@@ -1125,8 +1138,8 @@ str(r)</code></pre>
 ##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
 ##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;y&quot; &quot;x&quot;
 ##  $ model        :'data.frame':   1000 obs. of  2 variables:
-##   ..$ y: num [1:1000] 0.754 -0.4356 -1.0836 -1.0735 -0.0061 ...
-##   ..$ x: num [1:1000] -0.567 -2.387 0.773 0.35 0.633 ...
+##   ..$ y: num [1:1000] 0.497 -0.408 -0.309 0.543 -0.723 ...
+##   ..$ x: num [1:1000] -0.144 -0.582 0.808 0.167 1.752 ...
 ##   ..- attr(*, &quot;terms&quot;)=Classes 'terms', 'formula' length 3 y ~ x
 ##   .. .. ..- attr(*, &quot;variables&quot;)= language list(y, x)
 ##   .. .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
@@ -2904,7 +2917,7 @@ str(gender_reg)</code></pre>
 ##   .. ..- attr(*, &quot;order&quot;)= int 1
 ##   .. ..- attr(*, &quot;intercept&quot;)= int 1
 ##   .. ..- attr(*, &quot;response&quot;)= int 1
-##   .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: 0x3e40c80&gt; 
+##   .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: 0x3cd7e28&gt; 
 ##   .. ..- attr(*, &quot;predvars&quot;)= language list(pay_rate, gender)
 ##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;character&quot;
 ##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;pay_rate&quot; &quot;gender&quot;
@@ -2921,7 +2934,7 @@ str(gender_reg)</code></pre>
 ##   .. .. ..- attr(*, &quot;order&quot;)= int 1
 ##   .. .. ..- attr(*, &quot;intercept&quot;)= int 1
 ##   .. .. ..- attr(*, &quot;response&quot;)= int 1
-##   .. .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: 0x3e40c80&gt; 
+##   .. .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: 0x3cd7e28&gt; 
 ##   .. .. ..- attr(*, &quot;predvars&quot;)= language list(pay_rate, gender)
 ##   .. .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;character&quot;
 ##   .. .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;pay_rate&quot; &quot;gender&quot;
@@ -3301,15 +3314,582 @@ plogis(sum(logit$coefficients * typical))</code></pre>
 pnorm(sum(probit$coefficients * typical))</code></pre>
 <pre><code>## [1] 0.2480797</code></pre>
 <pre class="r"><code>#For comparison, the overall average in the sample is:
-teachers[ , mean(school_pct_disadv &lt; 100)]</code></pre>
-<pre><code>## [1] NA</code></pre>
+teachers[ , mean(school_pct_disadv &lt; 100, na.rm = TRUE)]</code></pre>
+<pre><code>## [1] 0.2598253</code></pre>
 </div>
 </div>
 <div id="reshaping" class="section level2">
 <h2><span class="header-section-number">3.5</span> Reshaping</h2>
+<p>Let’s read the full demographic file on student gender again. This is just a copy-paste of what we did above.</p>
+<pre class="r"><code>school_gender &lt;-
+  setDT(read_excel(&quot;./data/2015-2016 Enr Dem (Suppressed).xls&quot;, 
+                   sheet = &quot;Gender&quot;, skip = 6,
+                   col_names = c(&quot;&quot;, &quot;school_id&quot;, &quot;school_name&quot;, &quot;grade&quot;,
+                                 &quot;total_enrolled&quot;, &quot;count_female&quot;,
+                                 &quot;pct_female&quot;, &quot;count_male&quot;, &quot;pct_male&quot;)))</code></pre>
+<pre class="r"><code>school_gender</code></pre>
+<pre><code>##       school_id                  school_name      grade total_enrolled
+##    1:       101     John Bartram High School   9.000000            200
+##    2:       101     John Bartram High School  10.000000            197
+##    3:       101     John Bartram High School  11.000000            172
+##    4:       101     John Bartram High School  12.000000            141
+##    5:       101     John Bartram High School ALL GRADES            710
+##   ---                                                                 
+## 1662:       878 Philadelphia Virtual Academy   9.000000             46
+## 1663:       878 Philadelphia Virtual Academy  10.000000             69
+## 1664:       878 Philadelphia Virtual Academy  11.000000             79
+## 1665:       878 Philadelphia Virtual Academy  12.000000             64
+## 1666:       878 Philadelphia Virtual Academy ALL GRADES            311
+##       count_female pct_female count_male pct_male
+##    1:    70.000000   0.350000 130.000000 0.650000
+##    2:    86.000000   0.436548 111.000000 0.563452
+##    3:    78.000000   0.453488  94.000000 0.546512
+##    4:    63.000000   0.446809  78.000000 0.553191
+##    5:   297.000000   0.418310 413.000000 0.581690
+##   ---                                            
+## 1662:            s          s          s        s
+## 1663:    43.000000   0.623188  26.000000 0.376812
+## 1664:    47.000000   0.594937  32.000000 0.405063
+## 1665:    41.000000   0.640625  23.000000 0.359375
+## 1666:   191.000000   0.614148 120.000000 0.385852</code></pre>
+<pre class="r"><code>#Note that grade is pretty poorly formatted.
+#  Let's fix that quickly. I'll explain what's
+#  going on here later when we go into
+#  regular expressions in a bit more depth.
+#  Basically, we're deleting the decimal and everything after it.
+school_gender[grade != &quot;ALL GRADES&quot;, 
+              grade := paste0(&quot;GRADE_&quot;, gsub(&quot;\\..*&quot;, &quot;&quot;, grade))][]</code></pre>
+<pre><code>##       school_id                  school_name      grade total_enrolled
+##    1:       101     John Bartram High School    GRADE_9            200
+##    2:       101     John Bartram High School   GRADE_10            197
+##    3:       101     John Bartram High School   GRADE_11            172
+##    4:       101     John Bartram High School   GRADE_12            141
+##    5:       101     John Bartram High School ALL GRADES            710
+##   ---                                                                 
+## 1662:       878 Philadelphia Virtual Academy    GRADE_9             46
+## 1663:       878 Philadelphia Virtual Academy   GRADE_10             69
+## 1664:       878 Philadelphia Virtual Academy   GRADE_11             79
+## 1665:       878 Philadelphia Virtual Academy   GRADE_12             64
+## 1666:       878 Philadelphia Virtual Academy ALL GRADES            311
+##       count_female pct_female count_male pct_male
+##    1:    70.000000   0.350000 130.000000 0.650000
+##    2:    86.000000   0.436548 111.000000 0.563452
+##    3:    78.000000   0.453488  94.000000 0.546512
+##    4:    63.000000   0.446809  78.000000 0.553191
+##    5:   297.000000   0.418310 413.000000 0.581690
+##   ---                                            
+## 1662:            s          s          s        s
+## 1663:    43.000000   0.623188  26.000000 0.376812
+## 1664:    47.000000   0.594937  32.000000 0.405063
+## 1665:    41.000000   0.640625  23.000000 0.359375
+## 1666:   191.000000   0.614148 120.000000 0.385852</code></pre>
+<p>Above, we were focused only on school-level demographic data, so we threw away a lot of information.</p>
+<p>In certain settings, we may be more focused on grade-level outcomes (if, for example, we knew the <em>grade</em> that each teacher taught, primarily, than we might want to associate the grade-level demographics to each teacher).</p>
+<p>All of this information is here in the file we’ve got, but it’s in a slightly unfortunate format – there are many rows associated with each school. It’s much easier to merge a <code>data.table</code> where each school is found in one, and only one, row.</p>
+<div id="long-to-wide-dcast" class="section level3">
+<h3><span class="header-section-number">3.5.1</span> Long to Wide: <code>dcast</code></h3>
+<p>To accomplish this in Stata we would use <code>reshape wide</code>, like <code>reshape wide stub, i(i) j(j)</code>.</p>
+<p>In R, we use the <code>dcast</code> function (I believe this means <strong>d</strong>ata <strong>cast</strong>, with the idea that we’re casting data “out and to the side” by going from long to wide). There are three main arguments to <code>dcast</code>: <code>data</code> (the <code>data.table</code> to be reshaped), <code>formula</code> (a specification of how to reshape, akin to the <code>i(i)</code> and <code>j(j)</code> in Stata), and <code>value.var</code> (the equivalent of <code>stub</code> in Stata).</p>
+<p>It can be confusing to wrap your head around which arguments go where; here is an illustration to help orient your thinking about a given problem:</p>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAAOyCAMAAABUkNx4AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAVxQTFRF////////RET/AAD/d3f/MzP/iIj/mZn/u7v/3d3/Zmb/ERH/qqr/zMz/7u7/VVX/IiL//3d3R1twAFJ3V4C7/wAARJAgAJkAd8l3uwAAiAAAdwAARAAAAAAAZgAAqgAAzAAA7gAAmQAAVQAA3QAAEQAAMwAAIgAAAB8AAFwAAIUAAGYAACkAAEcAAFIAAHAAAI8AADMAABQAAD0AAAoAAHoA8/Pz+Pj47u7u9vb2MDAwf39/Pz8/ICAgzs7OEBAQ3t7eX19fr6+v/FhY/zMz+mVl8NXV94qK/j8/+XFx87y8MDD8EBD+T0/5j4/1Pz/6zs7wb2/3r6/zMKowP7A/f8Z/EJ8QT7VPj8yPb29v/UxM7+LiICD9vr7x3t7vIKQgvt2+n5+f+H5+9aOjX1/4r9evb8FvzuPOj4+Pn9KfX7tf9LCwn5/03ujevr6+T09Pf3/28cnJ9peX+vr6oMOepAAAAAF0Uk5TAEDm2GYAAAABYktHRACIBR1IAAAACXBIWXMAAACWAAAAlgBxRv7wAAAuPElEQVR42u3d+XvTVuLo4RKTne0uvbksZitLAgkJSbg33xCyUDptp9u0UNq0dGG6DNMZYGbu//881w4klmTJkrzK8vv5YZ5JSBxXkd8cHR3J7xzT28Yqkgrd8XdABSwJWMCSBCxgScAClt1BAhawJAELWBKwgCUJWMCSBCxgScACliRgAUsSsIAlAQtYkoAFLEnAApYELGBJAhawJAELWBKwgCUJWMCSBCxgScACliRgAUsSsIAlAQtYkoAFLEnAApYELGBJAhawJGAJWBKwgCUJWMCSgAUsScACliRgAUsCFrAkAQtYKlPjY8cnJqempg52n+na/5mamJiYGbMjAQtYKlKzYxMnTibvSqemJk7P2krAAlbRy73Va8OSyYmJ02OzHf2gLjzX7N935vhUlv+yE8fP2B+ABaxygdXuqGRgYM1M5dB4xjgLWMAqJVhvRiWZX+GDAWt24lROhieQBSxglRWs2it88kxhwcrNFbKABaxyg1UrE1kDAOv0qfb+e06O2y+ABazSgnXsWIZBSd/Bmj3R/n/PjB0DWMAqL1jHpseKBtb4yY4GjfYMYAGrvGDVBlnFAmv8VGf/OcQCFrDKDFbaS7y/YCV4NXXiYGX7m0VkY2MzE5NTp4gFLGCNIFgpL/G+gjUbw9D0RPxc+uzpiWnzWMAC1qiB1fqosK9gTTWvVWh55m8sboLeuUJgAavYYKV//Zmx07XjqDZOrvUTrIn8S6vONP83Tdk7gAWsIQfr8DhqJm5Mcmq8EGBFDwhPZFoJ2rxqyw4GLGCVA6z6mGQyZsllIcCKDLCOZ/0POmmIBSxglRWs2iu8eZR1vABgRQZY2SfPZ6NinbZ/AAtYpQGrUhmLnl87NTt4sI7nWh/W6ljSEAtYwCoTWM2DkonBgxV6StO5rmQes4sBC1glBqtpUDI9cLBmO1lNFZn+OmEHARawygRW06BkfNBgnc52iJrNX/cgBRawSgVWdFAyMWiwJjq6wGayvTOMAhawhgOs2elMKxv6BtZUR9fXjGdepyFgAWsIwarMhB9jtkhg5d9HGlP201MTM/YxYAGrZGDNZlq81DewOvw5M6gCFrDKDFbkUuOJ4QZrFlXAAlapwZrIshRgWMASsIBVbrCOZ1keDixgAUtFAGssy9LRwYDlnlbAAhawWoF1rEhguW0osIAFrDYeZDDLGtyZHVjAAtbQgHXMuzgDC1jAavEgg550D5+zNMQCFrCA1WIOa9Bgnc60jlXAAtaIgjWTZUzTN7Aq4RsunHKiEFjAAlbiQdigV7pHb7hALGABC1iBTmZZSdA/sMajO4p7xAALWMA6bDbTr6V/YDW/jepJuwqwgAWsuCmsY5WBg3W6eV+ZclwILGABq3lAc3LwYFXi3pl6yulCYAELWNELcyYKANb4qbj95dTkjGWkwALWaIMVuUPy4N+EIuYoNTD+mzDQAhawRhisyHtQnKwUAaxkseoHhxNjRlrAAtZIghWVYaYYYEUdbRppTR63+wALWKMGVtSr6Yw/qAtVOhLrzVDrtKEWsIA1OmA1qTBTGLBaHhUGh1oz3iwVWMAaBbDGm1doVooDVszTS2h60kw8sIBVcrDOTDb/SsaLBFalcno686NNHbe0FFjAKitYszNxw5eJSrHAqh2znsr+gAZawAJWCcEaPz1xMvYXMlkpHFiV2TxkHZs+bhYeWMAaGrA66mSlgGDVZ9+n8jzspENDYAFrBMA6OVtQsCqVMxPTOR54yo4FLGCVHawTs5XCglWff5/MYdaUlQ7AAlapwZro47Fnm4tcz8xkRuuU9zMEFrDKC9b0WKX4YB2gdfzEdFcGjAIWsIYVrInZvD+oC8+17f/kM2MTGabhp02+AwtYZQRr8kyftOkSWAeNH09Dy5tXAAtYpQPr1MSZvmnTTbDqjR0/cYpYwALWqICV53Z4BQTr4PgwaRVsXSzzWMACVlnAOpnvNngFBevNTHyCWVP2D2ABqywjrPFKScCqJC4t9Y6GwAJWgcFK+eLw7a9OlgisWqenHBQCC1hlAivyHs8TpQKrUhmbzr8eVsACVmHBGm//oHAIwKrMThpiAQtY5QGrg4PCYQCr9voyiwUsYJUHrMi7EE6UDaymO8E7UQgsYA0vWNH3eR4vG1hNYyy7CLCANbxgVU60eVA4LGBVpuxlwAJWacCaPdXeQeHQgHXaeUJgAas0YEVnecbKBlYlLPKkfQRYwBpisCLHTNOzZQNr0qw7sIBVHrDOtHVQODxghZduTNtHgAWsYQYr+gb1YyUDa8xpQmABq0RgRa7QyXZQODxgjQMLWMAqE1jjbZxI6zdYs33eJgIWsAoKVjsHhf0Ea+z45PSx8e5sk5P2EWABa8jBilyhM12cN6GoWXWywwVU484SAgtYpQIrOjE9UQywJk924/TemHVYwAJWucCKXKFzbKwQYE11Zf+YsNIdWMAqGViRK3TSDwr7AdbxrhzMhc+BnraPAAtYQw9W9AqdiSKAdaYbO0jkQc7YR4AFrOEHK+9dDfoy6d7OArGmibDQY5yyiwALWGUA60y+g8K+gHW8jQVirQdY5tyBBaxSgBVdjDVRALAiM2vHZvL/kMjA0RQWsIBVDrAiB2Apv4/+rMOKvotEbrEiD+CIEFjAKgtYkSt0Wh8U9gesyHFqbrGi4FnUACxglQWsXAeFfVrpPhHdS07kmHlvepsv7/IFLGCVB6zIFTotfyN9Amu26c1QpzPvJ81vpGqABSxglQes6BU6rQ4K+wRW9CkdnOnLtJZqrPmt6l34DCxglQms6BU6E4MHq/mgsL7ofSbl2O7M8ZPN33Vq3P4BLGCVCazoOoKxwYPVNHH+drQ0kfjcxiZOxn7LjN0DWMAqFVjRK3SSDwr7B9bsyaQ95uTkxMzY2NEB4tjY2MTEicSv9i71wAJW2cCKLrScGDxYLcTKkwl3YAGrfGCdyXhQ2Eewko4Kc+V4EFjAKiFY0UnupIPCvoIVvagwd6fsXMACVinBil6hM1EEsCrjHR0WnrBgFFjAKilY45l+L30GqzbyO9XujjXtimdgAau0YGU7KOw7WM0X2mQ8GjTbDixglRms6OUwk8UAq1I5k3+UNT3jaBBYwCo1WE2Xw5wuCFg1S2em8gyuJu1TwAJW6cGKXqETd5ODwYBVH2bNnMg0zpqeNHUFLGCNBFjRK3ROFAiseuPHJ1ueNZyanPFmE8AClgrU+NjxicmpqcAx4smpqcmJ42OsAhawJAELWBKwgCUJWMCSgCVgScACliRgAUsCFrAkAQtYkoAFLAlYwJIELGBJAhawJGABSxKwgCUJWMCSgAUsScACliRgAUsCFrAkAQtYkoAFLAlYwJIELGBJAhawJGABSxKwgCUJWMCSgAUsScACliRgAUsCFrAkAQtYErAELAlYwJLUNbD+m9723/+HpEL3P995V2/7X3OSCt3/BhawJGABSxKwgCUBS8CSgAUsScAClgQsYEkCFrAkAQtYErCAJQlYwJIELGBJwAKWJGABSxKwgCUBC1iSgAUsScAClgQsYEkCFrAkAQtYErCAJQlYwJIELGBJwAKWJGABSxKwgCUBC1iSgAUsCVigApYELGBJAhawJGABy+4gAQtYkoAFLAlYwJIELGBJAhawJGABSxKwgCUJWMCSgAUsScACliRgAUsCFrAkAQtYkoAFLAlYwJIELGBJAhawJGABSxKwgCUJWMCSgAUsScACliRgAUsCFrAkAQtYErAELAlYwJIELGBJwAKWJGABSxKwgCUBC1iSgAUsScAClgQsYEkCFrAkAQtYErCAJQlYwJIELGBJwAKWJGABSxKwgCUBC1iSgAUsScAClgQsYEkCFrAkAQtYErCAJQlYwJIELGBJwAKWJGABSwKWgCUBC1iSgAUsCVjAkgQsYEkCFrAkYAFLErCAJQlYwJKABSxJwAKWJGABSwIWsCQBC1iSgAUsCVjAkgQsYEkCFrAkYAFLErCAJQlYwJKABSxJwAKWJGABSwIWsCQBC1iSgAUsCVjAkgQsYEnAErAkYAFLErCAJQELWJKABSxJwAKWBCxgSQIWsCQBC1gSsIAlCVjAkgQsYEnAApYkYAFLErCAJQELWJKABSxJwAKWBCxgSQIWsCQBC1gSsIAlCVjAkgQsYEnAApYkYAFLErCAJQELWJKABSwJWAKWBCxgSQIWsCRgAUsSsIAlCVjAkoAFLEnAApYkYAFLAhawJAELWJKABSwJWMCSBCxgSQIWsCRgAUsSsIAlCVjAkoAFLEnAApYkYAFLAhawJAELWJKABSwJWMCSBCxgSQIWsCRgAUsSsIAlAUvAkoAFLEnAApYELGBJAhawJJUSrLPnzl+4UK114cLF85cuA0tSMcG6cvW9arQL564BS1LRwLp2/no1tguXgCUB652+jZwu3jib9jVJXB2QdRZYErD6odW5G3Vzzrf+qss3qy07fwVYErB6PYd+8VCcll92tZrWjcvAkoDVU64uNI7qOvOqWr1+FlgSsHp3MHgx4M3NDr2qdRVYErB6NbwKz6J37FW1eglYErB6UpShxOVUl69nBev6ZWBJwOqDV9XEKagb1czdvAIsCVi996p6LuErz1dzdB5YErB671WSNZeruboGLAlY3S1uWiphXcOFfGBdAJYErO4WNy11I/5UYjVnZ4ElAaubxU9LdWOA1bMhFrCkEQXryvXM00+5B1i9GmIBSxpRsC5ml+ZifrAuAEsCVvcGWNmvrLlSbaNrwJKA1dsZrNh1DVfbAes8sCRgdaukO1u9l3mR+/WLV2vHj1fOno99qJvAkoDVpS5ln3y6Fs9VYE381bj5+8vAkoDV0yn3uHUN59KvcL52oz/HhMCSRhKshCPC6+cvZzoijN6R4cqNjEtQgSUBK2/xh3k3r2b90ssZVnUBSwJWz6awrp/LfOO+81ke8SywJGD1aFHDjYSVU+9lPAN4IeudaoAlAStXzRcH3riSfbbrbKZB20VgScDqRtcz3yX0SubLbq73/uocYEkjCNaV7KumLmV+X5zoSonrwJKA1YXOZj98O595DXsTbVeAJQGrBycJr+W4y9/5rMO2s8CSgNX9k4QX8yzYupx1MeolYEnA6j5Yl3K8T0Xy1NR7Pb84B1jSCIL1XuZF6c1TWNmnu4AlAav7y7Au5FmwdTXzaOwCsCRgdR2sFkOhPLeNOQssCVg9Byt50HQ5xxQWsCT1AqzM6w+uZrkjadIZxZvAkoDVR7DO57ovX89vMAMsCVjv5lg2ehZYkgoJ1pVqrtvyAUsC1uDAOpvvxsfAkoA1OLDyLBsFlqSBgpVn2SiwJA0UrHzvNngZWBKweg7WlczLRqu57rIFLAlYnXcj21KFc1nvjpxwly1gScDq+qU5ZzPe1CHlnXDOuzRHAlbPwUpi6HquKSxgSRrc3Rou5ZvCajqnCCwJWN2/42jCatCL+aawmgZkF4ElAav7t0jOel1Oy3uIXqm646gErO6DdSnL1NTVaq4rn5uPIM8BSwJW553NMhZqvlND63cavOhtviRg9eKt6jPcaq/5wufWVz5fuZ79zQ6BJQErezfTh1g3ck5hnav2fN0osKSRBOti6gKr5hs1pKzCulnt+aoGYEkjCdbVtKO9mBn3Vu8/EfcNF4ElAasbXUvh5dL1GLBaCXTlZr470QBLAlbbk1i1MVbjpN6VuOPBVm9oH7fItPUBJLAkYLU/iVWfdLpUP6937dL567FetVrUcDXnASSwJGB1MImV3nv5Hu0isCRgdacr+cG6mmNFQ2+msIAljSZYMfe6SinxEO/yhbwHkMCSgNXR5YSpJawavXwx9wEksCRgdXyesHVxI6Zr527kP4AElgSsHk+7X8x2S9JeniMEljSyYOUcYl3Lco/RXt4LC1jSKIN1qfMZrPO5DiCBJQGrHycKr1/Jvp6hdwMsYEmjC9aV65nBupTtRoApvgFLAlbvDwrfy7n89Ny7wJKA1eM3o0joRuKAKX6MduNdYEnAGsw01vXk+y7Enia8fg1YErB6MI11oyOv4odoV98FlgSsft1nJnx8dy3Xjdx7doYQWBKw3j3X+lzh+ZYn/M7257YywJKA9faCwBaDrBtn896lppdeAUsaebBq46SEufeb6bNR1/vpFbAkYNVHWeebriy8fjHLOzdf6Nv8FbAkYDXMunT+woU3A6abFy6ez/g+86HThNcvvQssCViFLXia8L0r7wJLAlZxa5wmvHm29z8NWBKwOunwdOLVfvwwYEnA6vQ2gDfPX+7PDwOWBKxOunChX1oBSwLWMAUsCVjAkgQsYEnAApYkYAFLErCAJQELWJKABSxJwAKWBCxgSQIWsCQBC1gSsIAlCVjAkjQosKp9CFgSsIAlCVjAkgSsEQdr/miLLOT8zoWj75yP/fdbga19O9MjNr4+51PJ/Y2tvqG9/WloN3VS84uLS0t3lleABawilfZaaP/1txTY2neBVdRNndbq2jKwgFWYVtaPNsm9XN947+j71uO/YDW4uW8Bq6CbOotZd1aABayCtHa0Sdba/L6l2H+/HdrcS8Aq6KbO1PrSCrCAVYhS/3ynDhfi/6TfDf+RBlZBN3XWUdYysIBViBbbmgtuTMgsps4DZ50LLjtYhdzUmVsCFrCKNe2+2NY88O3UeeCsc8GlB6uIm3q0xAJWCdZhpR1xtP6rvtp6Hng1x2OXHqwibuocLQALWAVoqY2/oWnfczQPvJDjsYsG1khv6nvLd5YWIy+aZWABa/DdamMuOOs88Hzj7z+whm9Tryyth2beV4AFrGGcdl9ImTA5emHeaZyTvw2sIdzUYbKWgAWswXc791zwYspRwlJjULCcfS54BMAawk29Mp93VSqwgNXbVnPukKnzwOuBa1CyzwWPAFjDuKlXVsszxAJWKcDKOxfc+Po7rQ9j7gS/eAlYw7mpl3OuSgUWsPo17Z5th2z8yV1pfRhT/0t/L/NjjwJYQ7mpl0pzTAisctwP626uZdK3U66JuxWep5nP+tijANZwbur1sqzFAlY5wFrOtUz6btZ54Dd7952sjz0SYA3lpl4ryyQWsEpyx9E8c8G30u7rtB5ea3Qr62OPBFhDuamX2rqmaGTAahs275rTbndy/AldSjk+WIgexSxmfOzRAGsYN/Vy2/ceBBawetFKjrngoyHCeso88O3o7r4KrOHc1Mu93ijAAla+1jLPBWeeB15tft3dBtZwbmpgAauo0+5pd8O8mzJPErMYaCnbDMiIgDWMm7osC7GAVRawUhf8NB/RxL8kGvfHvBUzd3wLWMO4qe+ZdAdWwVpIWVLdPGecMg+8GDdUWALWMG7qfGsxgAWsPky7r2cb9a+m3CBlPu5FdjvTXVVGBazh29RL1mEBq7jT7suZ/tYutT54WI9/7S0Aawg39XzGMSGwgNW37mWaC15LmSNZi3+QTHPBIwPWsG3qwNtc3AMWsArSfIa54JWUyYzG0c69hF3+FrCGblOvtff+ZMAC1qCn3e+krCFaSFoRnWUJ9uiANVybOrBsdA1YwCpM6+nXX6ymTBfPJ02gLGT4Gz06YA3Vpr63Xp63oQBWmcBaSp2puJd1Hrj5UGc9fS54hMAaok0d9GpxDljAKky3Ukf+aylzL2vJD5BhLnho35ewzJs69Dat94AFrAK1mHKtbWOedy3l35dbjAhuAWtYNvXKndVyvfczsEoF1kLWpdUJcxkLraZd5lN3+1ECawg29b2Fu+H/zPk5YAGrUK223jfnM75peuwLJX0ueJTAKsymzt78CrCANUzT7vdSTsYvtzwUWUmdCx4psIqyqUfKK2CVDKxbLacr1lLmXdZar3RcS5sLHimwirKpR8orYJUMrMa1/nEHE2nzwCkrHVPngkcKrKJs6owtzc0BC1iF63aLueCFlLPbd9JmTlZT9v7RAqsgmzpTi/fmgAWsQk+7Nx9MLKacLUp7kaS+zEZo4WhxNnWG7t6emwMWsArZncSDiVspJ+KXU1f/rKQ8woiBVYxNnTa2Wrq9MjcHLGAVtJXEWYulrPPAyeurU75kxMAqxqZO6fZcqQJW2cAKnJ9KmgdeautveoaRwYiBVeBN3fju9RVgAavILSe8GhZSDkPudH7SadTAKvCmXirb6UFglRWsxoTu3fh54MWUb8vUOrAKvakbS0+H/o4ywCo5WPF/39PmgW/nPFG+AKxCb+rGU1s16Q6sQk+7x86gLKVc23Y378qeQYK10up63j6CVeRNvVjKg0JglQ+sxlzwatxhSPzueyv3YstbAwRrudWLuZ/vyl7gTX2vRHfBAlapwboXc077dtY3Te9kLnj0wCrypl4q021lgFVisBq3NrnbfBhytxvzwAlzwW1TMZ/t/dmznQPrJ1hF3tQrqyU8KARWGcFqngu+lbKQ8HY1fwvdo2Ix5zrHu61u3tJXsIq8qRs/af0WsIA1DNPuh3v6nczzwKmnlNaTj8bapmIt51hgtdU5+76CVehNvVieN58AVpnBahwy3Y0eudxJmQdey/7YzYdvbVORc7olMJ+8MmCwCr2pb61nePtEYAFr4N2KvKBvpfxVX8pxSNbi7avapmK5mmsSq7FSfHVu0GAVelMvle6gEFilBKtxMHAn/ApfSznEWs0zz7zePSqquYYCqy1HKf0Fq9iburGl7gILWEMw7b4Y3vFT3sEl0xRS8vvFtE/F3WqO1/Ht1vci6DNYhd7Uy2W7bQOwyglWY742dGgxnzY5m+XAYSVxLrh9KhbyvLBWe3RFYxk39d2S3bYBWCUFayn4p3mp9bVtt3IeN6wlveg6oGI1+6Vvd3p1z4gyburAvPsasIBV/Gn3xcAYYD1tHngh02MnzgV3QEVAoZQX1r31lEFDv8Eq9qYObNhlYAGrsN1t/Gm+l0LBeurbdiYNh9a7RkXgdiitX8sBrxKmgfoNVsE39XypbtsArLKCdbtx8mqp9UWwCzlXbQb/ai90jYqFaiaxlgNeJbwA+w5WsTf1cqne6qs3YFX7ELAy/m2eP/p/i92YBz4YDiWsoO6Iivksb6K3lOF25d0BK8+jFHtTr5Xptg3AKi1YR6/t21nngbNfv5EwF9wRFfdCt4CKnW9Zns/y1qD9B6vYmzpwtD0PLGAVtaO/zeutp03yzgOHDzOWukdF+E7niwuRA76VO+HbHMzPFQasgm/qhRIdFAKrtGAFDwVa7azr7SzUiZ8L7vDdlqNPeH7p9vLBc7q3fGdpPvqPK+nUdPL2z7nYG+SmzvAQi+U5KARWecFaTr9vZejPb551OvFjhQ7BanrdtyjZq0GANchNne9oexFYwCr6tHvGeeA8f3zjZ2M6BSt0qrD1bc5X5ooE1iA3dT70hv22DcAqMVjhSaHbKX98803I3o0bTXQM1ty9bLfjXMo2+9Q/sAa4qTPNZ66W5bYNwCoxWMHFmEkXFa+1+af3dhwenYM1t5LhLWVWl+eKBtYAN3XOxxjyg0JglRis0JzQUtoLLecy6Li54C6AFV27EMNV2hm2QYA1wE2d7TEWS3LbBmCVGax7PZoHTpoL7gpYteFAi1HW3fSX20DAGtymzjsTNty3bQBWmcEKrB5fS/uCvFfGxs0Fdwms2mjk9lLMOGv97kKW19pAwBrcps6t3lDfyw9YpQZrqGfglpfWFt8eyawvLi7dWbZNBCxgScACliRgAUsCFrCAJQELWJKABSwJWMCSBCxgSQIWsCRgjVzAkoAFLEnAApYELGBJAhawJAELWBKwgCUJWMCSBCxgScACliRgAUsSsIAlAQtYkoAFLEllAsvtZSRgAQtYErCAJQlYwJKABSxgScACliRgAUsCFrAkAQtYkoAFLAlYwJIELGBJAhawJGABSxKwgCUJWMCSgAUsScACliRgAUsCFrAkAQtYkoAFLAlYwJIELGBJAhawJGABSxKwgCUJWMCSgAUsScAClgQsYAFLAhawJAELWBKwgGV3kIAFLEnAApYELGBJAhawJAELWBKwgCUJWMCSBCxgScACliRgAUsSsIAlAQtYkoAFLEnAApYELGBJAhawJAELWBKwgCUJWMCSBCxgScBqhUsvApYELGBJAhawJAELWBKwgCUJWMCSBCxgScACliRgAUsSsIAlAQtYkoAFLEnAApYELGBJAhawJAELWBKwgCUJWMCSBCxgScACliRgAUtSj8EazoAlAQtYkoAFLAlYwJIELGBJAhawJGABSxKwgCUJWMCSgAUsScACliRgAUsCFrAkAQtYkoAFLAlYwJIELGBJAhawJGABSxKwgCUJWMCSgAUsScACliRgAUsCFrAkAQtYErBABSwJWMCSBCxgScAClt1BAhawJAELWBKwgCUJWMCSBCxgScACliRgAUsSsIAlAQtYkoAFLEnAApYELGBJAhawJAELWBKwgCUJWMCSBCxgScACliRgAUsSsIAlAQtYkoAFLEnAApYELGBJAhawJGAJWBKwgCUJWMCSgAUsScACliRgAUsCFrAkAQtYkoAFLAlYwJIELGBJAhawJGABSxKwgCUJWMCSgAUsScACliRgAUsCFrAkAQtYkoAFLAlYwJIELGBJAhawJGABSxKwgCUJWMCSgAUsScAClgQsAUsCFrAkAQtYErCAJQlYwJIELGBJwAKWJGABSxKwgCUBC1iSgAUsScAClgQsYEkCFrAkAQtYErCAJQlYwJIELGBJwAKWJGABSxKwgCUBC1iSgAUsScAClgQsYEkCFrAkAQtYErCAJQlYwJKAJWBJwAKWJGABSwIWsCQBC1iSgAUsCVjAkgQsYEkCFrAkYAFLErCAJQlYwJKABSxJwAKWJGABSwIWsCQBC1iSgAUsCVjAkgQsYEkCFrAkYAFLErCAJQlYwJKABSxJwAKWJGABSwIWsCQBC1gSsAQsCVjAkgQsYEnAApYkYAFLErCAJQELWJKABSxJwAKWBCxgSQIWsCQBC1gSsIAlCVjAkgQsYEnAApYkYAFLErCAJQELWJKABSxJwAKWBCxgSQIWsCQBC1gSsIAlCVjAkgQsYEnAApYkYAFLApaAJQELWJKABSwJWMCSBCxgSQIWsCRgAUsSsIAlCVjAkoAFLEnAApYkYAFLAhawJA0arGOSNCQBSxKwJAlYkoAlScCSJGBJApYkAUuSgCUJWJIELEkCliRgSRKwJAlYkoAlScCSJGBJApYkAUuSgCUJWJIELEkCliRgSVLvwfo/kjQc/d93NiRpOPovYEkCliQBSxKwJAlYkgQsScCSJGBJErAkAUuSgCVJwJIELEkCliQBSxKwJAlYkgQsScCSJGBJErAkAUuSgCVJwJIErLbbrNYa1A+/v2UX6MXvc4C/UvWwrfvAejDAvXu7Cqye/D6BVVKwdnYdEm5s9Grv3kzjaK/6sPHB+4+O+iD4Re8HP/d+0xf86cPa5z76+M8bGx9/0IP/hk8qjT797PPo579o/uCgv3z5Sf3rv9rY+OyLMv1KC9rjuYOexH7m7f+t9XXcN0W+MfJYoY8C33FYL5/V3NNvvg0/4sPqPrB6t3enPW54gPVdA6z3N5o//37zB/U+PELu+0ePevDf8KwS6pMfwp//pPmDel8efv0XP1YqwOp5P715gT+O/cxPRwA8jvum6D+EHyv00U/5wOr0WR3848/h8fOgh1gjDdZ+9Xn0U/HohD4b+uCvjz76sDa4+v6XDx693xOwah2R88OXn1Y+/Uvz55s++LXy6Ze1wdWPn39R+QRY/embucho5Nu5bwIf/VZz4fHcz03fFktO+JOhj1r8U9ee1dGj/vz707mnfwv+04vqgGexRhqsnQcbHYL150ff/ent//3lUc/Bqh3pfRI47ksE66vKs0PWPq8Aqz/9PXRcV+vJ3N8DH/1Rk+PbuT/6DVZbzyrwqH97HH6A3ZjXDLD69LgvYg7Ic4L18aN/BA8Oew7Wxo/PKv9MBeuzxtfUDw6B1afDwtBY5G9zPwU+ejn39OXGy6e1/+kvWG09q+CjvvwpJNzGXvUVsAYE1uvglHt7YAX//5/6AdbGPxtDrESwgv//L8DqU7/P/Z784dcHw5g/ogdovQernWcVetTIGO35gKfdBwbW9v2tanXn9Yvd5r374X7tn6pb+9s1UwKz4q/u723WvmXrRXTab/f+651qdbP29XuNLz9cDnRY8wnD3erORjfB2vju/T6AFfgoE1gbzz5p+wdvhjdd5MPE30ccWKHVds1L714d/Mo39x727Fkd/czd+5vVnb0eDBPCg5fI0Obx3G/1OaHIBHfHYP30uBfPqiWKOzujCNbu60NIdp5H9u5XW0fI7O02/mX/wdGnH4T3thc7hw/1IvBAUbA2m57D8+rrjsH67tEvvd9YIX9+zADWs8rnXfnBD8KbLvRh8u8jFqzQarvo0rvtxq9861WPntXhz3y+c7TbtWir2lzqkr3Q9FB4YPLzWzZ+Sp7gzgnWkycZf4ltPKvQD3wZeYZb1YejB9arnerOfu2/e/d5bc/YD+3dtX/aelEbW+0+rO18m41/2Xmwd/9h7fPbLx5UQ6dWn9d2pee79X94Hf273fq4ZL/6omOwPnz00Z/7C9bnGQ4Jv6x8+lWXfvZmaPd82HA/8feRuOlDn4r8yh/cf3UwtK5p8qJnz6r+M/fre0vtn1PGCZsxYG2mPavQCbjw6bk/3i52+rrVBHcusNIPBtt/VqHH/jYybb8/2GPCgYC1u1Pd3D7c2x5U7wf23trO29hj638NY+ee9kL71tGJ1vu5wIqbwsoL1vcfP3r08S95zNqtOfx6t22wfvi0MXpKBOvHzyqVzz7vilkvQtt6L5aT8O8jN1i1X/n9xtF9NcukbnvPqlrd3TocWm33YpjwtHG89be5p8FRytO5l2+HK0/7DVYbzyr42D8/jcxwPR9BsLaqm42X7O5mcGC0Fdr5nseSs534t3pnMwdYW9WN7GCFCv7TPw6Wkn7311++z+bVwd/uncNX6NZWPrC++jS0rCFU8Fv+ebCU9Nmvn//Y6e9qp7od2PCx45LtNJ1ag7UZ+pW/SB/JtPusatu9utXLdY+BGe3w5HZj5UDrCe5MYGVZMtrZswo89m9Po+siHg72crZBgPUqPFrfDYyjHkb+LD6I3Xsju37idERrsHa6AlaNrA8/qH/yow+/z+TV5nbtgOTtIGuvmgesH/71SW3k9GMWsGpkffnFwdU8X3ZIVvAIIOlooCOwootL9rIcFLb1rKrVHg8OAhPccZPbBwBEX/+9Byv/szp87J+/fjw3901kzcNu9cGogRXdw/Ybu9Ze9XmGBwjtirXv3n+42wZY1TxgpXzJv3/560ePPvp3hrHlAcjbr6sPHtZPL2zuZgKrcTXhv5LmtuJWL/zw+a+fVj79oaNfVnD8EhzXdA2s15EH3Y47F9KVZ1XNtHN10pNDAn6LndxuNqMfh4T5n1XwasKvc76qygjWZmSa4lXwhHfiK3j3xev6mZ4Hr/dfhDfZmwnSB1v7zwcH1pvprI/+lHoo8/pI5oN53EwHKA2vPvtxIw9Yb6azAhfztFNjxBOeOUr8feQEa6dpdvtBj55V719pRwdZf0QmtxtHYl+H10X1A6zcz6rh1TcvN4C10WJPSt4Y90M7dkSyw3UN+90F64MPcoBVX/b+YfaN8HCrurOXbULl0KKvnlW+zAtWfdn7lx39thrn4ELn5pJ/HznBijkf16NnleOV1tayhsY09sEK8kZPQ5cTJ09wH61VyABW+gqs9p/V4c/47aeIrsDKDFZtRLL5or5nPnz4fL/5q+qfrY+09roK1tEH2cD696PverK9jiz68YvKr7nB+qHyrNMB8cOIEem/j1xgbffpWeV4pT1oZ1nDxtFCgfA6gW8jN1j4NufwqcXC0WzlfVZHP+Plk+arH3dHD6wHyYeE1YRDwueh9TkJm2x7fyc8O9Z60z5IXdaQE6yNHl2bE7Do1+BwKRtYG51em3N4zBWcDU/9fWQH60GmlVfdeFZ9eKW9nRcKr8QMX2/899DtEjoF6/GTHjyrwM/4o2mMNYJnCfeSJ923EuZFt0J3tUjc816E5z/SljU87xSs99/vM1gbn2S4vcwnn3QVrLez2qHVA6m/j+xg7bX5Asj/rPoxNDg48/Zb6FqXyMUxTRPcccd7QVrCjxYBK9uAK+ezCj7o4/DtZRIuECk3WA/Dyxq2A7MN9xP23vC+FvxoczPb1zUXezo8H1iPHgWn2f/86P2eg/WXT9NvL1OpBKfZv6qE/NrOOh8T3VChzZW6nVM+FRhUP2998m53q36JVleeVT/AOpjgDk9uRy4/jnwcC1ZoXPN76LCsFVi1I7i5P152/qyCD/q3p0+i2/3+qIHVYuHo7k74AGF7a7PpULG+Cwf3wu0ghZERVnB6ZDvL2DYvWH8N/MPHj/7Tc7A2vqz8Kx2s4EzXZ5XgUoj61QDVar5bhLwZxYRWDyT/PlqBdfQAoUsYtqo7r1oNx5umJtt9Vv0Aq36vlsj9Wp5GFjKExzaxYP029/TnhhihI7lWYP1Rn4v6o/NnFXrQ3yO3UN4a7P1lBgLW9k5DrO3NanB69EVo772/83Zf3Wzssw8fVMNgNRYvv4rMYQW+a+NF853HUu/WkAGsgFj/efTd970Ha+PZ0UFhMlgBsf5VeRZaC/E6CYCWx/AvIqsHkn8fyThsHR5L7O5Xg2DV/mIFf+cPX2+Gj/zqp3+78qz6MltcG8d8G5nc/ibyJd8EZ4/iJ6h+n3v8VpeXj8NDoVZgPW0+CdnWs4rcESJ8UDiSd2t4+Pbi542He/VXT3BPqom1f/BH8+GLvZ2jpcm144a9+mcf1u8N8ioM1s6bm4Xs1i+dDS9suv/2u1692HsQ8yp9HXN+KvcI69EHv9TXi/77P99lWTjaBbC+Oro4p8UIq/LF5/X1oj/861l04ejBACvnebn6mbjw9cbJv49kHGrf83r7zRXOm6FvqY+x9w7W/r46ONe73/R8q115Vn0B67e5x40V5E08HZQ0wR08Pfd47nH92+r3KH78MitYySvg8z2r8GOEl5s+z/vXrhRgBe4h8+b2MoFZlVeBK+X3thuONe45E/r66lbgG6JXigWW5bxuPiUYuT/1+4+aC3w+7l1zal/wYeOdK3riVfMb4nxx8FGLd82p2fVl87tWHL2m27hAZbPprH7S72Ozxeql/cPP7Yd/hbV/CSyfivyitpJHhNmfVfRp9fI8109zgYOrx63eFCfmPXDmgtNRb/r9ZdP3Jr0LxZOkQ8I2ntWT0MM+CYxrn48iWPVbth3cZ+3+7tu/ooE973n9FmzVB6/vh6bm39yX7f525Os3a8cZh6ubXzQffB6sznpzM8Dm+dzwtdLfJYDV4l1z6rfs+9PBpYTf/fUfvdlOTW+Is/HDwUct3jWnfsu+vxxcSvjs1382TVVXq/nf+KQOQWTjJvw+HrRavfT86MaM0V/57v2DX+Hbxwv9kraqSVcsZ39W0ae12cMd++vg+2b91OpNcX5qyc9vf9SR+eO3jebvTQKrrtyTl915VoF//DnwkXu6D7L9wd6LbBA96PkVwCpzLwa994w0WLsj98bP2xkv1ZPi/+B5X8JBtjdqQ6z71Wp7C8ulDe/8POheDXbVbv973dv5G5W8rZ3tAT+D0QZrY3/Ejgl3qqM3bacu7j8Dn/8ccbBGrddm3DXUAUsSsCQJWJKAJUnAkiRgSQKWJAFLkoAlCViSBCxJApYkYEkSsCQJWJKAJUnAkiRgSQKWJAFLkoAlCViS1E+w/kuShqP/944kSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSZIkSRra/j+MBHohi+IShgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxNi0wNS0xMFQxMzozOTo1NS0wNDowMLd11kwAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTYtMDUtMTBUMTM6Mzk6NTUtMDQ6MDDGKG7wAAAAIHRFWHRwZGY6SGlSZXNCb3VuZGluZ0JveAA1NzZ4NDU0KzArMJ/nFVsAAAAUdEVYdHBkZjpWZXJzaW9uAFBERi0xLjQgHEc6eAAAAABJRU5ErkJggg==" title="dcast_chart" alt="Dcast Illustration" /></p>
+<p>Basically, the variables that we want to end up as rows, we put on the <em>left</em> of the formula (<strong>L</strong>eft-<strong>H</strong>and <strong>S</strong>ide), and those that we want to end up as columns we put on the <em>right</em> of the formula. <code>value.var</code> is(are) the variable(s) dictating what comes from each LHS/RHS pair in the data.</p>
+<p>Let’s reshape the gender demographics data so that there is only one row associated with each school:</p>
+<pre class="r"><code>school_gender_wide &lt;- 
+  dcast(school_gender, school_id ~ grade, value.var = &quot;pct_male&quot;)
+school_gender_wide</code></pre>
+<pre><code>##      school_id ALL GRADES  GRADE_0  GRADE_1 GRADE_10 GRADE_11 GRADE_12
+##   1:       101   0.581690       NA       NA 0.563452 0.546512 0.553191
+##   2:       102   0.550186       NA       NA 0.468531 0.549180 0.537736
+##   3:       103   0.530888       NA       NA 0.547826 0.480315 0.512195
+##   4:       105   0.425170       NA       NA 0.485714 0.426667 0.324324
+##   5:       110   0.547945       NA       NA 0.517241 0.537190 0.500000
+##  ---                                                                  
+## 214:       842   0.535922 0.603604 0.457944       NA       NA       NA
+## 215:       843   0.501355 0.515625 0.515152       NA       NA       NA
+## 216:       844   0.529412 0.515873 0.551724       NA       NA       NA
+## 217:       856   0.618357       NA       NA        s 0.543860        s
+## 218:       878   0.385852       NA       NA 0.376812 0.405063 0.359375
+##       GRADE_2  GRADE_3  GRADE_4  GRADE_5  GRADE_6  GRADE_7  GRADE_8
+##   1:       NA       NA       NA       NA       NA       NA       NA
+##   2:       NA       NA       NA       NA       NA       NA       NA
+##   3:       NA       NA       NA       NA       NA       NA       NA
+##   4:       NA       NA       NA       NA       NA       NA       NA
+##   5:       NA       NA       NA       NA       NA       NA       NA
+##  ---                                                               
+## 214: 0.470149 0.549550 0.500000 0.568000 0.576577 0.459459 0.656863
+## 215: 0.556962 0.529412 0.481481 0.486842 0.468354 0.478723 0.481481
+## 216: 0.552448 0.537879 0.467213 0.545455       NA       NA       NA
+## 217:       NA       NA       NA       NA       NA       NA       NA
+## 218:       NA       NA       NA       NA        s        s        s
+##       GRADE_9
+##   1: 0.650000
+##   2: 0.628743
+##   3: 0.575163
+##   4: 0.466667
+##   5: 0.607595
+##  ---         
+## 214:       NA
+## 215:       NA
+## 216:       NA
+## 217: 0.555556
+## 218:        s</code></pre>
+<p>We now have all of the grades as columns in the output. Note how much data is missing – this shows that most schools only cover a small range of grades. The grades are also out of order – they’ve been alphabetized, and <code>&quot;GRADE 10&quot;</code> comes before <code>&quot;GRADE 2&quot;</code> alphabetically. We can fix this by using <code>factor</code>s; we may get into that later.</p>
+<p>Note that we’ve lost a lot of information that was in or data originally – the data on student counts, the name of the school, etc. We can keep this sort of thing by using <code>dcast</code> more flexibly:</p>
+<pre class="r"><code>#keep school name by adding it as an ID
+#  variable; since school_name is the same
+#  for every school_id, this will not
+#  change our output.
+dcast(school_gender, school_id + school_name ~ grade, value.var = &quot;pct_male&quot;)</code></pre>
+<pre><code>##      school_id                                 school_name ALL GRADES
+##   1:       101                    John Bartram High School   0.581690
+##   2:       102               West Philadelphia High School   0.550186
+##   3:       103                   High School of the Future   0.530888
+##   4:       105 Paul Robeson High School for Human Services   0.425170
+##   5:       110                William L. Sayre High School   0.547945
+##  ---                                                                 
+## 214:       842                      Stephen Decatur School   0.535922
+## 215:       843                     Joseph Greenberg School   0.501355
+## 216:       844                   William H. Loesche School   0.529412
+## 217:       856                         The Workshop School   0.618357
+## 218:       878                Philadelphia Virtual Academy   0.385852
+##       GRADE_0  GRADE_1 GRADE_10 GRADE_11 GRADE_12  GRADE_2  GRADE_3
+##   1:       NA       NA 0.563452 0.546512 0.553191       NA       NA
+##   2:       NA       NA 0.468531 0.549180 0.537736       NA       NA
+##   3:       NA       NA 0.547826 0.480315 0.512195       NA       NA
+##   4:       NA       NA 0.485714 0.426667 0.324324       NA       NA
+##   5:       NA       NA 0.517241 0.537190 0.500000       NA       NA
+##  ---                                                               
+## 214: 0.603604 0.457944       NA       NA       NA 0.470149 0.549550
+## 215: 0.515625 0.515152       NA       NA       NA 0.556962 0.529412
+## 216: 0.515873 0.551724       NA       NA       NA 0.552448 0.537879
+## 217:       NA       NA        s 0.543860        s       NA       NA
+## 218:       NA       NA 0.376812 0.405063 0.359375       NA       NA
+##       GRADE_4  GRADE_5  GRADE_6  GRADE_7  GRADE_8  GRADE_9
+##   1:       NA       NA       NA       NA       NA 0.650000
+##   2:       NA       NA       NA       NA       NA 0.628743
+##   3:       NA       NA       NA       NA       NA 0.575163
+##   4:       NA       NA       NA       NA       NA 0.466667
+##   5:       NA       NA       NA       NA       NA 0.607595
+##  ---                                                      
+## 214: 0.500000 0.568000 0.576577 0.459459 0.656863       NA
+## 215: 0.481481 0.486842 0.468354 0.478723 0.481481       NA
+## 216: 0.467213 0.545455       NA       NA       NA       NA
+## 217:       NA       NA       NA       NA       NA 0.555556
+## 218:       NA       NA        s        s        s        s</code></pre>
+<pre class="r"><code>#keep the count of male students; for brevity,
+#  we'll also exclude a bunch of grades to the
+#  output is not as space-consuming
+dcast(school_gender[grade %in% paste0(&quot;GRADE_&quot;, 1:6)],
+      school_id ~ grade, value.var = c(&quot;pct_male&quot;, &quot;count_male&quot;))</code></pre>
+<pre><code>##      school_id pct_male_GRADE_1 pct_male_GRADE_2 pct_male_GRADE_3
+##   1:       113               NA               NA               NA
+##   2:       120         0.450820         0.470000         0.489362
+##   3:       123         0.491525         0.571429         0.402985
+##   4:       125         0.534483         0.478723         0.509091
+##   5:       126         0.439560         0.523256         0.530303
+##  ---                                                             
+## 164:       841         0.486486         0.554622         0.438776
+## 165:       842         0.457944         0.470149         0.549550
+## 166:       843         0.515152         0.556962         0.529412
+## 167:       844         0.551724         0.552448         0.537879
+## 168:       878               NA               NA               NA
+##      pct_male_GRADE_4 pct_male_GRADE_5 pct_male_GRADE_6 count_male_GRADE_1
+##   1:               NA                s         0.548148                 NA
+##   2:         0.425000         0.482353         0.564516          55.000000
+##   3:                s         0.615385         0.551020          29.000000
+##   4:         0.536082         0.515789               NA          62.000000
+##   5:         0.633803         0.588235         0.557692          40.000000
+##  ---                                                                      
+## 164:         0.560000         0.535714         0.552083          54.000000
+## 165:         0.500000         0.568000         0.576577          49.000000
+## 166:         0.481481         0.486842         0.468354          51.000000
+## 167:         0.467213         0.545455               NA          64.000000
+## 168:               NA               NA                s                 NA
+##      count_male_GRADE_2 count_male_GRADE_3 count_male_GRADE_4
+##   1:                 NA                 NA                 NA
+##   2:          47.000000          46.000000          34.000000
+##   3:          36.000000          27.000000                  s
+##   4:          45.000000          56.000000          52.000000
+##   5:          45.000000          35.000000          45.000000
+##  ---                                                         
+## 164:          66.000000          43.000000          56.000000
+## 165:          63.000000          61.000000          59.000000
+## 166:          44.000000          45.000000          39.000000
+## 167:          79.000000          71.000000          57.000000
+## 168:                 NA                 NA                 NA
+##      count_male_GRADE_5 count_male_GRADE_6
+##   1:                  s          74.000000
+##   2:          41.000000          35.000000
+##   3:          32.000000          27.000000
+##   4:          49.000000                 NA
+##   5:          30.000000          29.000000
+##  ---                                      
+## 164:          60.000000          53.000000
+## 165:          71.000000          64.000000
+## 166:          37.000000          37.000000
+## 167:          78.000000                 NA
+## 168:                 NA                  s</code></pre>
+</div>
+<div id="wide-to-long-melt" class="section level3">
+<h3><span class="header-section-number">3.5.2</span> Wide to Long: <code>melt</code></h3>
+<p>As often as we’re given data in long form that we prefer in wide form, we’re presented with data in <em>wide</em> form that we’d prefer in <em>long</em> form. Stata uses similar terminology for both – <code>reshape wide</code> for the former and <code>reshape long</code> for the latter, but R uses a different word – <code>dcast</code> for the former and <code>melt</code> for the latter. I picture the data set made of wax and melting away into a longer form.</p>
+<p><code>melt</code> also takes three main arguments – <code>data</code> (same as before), <code>id.vars</code> (same as LHS above), and <code>measure.vars</code> (basically RHS above). <code>measure.vars</code> can be a bit tricky, and there are a few ways to use it. First we can specify the column names explicitly. Second, we can specify a pattern matched by the names of the columns we’d like. Last, we can use column numbers (this isn’t recommended, so I won’t demonstrate it). This gets slightly more complicated when we want to split into more than one new column.</p>
+<p>Let’s try this with our <code>school_gender</code> data. We’ll stack the genders on top of each other and create a single column for student counts, then another for percentages (basically doubling the number of rows in the table).</p>
+<pre class="r"><code>#First, using explicit column names
+melt(school_gender, 
+     id.vars = c(&quot;school_id&quot;, &quot;grade&quot;), 
+     measure.vars = c(&quot;count_male&quot;, &quot;count_female&quot;))</code></pre>
+<pre><code>##       school_id      grade     variable      value
+##    1:       101    GRADE_9   count_male 130.000000
+##    2:       101   GRADE_10   count_male 111.000000
+##    3:       101   GRADE_11   count_male  94.000000
+##    4:       101   GRADE_12   count_male  78.000000
+##    5:       101 ALL GRADES   count_male 413.000000
+##   ---                                             
+## 3328:       878    GRADE_9 count_female          s
+## 3329:       878   GRADE_10 count_female  43.000000
+## 3330:       878   GRADE_11 count_female  47.000000
+## 3331:       878   GRADE_12 count_female  41.000000
+## 3332:       878 ALL GRADES count_female 191.000000</code></pre>
+<pre class="r"><code>#It's usually more concise to use the patterns
+#  convenience &quot;function&quot;; the syntax for this
+#  generally involves regular expressions, so
+#  I'll hold off on demonstrating the full
+#  power of this approach for now. 
+melt(school_gender, 
+     id.vars = c(&quot;school_id&quot;, &quot;grade&quot;), 
+     measure.vars = patterns(&quot;count&quot;))</code></pre>
+<pre><code>##       school_id      grade     variable      value
+##    1:       101    GRADE_9 count_female  70.000000
+##    2:       101   GRADE_10 count_female  86.000000
+##    3:       101   GRADE_11 count_female  78.000000
+##    4:       101   GRADE_12 count_female  63.000000
+##    5:       101 ALL GRADES count_female 297.000000
+##   ---                                             
+## 3328:       878    GRADE_9   count_male          s
+## 3329:       878   GRADE_10   count_male  26.000000
+## 3330:       878   GRADE_11   count_male  32.000000
+## 3331:       878   GRADE_12   count_male  23.000000
+## 3332:       878 ALL GRADES   count_male 120.000000</code></pre>
+<pre class="r"><code>#A bit more careful about the output to make
+#  it a bit more understandable
+melt(school_gender, 
+     id.vars = c(&quot;school_id&quot;, &quot;grade&quot;), 
+     measure.vars = patterns(&quot;count&quot;),
+     variable.name = &quot;gender&quot;,
+     value.name = &quot;count&quot;)</code></pre>
+<pre><code>##       school_id      grade       gender      count
+##    1:       101    GRADE_9 count_female  70.000000
+##    2:       101   GRADE_10 count_female  86.000000
+##    3:       101   GRADE_11 count_female  78.000000
+##    4:       101   GRADE_12 count_female  63.000000
+##    5:       101 ALL GRADES count_female 297.000000
+##   ---                                             
+## 3328:       878    GRADE_9   count_male          s
+## 3329:       878   GRADE_10   count_male  26.000000
+## 3330:       878   GRADE_11   count_male  32.000000
+## 3331:       878   GRADE_12   count_male  23.000000
+## 3332:       878 ALL GRADES   count_male 120.000000</code></pre>
+<p>We can extend this approach to handle reshaping both <code>count</code> and <code>pct</code> like so:</p>
+<pre class="r"><code>#Admittedly a bit tough to tell whether variable = 1
+#  corresponds to Male or Female
+melt(school_gender,
+     id.vars = c(&quot;school_id&quot;, &quot;grade&quot;),
+     measure.vars = patterns(&quot;count&quot;, &quot;pct&quot;))</code></pre>
+<pre><code>##       school_id      grade variable     value1   value2
+##    1:       101    GRADE_9        1  70.000000 0.350000
+##    2:       101   GRADE_10        1  86.000000 0.436548
+##    3:       101   GRADE_11        1  78.000000 0.453488
+##    4:       101   GRADE_12        1  63.000000 0.446809
+##    5:       101 ALL GRADES        1 297.000000 0.418310
+##   ---                                                  
+## 3328:       878    GRADE_9        2          s        s
+## 3329:       878   GRADE_10        2  26.000000 0.376812
+## 3330:       878   GRADE_11        2  32.000000 0.405063
+## 3331:       878   GRADE_12        2  23.000000 0.359375
+## 3332:       878 ALL GRADES        2 120.000000 0.385852</code></pre>
+<pre class="r"><code>#If we want to use the explicitly-name approach
+#  of before, we have to keep all associated columns
+#  as one item of a list -- here, the first
+#  item of the list is for counts, and the second
+#  item of the list is for percentages.
+#Advantage: we know for sure that count_male
+#  and pct_male correspond to variable = 1
+melt(school_gender,
+     id.vars = c(&quot;school_id&quot;, &quot;grade&quot;),
+     measure.vars = list(c(&quot;count_male&quot;, &quot;count_female&quot;),
+                         c(&quot;pct_male&quot;, &quot;pct_female&quot;)))</code></pre>
+<pre><code>##       school_id      grade variable     value1   value2
+##    1:       101    GRADE_9        1 130.000000 0.650000
+##    2:       101   GRADE_10        1 111.000000 0.563452
+##    3:       101   GRADE_11        1  94.000000 0.546512
+##    4:       101   GRADE_12        1  78.000000 0.553191
+##    5:       101 ALL GRADES        1 413.000000 0.581690
+##   ---                                                  
+## 3328:       878    GRADE_9        2          s        s
+## 3329:       878   GRADE_10        2  43.000000 0.623188
+## 3330:       878   GRADE_11        2  47.000000 0.594937
+## 3331:       878   GRADE_12        2  41.000000 0.640625
+## 3332:       878 ALL GRADES        2 191.000000 0.614148</code></pre>
+<pre class="r"><code>#We can again specify value.name to facilitate understanding
+melt(school_gender,
+     id.vars = c(&quot;school_id&quot;, &quot;grade&quot;),
+     measure.vars = list(c(&quot;count_male&quot;, &quot;count_female&quot;),
+                         c(&quot;pct_male&quot;, &quot;pct_female&quot;)),
+     value.name = c(&quot;count&quot;, &quot;pct&quot;))</code></pre>
+<pre><code>##       school_id      grade variable      count      pct
+##    1:       101    GRADE_9        1 130.000000 0.650000
+##    2:       101   GRADE_10        1 111.000000 0.563452
+##    3:       101   GRADE_11        1  94.000000 0.546512
+##    4:       101   GRADE_12        1  78.000000 0.553191
+##    5:       101 ALL GRADES        1 413.000000 0.581690
+##   ---                                                  
+## 3328:       878    GRADE_9        2          s        s
+## 3329:       878   GRADE_10        2  43.000000 0.623188
+## 3330:       878   GRADE_11        2  47.000000 0.594937
+## 3331:       878   GRADE_12        2  41.000000 0.640625
+## 3332:       878 ALL GRADES        2 191.000000 0.614148</code></pre>
+</div>
 </div>
 <div id="string-data-regex" class="section level2">
 <h2><span class="header-section-number">3.6</span> String Data / regex</h2>
+<p>String data is ubiquitous. And it is ubiquitously messy. Typos, transpositions, inconsistent abbreviations, strange character encodings, arbitrary punctuation… there’s no end to the nightmares that can be caused to a data analyst forced to work with string data.</p>
+<p>The most powerful tool that a data analyst can have in their belt to attack such data is a facility with <em>regular expressions</em>.</p>
+<p>Basically, regular expressions are a language for talking to and manipulating string data. Have you ever wondered how many words in English fit some certain pattern? Regular expressions are your best friend.</p>
+<p>What are all the words in the English language that have the five vowels in order? I used the <a href="http://www.visca.com/regexdict/">Regex Dictionary</a> to search for the pattern <code>a.*e.*i.*o.*u.*</code> (we’ll cover what this means momentarily) and got the following list:</p>
+<p><code>abstemious, adventitious, amentiferous, anemophilous, arenicolous, argentiferous, arsenious, arteriovenous, autoecious, cavernicolous, facetious, garnetiferous, sacrilegious, theater-in-the-round</code></p>
+<p>Just like that, instantly! Regular expressions is basically a programming language in and of itself. They can be accessed through most other programs – Stata, Excel, SAS, MATLAB, Python, you name it. Here we’ll obviously focus on their use in R.</p>
+<p>To just introduce some of the most common things used in regex, I’ll just do a bunch of quick examples demonstrating a certain type of pattern on a single string; then at the end we’ll quickly apply this to some of our school data.</p>
+<div id="gsub-grep-grepl-strsplit" class="section level3">
+<h3><span class="header-section-number">3.6.1</span> <code>gsub</code>, <code>grep</code>, <code>grepl</code>, <code>strsplit</code></h3>
+<p>These four are the workhorse functions of using regular expressions in R. They each serve a distinct purpose, and I’ll try and use all four in this brief overview a couple of different times.</p>
+<ol style="list-style-type: decimal">
+<li><code>gsub</code> is used for <strong>sub</strong>stitution of patterns. Want to delete all numbers? Cut certain strings from names? This is your friend. A quick side note on etymology – the “g” in <code>gsub</code> stands for <strong>g</strong>lobal. There is a rarely-used alternative to <code>gsub</code>, <code>sub</code>, which will replace only the first match of the supplied pattern… I’ve only ever used it once, just something to keep in mind.</li>
+<li><code>grep</code> (an obscure acronym for <strong>g</strong>lobal <strong>r</strong>egular <strong>e</strong>xpression <strong>p</strong>rint, though I only ever say “grep”) has two purposes. The first identifies if elements of a string match a pattern, and then returns the indices of the vector corresponding to matches. The second (with setting the argument <code>value = TRUE</code>) returns <em>the matched strings themselves</em>.</li>
+<li><code>grepl</code> (the “l” stands for <strong>l</strong>ogical) is used to simply test for existence of the pattern in strings. If the pattern is matched, we get <code>TRUE</code>, otherwise <code>FALSE</code>.</li>
+</ol>
+</div>
+<div id="simple-exact-substring-matching" class="section level3">
+<h3><span class="header-section-number">3.6.2</span> Simple, Exact Substring Matching</h3>
+<p>The most common regular expression is simply an <em>exact</em> sequence of letters. Suppose we wanted to find all the people named Bob. Then we might do:</p>
+<pre class="r"><code>strings &lt;- c(&quot;Bob Dylan&quot;, &quot;Johnny Cash&quot;, &quot;Bob Marley&quot;, &quot;Janis Joplin&quot;)
+
+#note the order of arguments!!
+#  this is a pet peeve of mine, as I'd expect
+#  strings to go first.
+grep(&quot;Bob&quot;, strings, value = TRUE)</code></pre>
+<pre><code>## [1] &quot;Bob Dylan&quot;  &quot;Bob Marley&quot;</code></pre>
+<pre class="r"><code>firsts &lt;- c(&quot;Bob&quot;, &quot;Johnny&quot;, &quot;Bob&quot;, &quot;Janis&quot;)
+lasts &lt;- c(&quot;Dylan&quot;, &quot;Cash&quot;, &quot;Marley&quot;, &quot;Joplin&quot;)
+#We might use grep without value = TRUE to
+#  find the last names of all Bobs:
+grep(&quot;Bob&quot;, strings)</code></pre>
+<pre><code>## [1] 1 3</code></pre>
+<pre class="r"><code>lasts[grep(&quot;Bob&quot;, strings)]</code></pre>
+<pre><code>## [1] &quot;Dylan&quot;  &quot;Marley&quot;</code></pre>
+<pre class="r"><code>mons &lt;- c(&quot;January&quot;, &quot;February&quot;, &quot;March&quot;, &quot;April&quot;,
+          &quot;May&quot;, &quot;June&quot;, &quot;July&quot;, &quot;August&quot;,
+          &quot;September&quot;, &quot;October&quot;, &quot;November&quot;, &quot;December&quot;)
+
+#Which months can we eat oysters?
+grep(&quot;r&quot;, mons)</code></pre>
+<pre><code>## [1]  1  2  3  4  9 10 11 12</code></pre>
+</div>
+<div id="beginningend-anchors-and" class="section level3">
+<h3><span class="header-section-number">3.6.3</span> Beginning/End Anchors: <code>^</code> and <code>$</code></h3>
+<p>Sometimes we want to be sure we’re matching a pattern from the beginning or end of a string. Regex uses two symbols to represent these: <code>^</code> (beginning) and <code>$</code> (end).</p>
+<p>Let’s try it out:</p>
+<pre class="r"><code>strings &lt;- c(&quot;Bob Dylan&quot;, &quot;Johnny Cash&quot;,
+             &quot;Bob Marley&quot;, &quot;Janis Joplin&quot;,
+             &quot;Billy-Bob Thornton&quot;)
+
+#Just matching Bob will give us the last
+#  string as well:
+grep(&quot;Bob&quot;, strings, value = TRUE)</code></pre>
+<pre><code>## [1] &quot;Bob Dylan&quot;          &quot;Bob Marley&quot;         &quot;Billy-Bob Thornton&quot;</code></pre>
+<pre class="r"><code>#To exclude this, we can force Bob
+#  to have come from the beginning
+#  of the string:
+grep(&quot;^Bob&quot;, strings, value = TRUE)</code></pre>
+<pre><code>## [1] &quot;Bob Dylan&quot;  &quot;Bob Marley&quot;</code></pre>
+<pre class="r"><code>states &lt;- 
+  c(&quot;Alabama&quot;, &quot;Alaska&quot;, &quot;Arizona&quot;, &quot;Arkansas&quot;,
+    &quot;California&quot;, &quot;Colorado&quot;, &quot;Connecticut&quot;,
+    &quot;Delaware&quot;, &quot;Florida&quot;, &quot;Georgia&quot;, &quot;Hawaii&quot;,
+    &quot;Idaho&quot;, &quot;Illinois&quot;, &quot;Indiana&quot;, &quot;Iowa&quot;,
+    &quot;Kansas&quot;, &quot;Kentucky&quot;, &quot;Louisiana&quot;, &quot;Maine&quot;,
+    &quot;Maryland&quot;, &quot;Massachusetts&quot;, &quot;Michigan&quot;,
+    &quot;Minnesota&quot;, &quot;Mississippi&quot;, &quot;Missouri&quot;,
+    &quot;Montana&quot;, &quot;Nebraska&quot;, &quot;Nevada&quot;, &quot;New Hampshire&quot;, 
+    &quot;New Jersey&quot;, &quot;New Mexico&quot;, &quot;New York&quot;, 
+    &quot;North Carolina&quot;, &quot;North Dakota&quot;, &quot;Ohio&quot;, 
+    &quot;Oklahoma&quot;, &quot;Oregon&quot;, &quot;Pennsylvania&quot;, &quot;Rhode Island&quot;, 
+    &quot;South Carolina&quot;, &quot;South Dakota&quot;, &quot;Tennessee&quot;, 
+    &quot;Texas&quot;, &quot;Utah&quot;, &quot;Vermont&quot;, &quot;Virginia&quot;, &quot;Washington&quot;, 
+    &quot;West Virginia&quot;, &quot;Wisconsin&quot;, &quot;Wyoming&quot;)
+
+#Which states start with New?
+grep(&quot;^New&quot;, states, value = TRUE)</code></pre>
+<pre><code>## [1] &quot;New Hampshire&quot; &quot;New Jersey&quot;    &quot;New Mexico&quot;    &quot;New York&quot;</code></pre>
+<pre class="r"><code>#Which states DON'T end with a?
+states[!grepl(&quot;a$&quot;, states)]</code></pre>
+<pre><code>##  [1] &quot;Arkansas&quot;      &quot;Colorado&quot;      &quot;Connecticut&quot;   &quot;Delaware&quot;     
+##  [5] &quot;Hawaii&quot;        &quot;Idaho&quot;         &quot;Illinois&quot;      &quot;Kansas&quot;       
+##  [9] &quot;Kentucky&quot;      &quot;Maine&quot;         &quot;Maryland&quot;      &quot;Massachusetts&quot;
+## [13] &quot;Michigan&quot;      &quot;Mississippi&quot;   &quot;Missouri&quot;      &quot;New Hampshire&quot;
+## [17] &quot;New Jersey&quot;    &quot;New Mexico&quot;    &quot;New York&quot;      &quot;Ohio&quot;         
+## [21] &quot;Oregon&quot;        &quot;Rhode Island&quot;  &quot;Tennessee&quot;     &quot;Texas&quot;        
+## [25] &quot;Utah&quot;          &quot;Vermont&quot;       &quot;Washington&quot;    &quot;Wisconsin&quot;    
+## [29] &quot;Wyoming&quot;</code></pre>
+<pre class="r"><code>#We could also have used another
+#  argument of grep, invert,
+#  to accomplish the same thing as
+#  x[!grepl(&quot;pattern&quot;, x)]
+grep(&quot;a$&quot;, states, value = TRUE, invert = TRUE)</code></pre>
+<pre><code>##  [1] &quot;Arkansas&quot;      &quot;Colorado&quot;      &quot;Connecticut&quot;   &quot;Delaware&quot;     
+##  [5] &quot;Hawaii&quot;        &quot;Idaho&quot;         &quot;Illinois&quot;      &quot;Kansas&quot;       
+##  [9] &quot;Kentucky&quot;      &quot;Maine&quot;         &quot;Maryland&quot;      &quot;Massachusetts&quot;
+## [13] &quot;Michigan&quot;      &quot;Mississippi&quot;   &quot;Missouri&quot;      &quot;New Hampshire&quot;
+## [17] &quot;New Jersey&quot;    &quot;New Mexico&quot;    &quot;New York&quot;      &quot;Ohio&quot;         
+## [21] &quot;Oregon&quot;        &quot;Rhode Island&quot;  &quot;Tennessee&quot;     &quot;Texas&quot;        
+## [25] &quot;Utah&quot;          &quot;Vermont&quot;       &quot;Washington&quot;    &quot;Wisconsin&quot;    
+## [29] &quot;Wyoming&quot;</code></pre>
+</div>
+<div id="multiple-possibilities" class="section level3">
+<h3><span class="header-section-number">3.6.4</span> Multiple Possibilities: <code>|</code></h3>
+<p>As typically in programming, we can use <code>|</code> to mean “or”. <code>|</code> separates patterns. Let’s try it out:</p>
+<pre class="r"><code>#Let's get states starting with directional names
+grep(&quot;North|South|East|West&quot;, states, value = TRUE)</code></pre>
+<pre><code>## [1] &quot;North Carolina&quot; &quot;North Dakota&quot;   &quot;South Carolina&quot; &quot;South Dakota&quot;  
+## [5] &quot;West Virginia&quot;</code></pre>
+</div>
+<div id="white-space-s" class="section level3">
+<h3><span class="header-section-number">3.6.5</span> White Space: <code>\\s</code></h3>
+<p>White space comes in many forms. Obviously the most common is a simple space. But also included in this are other sorts of blank characters that may show up unexpectedly in our data, like tabs (<code>\t</code>), newlines (<code>\n</code>), a carriage return (<code>\r</code>), a form feed (<code>\f</code>), etc. (like I said, string data is messy).</p>
+<p>In regex in R, <code>\\s</code> matches <em>all</em> of these (those who have seen regex before should note that we need two backslashes because the backslash itself needs to be escaped in an R string). For those interested in web scraping, unfortunately, it appears that <code>\\s</code> does <em>not</em> match <code>&amp;nbsp;</code>; we’ll return to this later.</p>
+<pre class="r"><code>#Which states have a space of any sort?
+grep(&quot;\\s&quot;, states, value = TRUE)</code></pre>
+<pre><code>##  [1] &quot;New Hampshire&quot;  &quot;New Jersey&quot;     &quot;New Mexico&quot;     &quot;New York&quot;      
+##  [5] &quot;North Carolina&quot; &quot;North Dakota&quot;   &quot;Rhode Island&quot;   &quot;South Carolina&quot;
+##  [9] &quot;South Dakota&quot;   &quot;West Virginia&quot;</code></pre>
+</div>
+<div id="wildcard-." class="section level3">
+<h3><span class="header-section-number">3.6.6</span> Wildcard: <code>.</code></h3>
+<p>Sometimes, we don’t care <em>what</em> character is in a certain place, just that it’s there. This type of pattern is called a wildcard, and it’s denoted in regex by <code>.</code>.</p>
+<p>Actually, it’s rare to use it by itself, but it’ll come up a lot when we have more tools. The only thing I can think of for this alone is cheating on crosswords. Suppose we wanted to fill in a crossword answer that had the pattern <code>L _ V _ _ _ _ _ _</code>. As long as we know it’s one word, we can go to the Regex dictionary and search the pattern: <code>l.v......</code> and we’ll get the full list of possible answers: <code>lava-lava, lavaliere, leviathan, Levitical, Leviticus, liverleaf, liverwort, liveryman, livestock</code>. We’ll use this more soon.</p>
+</div>
+<div id="quantifiers-m-n" class="section level3">
+<h3><span class="header-section-number">3.6.7</span> Quantifiers: <code>*</code>, <code>+</code>, <code>?</code>, <code>{m(, n)}</code></h3>
+<p>The most common appearance of <code>.</code> from the last section is as <code>.*</code>. We saw this when I found all the pan-vowel words in the introduction to this section.</p>
+<p><code>*</code> is a quantifier – it quantifies the piece of the pattern directly before it. In particular, <code>*</code> says to match the thing before it <em>0 or more times</em>. So <code>.*</code> means “match <em>anything</em> at least 0 times.” So the regex in the introduction, <code>a.*e.*i.*o.*u</code> means match “‘a’ followed by <em>anything any number of times</em> followed by ‘e’ followed by <em>anything any number of times</em> followed by ‘i’ followed by <em>anything any number of times</em> followed by ‘o’ followed by <em>anything any number of times</em> followed by ‘u’”.</p>
+<p>Here are all the possible quantifiers:</p>
+<ol style="list-style-type: decimal">
+<li><code>*</code>: Match <em>at least 0 times</em></li>
+<li><code>+</code>: Match <em>at least 1 time</em></li>
+<li><code>?</code>: Match <em>exactly</em> 0 or 1 time.</li>
+<li><code>{m}</code>: Match <em>exactly</em> <code>m</code> times.</li>
+<li><code>{m,n}</code>: Match <em>between</em> <code>m</code> and <code>n</code> times, inclusive. If <code>n</code> is blank, it’s <em>at least</em> <code>m</code> times.</li>
+</ol>
+<p>Some demonstration:</p>
+<pre class="r"><code>#What states have a doubled s?
+grep(&quot;s{2}&quot;, states, value = TRUE)</code></pre>
+<pre><code>## [1] &quot;Massachusetts&quot; &quot;Mississippi&quot;   &quot;Missouri&quot;      &quot;Tennessee&quot;</code></pre>
+<pre class="r"><code>#Which states have an a in them
+#  between the first and the last letter?
+#  (first letter is excluded because
+#   we're only looking for lowercase a)
+grep(&quot;a.+&quot;, states, value = TRUE)</code></pre>
+<pre><code>##  [1] &quot;Alabama&quot;        &quot;Alaska&quot;         &quot;Arkansas&quot;       &quot;California&quot;    
+##  [5] &quot;Colorado&quot;       &quot;Delaware&quot;       &quot;Hawaii&quot;         &quot;Idaho&quot;         
+##  [9] &quot;Indiana&quot;        &quot;Kansas&quot;         &quot;Louisiana&quot;      &quot;Maine&quot;         
+## [13] &quot;Maryland&quot;       &quot;Massachusetts&quot;  &quot;Michigan&quot;       &quot;Montana&quot;       
+## [17] &quot;Nebraska&quot;       &quot;Nevada&quot;         &quot;New Hampshire&quot;  &quot;North Carolina&quot;
+## [21] &quot;North Dakota&quot;   &quot;Oklahoma&quot;       &quot;Pennsylvania&quot;   &quot;Rhode Island&quot;  
+## [25] &quot;South Carolina&quot; &quot;South Dakota&quot;   &quot;Texas&quot;          &quot;Utah&quot;          
+## [29] &quot;Washington&quot;</code></pre>
+<pre class="r"><code>flips &lt;-
+  c(&quot;HTHHHTHHHTH&quot;,
+    &quot;THTTHTTHHTH&quot;,
+    &quot;THTHTHHTHHHT&quot;,
+    &quot;THTHTTTHTTHTTT&quot;)
+
+#Which sequences of coin flips had
+#  at least 3 heads in a row?
+grepl(&quot;H{3, }&quot;, flips)</code></pre>
+<pre><code>## [1]  TRUE FALSE  TRUE FALSE</code></pre>
+<pre class="r"><code>#Let's match the middle initial K, possibly
+#  followed by some punctuation
+grepl(&quot;\\sK.?&quot;, c(&quot;Johnson, Mary K&quot;,
+                  &quot;Hobbes, Calvin K.&quot;,
+                  &quot;Martin, George R. R.&quot;))</code></pre>
+<pre><code>## [1]  TRUE  TRUE FALSE</code></pre>
+</div>
+<div id="group-matching" class="section level3">
+<h3><span class="header-section-number">3.6.8</span> Group Matching: <code>[]</code></h3>
+<p><code>[]</code> is used for a less inclusive version of <code>.</code>. We specify the characters that we’re OK with inside of <code>[]</code> and they’ll be matched. Most commonly, this is used for matching <em>any letter</em> or <em>any number</em>. To do this, we use <code>-</code> inside <code>[]</code> to mean “through”, like <code>[A-Z]</code> (A through Z):</p>
+<pre class="r"><code>#Let's match ANY middle initial
+nms &lt;- c(&quot;Johnson, Mary K&quot;,
+         &quot;Hobbes, Calvin K.&quot;,
+         &quot;Martin, George R. R.&quot;, &quot;Obama, Barack&quot;,
+         &quot;Prince, The Artist Formerly Known As&quot;)
+grepl(&quot;\\s[A-Z]\\.?$&quot;, nms)</code></pre>
+<pre><code>## [1]  TRUE  TRUE  TRUE FALSE FALSE</code></pre>
+<pre class="r"><code>#If we want to find anyone with a period, 
+#  we have to be careful. This won't work:
+grepl(&quot;.&quot;, nms)</code></pre>
+<pre><code>## [1] TRUE TRUE TRUE TRUE TRUE</code></pre>
+<pre class="r"><code>#We CAN put a period inside a group:
+grepl(&quot;[.]&quot;, nms)</code></pre>
+<pre><code>## [1] FALSE  TRUE  TRUE FALSE FALSE</code></pre>
+<pre class="r"><code>#OR we can escape it with \\:
+grepl(&quot;\\.&quot;, nms)</code></pre>
+<pre><code>## [1] FALSE  TRUE  TRUE FALSE FALSE</code></pre>
+<pre class="r"><code>#Let's remove all digits from some addresses
+gsub(&quot;[0-9]&quot;, &quot;&quot;, c(&quot;3718 Locust Walk&quot;,
+                    &quot;219 S 41st Street&quot;,
+                    &quot;1600 Pennsylvania Ave NW&quot;))</code></pre>
+<pre><code>## [1] &quot; Locust Walk&quot;         &quot; S st Street&quot;         &quot; Pennsylvania Ave NW&quot;</code></pre>
+<pre class="r"><code>#Whoops, we took away too much there!
+#  We also missed the leading white space
+#  Let's try again:
+gsub(&quot;^[0-9]*\\s*&quot;, &quot;&quot;, c(&quot;3718 Locust Walk&quot;,
+                          &quot;219 S 41st Street&quot;,
+                          &quot;1600 Pennsylvania Ave NW&quot;))</code></pre>
+<pre><code>## [1] &quot;Locust Walk&quot;         &quot;S 41st Street&quot;       &quot;Pennsylvania Ave NW&quot;</code></pre>
+<div id="specials-in-grouping-punct-alnum" class="section level4">
+<h4><span class="header-section-number">3.6.8.1</span> Specials in Grouping: <code>[:punct:]</code>, <code>[:alnum:]</code></h4>
+<p>Also within <code>[]</code> we can refer to certain sets of characters with special shorthands. The two most useful are <code>[:punct:]</code> to refer to all punctuation (well, most – specifically, <code>[:punct:]</code> matches all of <code>[-[]\;',./!@#%&amp;*()_{}::&quot;?]</code>), and <code>[:alnum:]</code> to refer to all alphanumeric characters (i.e., <code>[:alnum:]</code> is the same as <code>[A-Za-z0-9]</code>). (There are also <code>[:upper:]</code>, <code>[:lower:]</code>, <code>[:digit:]</code>, and <code>[:alpha:]</code>, but all of these are longer to write out than just writing <code>A-Z</code>, <code>a-z</code>, <code>0-9</code>, and <code>a-zA-Z</code>, respectively)</p>
+<pre class="r"><code>#get rid of all punctuation
+gsub(&quot;[[:punct:]]&quot;, &quot;&quot;, &quot;John C. Willington, Jr.&quot;)</code></pre>
+<pre><code>## [1] &quot;John C Willington Jr&quot;</code></pre>
+<pre class="r"><code>#get rid of all alphanumeric characters
+gsub(&quot;[[:alnum:]]&quot;, &quot;&quot;, &quot;John C. Willington, Jr.&quot;)</code></pre>
+<pre><code>## [1] &quot; . , .&quot;</code></pre>
+</div>
+<div id="negative-group-matching" class="section level4">
+<h4><span class="header-section-number">3.6.8.2</span> Negative Group Matching: <code>[^]</code></h4>
+<p>We can specify a group of characters <em>not</em> to match by starting the matching group with <code>[^</code> instead of <code>[</code>.</p>
+<pre class="r"><code>#Keep only digits
+gsub(&quot;[^0-9]&quot;, &quot;&quot;, c(&quot;3718 Locust Walk&quot;,
+                     &quot;219 S 41st Street&quot;,
+                     &quot;1600 Pennsylvania Ave NW&quot;))</code></pre>
+<pre><code>## [1] &quot;3718&quot;  &quot;21941&quot; &quot;1600&quot;</code></pre>
+</div>
+</div>
+<div id="awesome-tools-for-practicing" class="section level3">
+<h3><span class="header-section-number">3.6.9</span> Awesome Tools for Practicing</h3>
+<p>I think that’s enough for today. Some other common things to look up:</p>
+<ul>
+<li><code>()</code> to denote matched groups, along with <code>\\1</code>, <code>\\2</code>, etc.</li>
+<li>Look-ahead and look-behind, both positive and negative, using <code>perl = TRUE</code></li>
+<li><code>\\U</code> and <code>\\L</code> to force letters upper- or lower-case within regex</li>
+</ul>
+<p>Besides that, regex is all about playing around extensively with your actual data.</p>
+<p>And staring at a regex cheat sheet! I have this printed and pasted above my desk:</p>
+<p><a href="https://www.cheatography.com/davechild/cheat-sheets/regular-expressions/" class="uri">https://www.cheatography.com/davechild/cheat-sheets/regular-expressions/</a></p>
+<p>I also frequently visit this website, which allows you to test regexes and breaks down the pattern step-by-step with explanations and pretty colors:</p>
+<p><a href="https://regex101.com/" class="uri">https://regex101.com/</a></p>
+</div>
 </div>
 <div id="non-.csv-data" class="section level2">
 <h2><span class="header-section-number">3.7</span> Non-.csv Data</h2>
