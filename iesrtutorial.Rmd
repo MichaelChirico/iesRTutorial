@@ -2341,9 +2341,63 @@ I also frequently visit this website, which allows you to test regexes and break
 
 https://regex101.com/
 
+### A Quick Data Exercise
+
+Remember how we found out that Masterman had a strange job description for its teachers? The reason we were susceptible to this is that we relied on finding the most common job description to identify teachers. This was bound to fail if a small, specialized school like Masterman uses some alternative description on a small scale.
+
+A better approach to tackling this problem would have been to use regex. After some brief inspection of our `salaries` data, we could have seen that `TEACHER` appears to be a constant in the job description of teachers. We can start from there and winnow down our options to only identify the teachers we're interested in, but also be more inclusive than just including `TEACHER,FULL TIME`:
+
+```{r regex_teacher_job}
+#putting grepl in the first argument means
+#  we'll only get rows for which there is
+#  a match to the pattern
+salaries[grepl("TEACHER", title_description),
+         .N, by = title_description][order(-N)]
+```
+
+On a smaller scale, it's a lot easier to piece through _every_ possible `TEACHER`-related job title. We can see Masterman's `TEACHER,DEMONSTRATION` right there as 5th-most-common. Suppose we had wanted to keep only `TEACHER,FULL TIME` and `TEACHER,DEMONSTRATION` for our `teachers` data set. We might have subsetted like this:
+
+```{r regex_teacher_subset}
+#(FULL|DEMO) matches ONLY
+#  TEACHER,FULL or TEACHER,DEMO;
+#  the rest of the regex is to exclude
+#  TEACHER,DEMONSTRATION,SPEC ED, which
+#  is distinguished by having a comma
+#  later in the string, so we require
+#  our match to have all the remaining
+#  characters after (FULL|DEMO) to
+#  NOT be a comma.
+salaries[grepl("TEACHER,(FULL|DEMO)[^,]*$", title_description),
+         unique(title_description)]
+```
+
+What about if we only wanted to compare the average wage of PFT employees vs. non-PFT employees? PFT has several arms/classes of employee employed by the district, so we might not want to look solely at `PFT-TEACHER`. We can do this with regex:
+
+```{r regex_pft_wages}
+#make sure we don't mix hourly employees
+#  since their wages are quoted by the hour
+salaries[pay_rate_type == "SALARIED", 
+         .(avg_wage = mean(pay_rate)), 
+         by = .(pft = grepl("^PFT", type_of_representation))]
+```
+
+Lastly, we can extract only employees working at schools (as opposed to offices) with something like:
+
+```{r regex_schools}
+salaries[grepl("SCHOOL", organization_level),
+         .N, organization_level][order(-N)]
+```
+
+
 ## Non-.csv Data
 
+Comma- or tab-separated data is ideal, especially since we have the incredibly-fast `fread` by our side to facilitate the data reading process when we're lucky enough to have this kind of data.
+
+But we're not always so lucky. We've already covered how to read in Excel data files. Here we'll cover three more file types which I've found frequently in the wild -- files created in SAS, files created in Stata, and fixed-width files. All are handled by the `haven` package, which is specifically designed to handle reading foreign, non-csv data types into R. 
+
 ### SAS: `read_sas`
+
+### Stata: `read_dta`
 
 ### Fixed-width `read_fwf`
 
@@ -2358,6 +2412,8 @@ https://regex101.com/
 `axes`/`matplot`
 
 ## `ggplot`
+
+I don't know how to use it really, but many of my R-using friends _swear by `ggplot2`. There are whole textbooks dedicated to how to use `ggplot`. Search around on Google for some examples and see if you like the aesthetic (I don't), in which case it may be worth exploring and investing some time in learning how to use it.
 
 # Web Scraping: `rvest` (1:30 PM - 2:30 PM)
 
