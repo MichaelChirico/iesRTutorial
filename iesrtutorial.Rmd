@@ -2413,7 +2413,12 @@ But we're not always so lucky. We've already covered how to read in Excel data f
 
 ## `ggplot`
 
-I don't know how to use it really, but many of my R-using friends _swear by `ggplot2`. There are whole textbooks dedicated to how to use `ggplot`. Search around on Google for some examples and see if you like the aesthetic (I don't), in which case it may be worth exploring and investing some time in learning how to use it.
+I don't know how to use it really, but many of my R-using friends _swear_ by `ggplot2`. It is the plotting method/aesthetic of choice for Nate Silver's [fivethirtyeight.com](http://fivethirtyeight.com/), a site about quantitative analysis of politics, sports, etc. Here's an example:
+
+
+![538 Style](http://i.imgur.com/jEYcR08.png "538 style")
+
+There are whole textbooks dedicated to how to use `ggplot`. Search around on Google for some examples and see if you like the aesthetic (I don't), in which case it may be worth exploring and investing some time in learning how to use it.
 
 # Web Scraping: `rvest` (1:30 PM - 2:30 PM)
 
