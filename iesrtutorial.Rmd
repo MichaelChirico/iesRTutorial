@@ -2403,7 +2403,7 @@ To just run through a quick example, let's load in the most recent LEA Universe 
 
 Basically, reading such a file is as simple as using the `read_sas` function from the `haven` package:
 
-```{r haven_load, eval = FALSE}
+```{r haven_load, eval = FALSE, cache = TRUE}
 #To install from CRAN
 install.packages("haven")
 ```
@@ -2465,7 +2465,7 @@ library(readr)
 
 `read_fwf` is the function in `readr`. In addition to the column names, it requires an extra argument -- `col_positions`. This tells `read_fwf` how to find the columns in the data. It can be specified in a number of ways (see `?read_fwf`), but the one we'll use today is to use the helper function `fwf_widths`. This latter function maps column widths into something that `col_positions` can understand. It also takes an argument allowing us to specify column names, which is convenient.
 
-```{r readr_fwf}
+```{r readr_fwf, cache = TRUE}
 #The column widths are kept in a separate dictionary file,
 #  which I had to create myself
 fwf_dict <- fread("data/00keys.csv", header = FALSE)
@@ -2509,13 +2509,23 @@ teachers_wisc <-
                   as.integer(salary) > 0 & 
                   substr(agency, 1, 2) != "99" & 
                   as.integer(total_exp) %between% c(10, 300)]
+
+#Now set salaries and fringe benefits to be numeric
+teachers_wisc[ , salary := as.numeric(salary)]
+teachers_wisc[ , fringe := as.numeric(fringe)]
 ```
 
-Now we can examine the distribution on a more select/interesting sample of employees. Drawing histograms is managed through the `hist` function. It only needs one argument -- a vector which will be converted into a distribution.
+Now we can examine the distribution on a more select/interesting sample of employees. Drawing histograms is managed through the `hist` function (so it's _very_ similar to Stata). It only needs one argument -- a vector which will be converted into a distribution.
 
-```{r wisc_age_hist}
+```{r wisc_age_hist, eval = FALSE}
 #no-frills histogram
 teachers_wisc[ , hist(birth_year)]
+```
+```{r wisc_age_hist_inv, echo = FALSE}
+#Adding this to hide the output mess
+invisible(
+  teachers_wisc[ , hist(birth_year)]
+)
 ```
 
 That's not bad considering how simple it was to program. There are three things that jump out at me immediately as being deficiencies of this plot:
@@ -2526,9 +2536,11 @@ That's not bad considering how simple it was to program. There are three things 
  
 Let's take care of the three of these in turn.
 
+#### Main Title
+
 The main title of a plot is almost always handled by the `main` argument to a plotting function:
 
-```{r wisc_age_hist_title}
+```{r wisc_age_hist_title, eval = FALSE}
 #Customizing the main title
 teachers_wisc[ , hist(birth_year, 
                       main = "Distribution of Year of Birth among Wisconsin Teachers")]
@@ -2545,15 +2557,366 @@ teachers_wisc[ , hist(birth_year,
                       main = paste0("Distribution of Year of Birth\n",
                                     "Among Wisconsin Teachers"))]
 ```
+```{r wisc_age_hist_title_inv, echo = FALSE}
+invisible({
+  teachers_wisc[ , hist(birth_year, 
+                        main = "Distribution of Year of Birth among Wisconsin Teachers")]
+  teachers_wisc[ , hist(birth_year, 
+                        main = "Distribution of Year of Birth\nAmong Wisconsin Teachers")]
+  teachers_wisc[ , hist(birth_year, 
+                        main = paste0("Distribution of Year of Birth\n",
+                                      "Among Wisconsin Teachers"))]
+})
+```
 
+#### Axis Labels
 
-`axes`
+Looking better already. Now let's handle the axes. There are four arguments involved here. `xlab` and `ylab` handle the labels of the two axes. And we can use `xaxt` and `yaxt` to tell R not to plot an axis (usually this means we want to specify our own axes/ticks; we'll experiment with this later):
+
+```{r wisc_age_hist_axes, eval = FALSE}
+#remember, argument order doesn't
+#  matter as long as we name the arguments
+teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
+                      main = paste0("Distribution of Year of Birth\n",
+                                    "Among Wisconsin Teachers"))]
+```
+```{r wisc_age_hist_axes_inv, echo = FALSE}
+invisible(
+  teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
+                        main = paste0("Distribution of Year of Birth\n",
+                                      "Among Wisconsin Teachers"))]
+)
+```
+
+#### Colors
+
+Now let's add some real life by coloring our plot! This is handled with the `col` argument.
+
+There are 657 color names understood by this argument. You can see all of them by running `colors()`. More often when choosing a color, I visit [this website](http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf), which has the name of all of these colors as well as a preview of the color itself. Here's the first page:
+
+![Thanks Tian Zhang!](http://i.imgur.com/iwnA8hD.png "Thanks Tian Zhang!")
+
+```{r wisc_age_hist_col, eval = FALSE}
+#something plain
+teachers_wisc[ , hist(birth_year, xlab = "Year of Birth", col = "red",
+                      main = paste0("Distribution of Year of Birth\n",
+                                    "Among Wisconsin Teachers"))]
+
+#something more exotic
+teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
+                      col = "darkslateblue",
+                      main = paste0("Distribution of Year of Birth\n",
+                                    "Among Wisconsin Teachers"))]
+```
+```{r wisc_age_hist_col_inv, echo = FALSE}
+invisible({
+teachers_wisc[ , hist(birth_year, xlab = "Year of Birth", col = "red",
+                      main = paste0("Distribution of Year of Birth\n",
+                                    "Among Wisconsin Teachers"))]
+teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
+                      col = "darkslateblue",
+                      main = paste0("Distribution of Year of Birth\n",
+                                    "Among Wisconsin Teachers"))]
+})
+```
+
+#### More Histogram Bells & Whistles
+
+There are a bunch of other ways we can spruce up plots, but we'll save those for other plot types. For now, let's just name a few extras specifically made for histograms.
+
+##### Density vs. Frequency
+
+Histograms can be used to represent either frequency or probability. Basically, frequencies are raw numbers, but when plotted as probabilities, we force the total area of the histogram to be 1 (just like every random variable). We can switch to probabilities by setting the argument `freq` to `FALSE`:
+
+```{r wisc_age_hist_freq, eval = FALSE}
+#note the different y axis
+teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
+                      col = "darkslateblue", freq = FALSE,
+                      main = paste0("Distribution of Year of Birth\n",
+                                    "Among Wisconsin Teachers"))]
+```
+```{r wisc_age_hist_freq_inv, echo = FALSE}
+invisible(
+teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
+                      col = "darkslateblue", freq = FALSE,
+                      main = paste0("Distribution of Year of Birth\n",
+                                    "Among Wisconsin Teachers"))]
+)
+```
+
+##### Customized Bins/Breaks
+
+Actually, the histogram is a fairly well-studied (and oft-criticized) non-parametric estimator of the distribution of a random variable. There is extensive debate and argument about the proper way to construct a histogram -- how wide the bins should be, how many there should be, where the bins should be centered, etc.
+
+By default, R uses Sturges' formula (based on the range of the data)for determining most of this. But there is also easy access to using alternative algorithms in the `breaks` argument. If we pass `"Scott"` (specifically tailored to the normal distribution) or `"FD"` (based on the inter-quartile range), we'll get a slightly different histogram based on the bins produced by these approaches. To be honest, I've never used any of these, so we'll skip them for now. 
+
+We can also do send some other things to `breaks` -- most commonly, a single number (meaning the number of bins to be used), but also a vector (specifying the endpoints of the bins) and some other more obscure options (see `?hist` for more). Let's test these out:
+
+```{r wisc_hist_age_breaks, eval = FALSE}
+#Same as above, for comparison without scrolling
+teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
+                      col = "darkslateblue", freq = FALSE,
+                      main = paste0("Distribution of Year of Birth\n",
+                                    "Among Wisconsin Teachers"))]
+
+#Setting the breakpoints ourself to have one for every year
+teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
+                      breaks = min(birth_year):max(birth_year),
+                      col = "darkslateblue", freq = FALSE,
+                      main = paste0("Distribution of Year of Birth\n",
+                                    "Among Wisconsin Teachers"))]
+
+#Setting the NUMBER of bins ourself
+teachers_wisc[ , hist(birth_year, xlab = "Year of Birth", breaks = 20,
+                      col = "darkslateblue", freq = FALSE,
+                      main = paste0("Distribution of Year of Birth\n",
+                                    "Among Wisconsin Teachers"))]
+```
+```{r wisc_hist_age_breaks_inv, echo = FALSE, fig.keep = "all"}
+invisible({
+  cat("Default (Sturges)\n")
+teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
+                      col = "darkslateblue", freq = FALSE,
+                      main = paste0("Distribution of Year of Birth\n",
+                                    "Among Wisconsin Teachers"))]
+cat("Choosing Endpoints\n")
+teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
+                      breaks = min(birth_year):max(birth_year),
+                      col = "darkslateblue", freq = FALSE,
+                      main = paste0("Distribution of Year of Birth\n",
+                                    "Among Wisconsin Teachers"))]
+cat("Choosing # Bins\n")
+teachers_wisc[ , hist(birth_year, xlab = "Year of Birth", breaks = 20,
+                      col = "darkslateblue", freq = FALSE,
+                      main = paste0("Distribution of Year of Birth\n",
+                                    "Among Wisconsin Teachers"))]
+})
+```
 
 ### Kernel Density Plots
 
+A kernel density plot is simply the continuous version of a histogram. Rather than trying to approximate the distribution of a continuous variable with a necessarily-discrete histogram, statisticians have devised kernel density estimates as a continuous approximation for continuous variables. 
+
+#### Barebones
+
+These are handled in R with the `density` function (_c.f._ `kdensity` in Stata). Unlike `hist`, the `density` function does not itself plot the kernel density. Instead, we have to send the output of `density` to the _main_ plotting function in R `plot`. `plot` accepts all of the same arguments that we sent to `hist` as plot-style bells and whistles.
+
+```{r wisc_dens_age, eval = FALSE}
+teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
+                      xlab = "$", col = "darkgreen")]
+```
+```{r wisc_dens_age_inv, echo = FALSE}
+invisible(
+teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
+                      xlab = "$", col = "darkgreen")]
+)
+```
+
+A few things about this basic plot jump out to me and highlight some new things we can add to our toolbelt to improve the readability of this plot.
+
+ 1. The line is too thin. It's a bit hard to see.
+ 2. The numbers on the x- and y-axes are impossible to understand.
+ 
+After handling each of these, we'll turn to addressing some `density`-specific parameters.
+
+#### Line Width
+
+Line width is handled by the `lwd` parameter. This is specified as a number; the default is 1. I usually specify `lwd = 3` in presentation-ready plots. As we draw more and more complicated plots, this is something we can use to distinguish certain parts of our plot.
+
+```{r wisc_dens_age_lwd, eval = FALSE}
+teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
+                      xlab = "$", col = "darkgreen", lwd = 3)]
+```
+```{r wisc_dens_age_lwd_inv, echo = FALSE}
+invisible(
+teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
+                      xlab = "$", col = "darkgreen", lwd = 3)]
+)
+```
+
+#### Axis Labels
+
+R does its best to come up with nice, round, easy-on-the-eyes axis labels, but sometimes it doesn't do so well. When we notice this is the case, R has given us the tools to customize what shows up on all of the axes. Surprise, surprise, this is done through the `axis` function. `axis` takes three main arguments: 1) `side`, which tells to which side of the plot to add the axis (from 1 through 4, going clockwise from the bottom, so `side = 1` is the x axis, `side = 2` is the y axis, etc.); 2) `at`, which tells _where_ (which x or y values) to put ticks (this defaulted to `c(0, 20000, 40000, 60000, 80000)` in our original plot); and 3) `labels`, which tells _what_ to write at those ticks.
+
+When we specify custome axis labels, we probably want to shut off the automatic axis creation done by the original plot; we can do this by specifying `xaxt = "n"` (or similarly for `yaxt`). Let's first demonstrate the effect of this:
+
+```{r wisc_dens_age_no_x, eval = FALSE}
+teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
+                      xlab = "$", col = "darkgreen", lwd = 3,
+                      xaxt = "n")]
+```
+```{r wisc_dens_age_no_x_inv, echo = FALSE}
+invisible(
+teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
+                      xlab = "$", col = "darkgreen", lwd = 3,
+                      xaxt = "n")]
+)
+```
+
+If we follow a `plot` call with a call to `axis`, it will add the axis we specify to the "current" plot. Basically, the "current" plot is the one drawn the most recent time we ran `plot` (with some exceptions we won't get into today). So let's add an axis:
+
+```{r wisc_dens_add_axis}
+axis(side = 1, at = seq(0, 90000, by = 10000),
+     labels = paste0("$", seq(0, 90, by = 10), "k"))
+```
+
+You'll also notice the numbers on the y axis are hard to read. To be honest, I don't think those numbers tell us much of anything, so I'm generally fine excluding the y axis on a density plot entirely:
+
+```{r wisc_dens_no_y, eval = FALSE}
+teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
+                      xlab = "$", col = "darkgreen", lwd = 3,
+                      xaxt = "n", yaxt = "n")]
+axis(side = 1, at = seq(0, 90000, by = 10000),
+     labels = paste0("$", seq(0, 90, by = 10), "k"))
+```
+```{r wisc_dens_no_y_inv, echo = FALSE}
+invisible({
+  teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
+                        xlab = "$", col = "darkgreen", lwd = 3,
+                        xaxt = "n", yaxt = "n")]
+  axis(side = 1, at = seq(0, 90000, by = 10000),
+       labels = paste0("$", seq(0, 90, by = 10), "k"))
+})
+```
+
+#### Density Parameters
+
+Just like with histograms, and perhaps even more so, kernel densities can be micromanaged to no end by specifying a number of parameters. See `?density` for more, as I don't think it's worthwhile to spend much time on the nuanced differences between the estimators; here, I'll just list a few options and some sample values.
+
+* `bw`: the bandwidth. As with `breaks` from `hist`, there are a few typical algorithms available out of the box. I'll just name them here; see `?bandwidth` for more: `"nrd0"`, `"nrd"`, `"ucv"`, `"bcv"`, `"SJ"`. We can also specify bandwidth as a number ourselves; the larger is the bandwidth, the further away informative points can be.
+
+* `kernel`: the kernel used to accrue information from nearby points. These basically differ in how much information is ascribed to very-nearby points as opposed to slightly-further points. The default in R is the Gaussian (normal) kernel (`kernel = "gaussian"`), which means R differs from Stata, which uses the Epanechnikov kernel by default. The latter has some better statistical properties, but is less appealing for other reasons. Besides Gaussian, R also supports the following values for `kernel`: `"epanechnikov"`, `"rectangular"`, `"triangular"`, `"biweight"`, `"cosine"`, and `"optcosine"`. 
+
 ### Scatterplots
 
+Histograms and kernel densities are the main tools of examining graphically one-dimensional random variables.
+
+Now, we'll move on to examining joint distributions graphically. The main tool people use here is the scatter plot.
+
+Let's examine the relationship between teachers' salary and fringe benefits. This would be an essential first step in trying to understand our data if we planned to run a regression involving these two variables. Since it's not very interesting to see a scatterplot of ~65,000 points, we'll focus more specifically on English teachers (distinguished by having the variable `area` equal `300`:
+
+```{r english}
+english <- teachers_wisc[area == 300]
+```
+
+#### Barebones
+
+Scatterplots are handled through the `plot` function. If we pass two vectors and say nothing else, `plot` assumes we want a scatterplot and treats the first vector as the "x" variable, and the second as the "y" variable. Other than that, business as usual, per above:
+
+```{r scatter, eval = FALSE}
+english[ , plot(salary, fringe, xlab = "Salary ($)",
+                ylab = "Fringe Benefits ($)",
+                main = "Fringe Benefits vs. Salary",
+                col = "darkblue")]
+```
+```{r scatter_inv, echo = FALSE}
+invisible(
+english[ , plot(salary, fringe, xlab = "Salary ($)",
+                ylab = "Fringe Benefits ($)",
+                main = "Fringe Benefits vs. Salary",
+                col = "darkblue")]
+)
+```
+
+Immediately, we can see that some outliers are going to be tainting any naive analysis we may perform on the data. After fixing this, we'll learn one more general plotting trick, and one scatterplot-specific trick.
+
+```{r scatter_out, eval = FALSE}
+english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
+                         ylab = "Fringe Benefits ($)",
+                         main = "Fringe Benefits vs. Salary",
+                         col = "darkblue")]
+```
+```{r scatter_out_inv, echo = FALSE}
+invisible(
+english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
+                         ylab = "Fringe Benefits ($)",
+                         main = "Fringe Benefits vs. Salary",
+                         col = "darkblue")]
+)
+```
+
+#### Axis Label Orientation
+
+In some plots, having the y axis labels parallel to the y axis makes it harder to read. There is a parameter that controls the orientation of axis labels relative to each axis -- `las`. It can take 4 possible values -- the default, `0`, means "always parallel"; `1` means "always horizontal"; `2` means "always perpendicular"; and `3` means "always vertical". These numbers don't really correspond to anything, so far as I can tell -- in a given situation, I usually just plug in one or two of the options to see what works best. Here, we want `las = 1`:
+
+```{r scatter_las, eval = FALSE}
+english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
+                         ylab = "Fringe Benefits ($)",
+                         main = "Fringe Benefits vs. Salary",
+                         col = "darkblue", las = 1)]
+
+#This makes the y axis label conflict
+#  with the tick labels; there's another way
+#  to deal with this, but for now we can just abbreviate
+#  the axis labels like we did above
+english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
+                         ylab = "Fringe Benefits ($)",
+                         main = "Fringe Benefits vs. Salary",
+                         col = "darkblue", yaxt = "n")]
+#Since we suppressed the y axis in plot, changing las
+#  there wouldn't matter (since the x axis is
+#  unaffected by our choice of las); to handle
+#  the orientation here, we have to send our
+#  las value of choice to the axis function
+axis(side = 2, at = 5000*(0:5), las = 1,
+     labels = paste0("$", 5*(0:5), "k"))
+```
+```{r scatter_las_inv, echo = FALSE}
+invisible({
+  english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
+                           ylab = "Fringe Benefits ($)",
+                           main = "Fringe Benefits vs. Salary",
+                           col = "darkblue", las = 1)]
+  english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
+                           ylab = "Fringe Benefits ($)",
+                           main = "Fringe Benefits vs. Salary",
+                           col = "darkblue", yaxt = "n")]
+  axis(side = 2, at = 5000*(0:5), las = 1,
+       labels = paste0("$", 5*(0:5), "k"))
+})
+```
+
+#### Conditional Coloring
+
+One awesome thing about scatterplots is that we can set the color of each point to be different if we so choose. We can do this by supplying a _vector_ to `col` that is equal in length to our data. This is rare, but it _is_ common to set the color of each point according to some condition. The easiest way to do this is with `ifelse` (this is [inefficient](http://stackoverflow.com/questions/16275149/does-ifelse-really-calculate-both-of-its-vectors-every-time-is-it-slow), and I hate `ifelse`, but will suffice for today). Let's color the points by the degree that a teacher has.
+
+```{r scatter_color, eval = FALSE}
+english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
+                         ylab = "Fringe Benefits ($)",
+                         main = "Fringe Benefits vs. Salary", yaxt = "n"
+                         col = ifelse(highest_degree == 4, "darkred", "darkblue"))]
+axis(side = 2, at = 5000*(0:5), las = 1,
+     labels = paste0("$", 5*(0:5), "k"))
+```
+```{r scatter_color_inv, echo = FALSE}
+invisible({
+english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
+                         ylab = "Fringe Benefits ($)",
+                         main = "Fringe Benefits vs. Salary", yaxt = "n"
+                         col = ifelse(highest_degree == 4, "darkred", "darkblue"))]
+axis(side = 2, at = 5000*(0:5), las = 1,
+     labels = paste0("$", 5*(0:5), "k"))
+})
+```
+
+#### Legends
+
+The above plot clearly demonstrates that there is a strong correlation between the degree you have, the fringe benefits you receive, and your salary. But it's not at all clear to a casual observer what the difference is between red and blue dots (Republican vs. Democrat?). To elucidate this, we'll add a legend. You guessed right -- the function we need is `legend`. `legend`, like `axis`, is a plotting function that will add its output to the "current" plot. `legend` takes a bunch of parameters. The first (or first and second) specifies the position (either relative position -- e.g. `"top"` or `"bottomright"`, or, when specifying x and y, the exact coordinates of the box). The `legend` argument tells the labels in the legend.
+
+```{r scatter_legend}
+legend("topleft",
+       legend = c("Bachelor's", "Master's"), 
+       #make sure to make the first color
+       #  correspond to the first item in legend, etc.
+       col = c("darkred", "darkblue"))
+```
+
+
 ### Line Plots
+
+### Bar Plots
+
+### Box and Whisker Plots
 
 ### Multiple Plots
 
