@@ -2397,19 +2397,167 @@ But we're not always so lucky. We've already covered how to read in Excel data f
 
 ### SAS: `read_sas`
 
+Users of SAS may be familiar with its `sas7bdat` export file (I think it stands for "SAS 7 binary data"). I have found this file format in one place while working on projects in education -- the [Common Core of Data](https://nces.ed.gov/ccd/ccddata.asp). Many of the district- and school-level data files found there are available in `sas7bdat` format.
+
+To just run through a quick example, let's load in the most recent LEA Universe Survey Data, from 2013-14. The original data can be found on [this site](https://nces.ed.gov/ccd/pubagency.asp) [here](https://nces.ed.gov/ccd/data/zip/ag131a_supp_sas.zip), but has been loaded onto your computer already.
+
+Basically, reading such a file is as simple as using the `read_sas` function from the `haven` package:
+
+```{r haven_load, eval = FALSE}
+#To install from CRAN
+install.packages("haven")
+```
+```{r read_sas}
+#Now load the package:
+library(haven)
+
+leas_13 <- read_sas("data/ag131a_supp.sas7bdat")
+class(leas_13)
+
+#again, it's been read as a data.frame,
+#  so we'll use setDT to make it a data.table
+setDT(leas_13)
+
+#these files are huge...
+ncol(leas_13)
+
+#so let's just preview the first, say, 30 columns:
+leas_13[ , 1:30, with = FALSE]
+```
+
 ### Stata: `read_dta`
 
-### Fixed-width `read_fwf`
+I haven't come across any files in education that are only available in .dta format, so we'll just quickly digress into using non-educational data to demonstrate how to read such files in case you find them in your research.
+
+The file I found is from [here](http://faculty.econ.ucdavis.edu/faculty/cameron/stata/stataintro.html), [this file](http://faculty.econ.ucdavis.edu/faculty/cameron/stata/carsdata.dta). Again, it's pre-loaded on your machine. 
+
+As I mentioned, the `haven` package is designed to handle reading all sorts of foreign formats into R; Stata is among them.
+
+```{r read_dta}
+#this is a very tiny file
+car_data <- read_dta("data/carsdata.dta")
+#we could use setDT, etc., but we won't
+car_data
+```
+
+### Fixed-width `read_fwf`/`fread` redux
+
+Fixed-width files are basically the bane of my existence. Trouble is, I keep running into them all the time, regardless of how nightmarish they are to deal with. Especially if you have to create the width dictionary yourself.
+
+This is essentially the case with _old_ Universe files from the Common Core. Take, for example, the [1995-96 LEA Universe Flat File](https://nces.ed.gov/ccd/data/zip/pau95data.zip), which is in fixed-width format. There is a [record layout](https://nces.ed.gov/ccd/data/txt/pau95lay.txt) on the NCES website as well... unfortunately, it, too is in fixed-width format! See what I mean about fixed-width...
+
+To simplify our exercise a bit, instead of using the NCES files, we'll use some files from Wisconsin. The main advantage being I've already done a fair bit of data cleaning on the original raw files.
+
+Much like Philadelphia, Wisconsin publishes data on all of its teachers. But the Wisconsin data is much more comprehensive. It's statewide, and it includes information on teachers' age, experience, fringe benefits pay, etc. The data goes back to 1994-95, but we'll just use the 1999-2000 data for now.
+
+The data files can be found [here](http://dpi.wi.gov/cst/data-collections/staff/published-data), but be forewarned -- they're _very_ messy. Messy enough to have served as inspiration for the "Data Cleaning" section in the appendix. I've done everyone the favor of including the more manageable version in today's data files. 
+
+#### `read_fwf`
+
+The package we'll use for reading fixed-width files is `readr`. Let's load it:
+
+```{r readr_install, eval = FALSE}
+install.packages("readr")
+```
+```{r readr_load}
+library(readr)
+```
+
+`read_fwf` is the function in `readr`. In addition to the column names, it requires an extra argument -- `col_positions`. This tells `read_fwf` how to find the columns in the data. It can be specified in a number of ways (see `?read_fwf`), but the one we'll use today is to use the helper function `fwf_widths`. This latter function maps column widths into something that `col_positions` can understand. It also takes an argument allowing us to specify column names, which is convenient.
+
+```{r readr_fwf}
+#The column widths are kept in a separate dictionary file,
+#  which I had to create myself
+fwf_dict <- fread("data/00keys.csv", header = FALSE)
+teachers_wisc <-
+  read_fwf("data/00staff.dat", 
+           col_positions = 
+             fwf_widths(fwf_dict$V2, fwf_dict$V1))
+#we gotta setDT again
+class(teachers_wisc)
+setDT(teachers_wisc)[]
+```
 
 # Plotting (11 AM - 12 PM)
 
-## Descriptive Tables
+Now we can finally start working on some design!
 
-## Regression Tables: `texreg`/`xtable`
+Fine-tuning plots is a pain in any language/program. But doing basic plots in R very simple. We'll start with some easy plots and move on to some more bells and whistles. 
 
 ## `base` Plots
 
-`axes`/`matplot`
+R comes ready and loaded with functions for all of the most common types of plots -- histograms, kernel density, scatter plots, line plots, barplots, etc. I'll go through these one by one, sprinkling in some tricks along the way which are applicable to any plotting sceneario (e.g., setting the axis labels and plot title).
+
+After we have all of the main plot types handy, I'll move on to tiling plots (plotting more than one plot at once).
+
+### Histograms
+
+Histograms are probably the most common way to get a glance at the way that a variable is distributed in your data. Let's examine the distribution of birth years in the Wisconsin teacher data. 
+
+First, a quick jab of data cleaning:
+
+```{r wisc_data_clean}
+#Only include teachers matching the following criteria:
+#  * Have bachelor's or master's degree
+#  * Are full-time
+#  * Strictly positive salary
+#  * Aren't hired by administrative buildings
+
+teachers_wisc <- 
+  teachers_wisc[highest_degree %in% c(4, 5) & 
+                  position_code == "53" &
+                  as.integer(salary) > 0 & 
+                  substr(agency, 1, 2) != "99" & 
+                  as.integer(total_exp) %between% c(10, 300)]
+```
+
+Now we can examine the distribution on a more select/interesting sample of employees. Drawing histograms is managed through the `hist` function. It only needs one argument -- a vector which will be converted into a distribution.
+
+```{r wisc_age_hist}
+#no-frills histogram
+teachers_wisc[ , hist(birth_year)]
+```
+
+That's not bad considering how simple it was to program. There are three things that jump out at me immediately as being deficiencies of this plot:
+
+ 1. The title is abstruse
+ 2. The axis titles are odd
+ 3. There's no color -- how drab!
+ 
+Let's take care of the three of these in turn.
+
+The main title of a plot is almost always handled by the `main` argument to a plotting function:
+
+```{r wisc_age_hist_title}
+#Customizing the main title
+teachers_wisc[ , hist(birth_year, 
+                      main = "Distribution of Year of Birth among Wisconsin Teachers")]
+
+#May be preferable to have the title split over
+#  two lines -- to do this, add \n where
+#  you want the title to split
+teachers_wisc[ , hist(birth_year, 
+                      main = "Distribution of Year of Birth\nAmong Wisconsin Teachers")]
+
+#To make our code less espansive, we can split the
+#  title over two lines with paste0:
+teachers_wisc[ , hist(birth_year, 
+                      main = paste0("Distribution of Year of Birth\n",
+                                    "Among Wisconsin Teachers"))]
+```
+
+
+`axes`
+
+### Kernel Density Plots
+
+### Scatterplots
+
+### Line Plots
+
+### Multiple Plots
+
+`matplot`
 
 ## `ggplot`
 
@@ -2418,7 +2566,11 @@ I don't know how to use it really, but many of my R-using friends _swear_ by `gg
 
 ![538 Style](http://i.imgur.com/jEYcR08.png "538 style")
 
-There are whole textbooks dedicated to how to use `ggplot`. Search around on Google for some examples and see if you like the aesthetic (I don't), in which case it may be worth exploring and investing some time in learning how to use it.
+There are whole textbooks dedicated to how to use `ggplot`. Search around on Google for some examples and see if you like the aesthetic (I don't), in which case it may be worth exploring and investing some time in learning how to use it. [This](http://www.amazon.com/ggplot2-Elegant-Graphics-Data-Analysis/dp/0387981403) book was written by the package author (Hadley Wickham, who in fact used this package as a substantial portion of his PhD thesis), and there's a free chapter on graphs of [Winston Chang's R Cookbook](http://www.cookbook-r.com/Graphs/).
+
+## Descriptive Tables
+
+## Regression Tables: `texreg`/`xtable`
 
 # Web Scraping: `rvest` (1:30 PM - 2:30 PM)
 
