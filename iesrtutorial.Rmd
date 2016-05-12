@@ -2513,19 +2513,16 @@ teachers_wisc <-
 #Now set salaries and fringe benefits to be numeric
 teachers_wisc[ , salary := as.numeric(salary)]
 teachers_wisc[ , fringe := as.numeric(fringe)]
+
+#experience is kept in units of tenth-years, for some reason
+teachers_wisc[ , total_exp := as.numeric(total_exp)/10]
 ```
 
 Now we can examine the distribution on a more select/interesting sample of employees. Drawing histograms is managed through the `hist` function (so it's _very_ similar to Stata). It only needs one argument -- a vector which will be converted into a distribution.
 
-```{r wisc_age_hist, eval = FALSE}
+```{r wisc_age_hist, results = "hide"}
 #no-frills histogram
 teachers_wisc[ , hist(birth_year)]
-```
-```{r wisc_age_hist_inv, echo = FALSE}
-#Adding this to hide the output mess
-invisible(
-  teachers_wisc[ , hist(birth_year)]
-)
 ```
 
 That's not bad considering how simple it was to program. There are three things that jump out at me immediately as being deficiencies of this plot:
@@ -2540,7 +2537,7 @@ Let's take care of the three of these in turn.
 
 The main title of a plot is almost always handled by the `main` argument to a plotting function:
 
-```{r wisc_age_hist_title, eval = FALSE}
+```{r wisc_age_hist_title, results = "hide"}
 #Customizing the main title
 teachers_wisc[ , hist(birth_year, 
                       main = "Distribution of Year of Birth among Wisconsin Teachers")]
@@ -2557,35 +2554,17 @@ teachers_wisc[ , hist(birth_year,
                       main = paste0("Distribution of Year of Birth\n",
                                     "Among Wisconsin Teachers"))]
 ```
-```{r wisc_age_hist_title_inv, echo = FALSE}
-invisible({
-  teachers_wisc[ , hist(birth_year, 
-                        main = "Distribution of Year of Birth among Wisconsin Teachers")]
-  teachers_wisc[ , hist(birth_year, 
-                        main = "Distribution of Year of Birth\nAmong Wisconsin Teachers")]
-  teachers_wisc[ , hist(birth_year, 
-                        main = paste0("Distribution of Year of Birth\n",
-                                      "Among Wisconsin Teachers"))]
-})
-```
 
 #### Axis Labels
 
 Looking better already. Now let's handle the axes. There are four arguments involved here. `xlab` and `ylab` handle the labels of the two axes. And we can use `xaxt` and `yaxt` to tell R not to plot an axis (usually this means we want to specify our own axes/ticks; we'll experiment with this later):
 
-```{r wisc_age_hist_axes, eval = FALSE}
+```{r wisc_age_hist_axes, results = "hide"}
 #remember, argument order doesn't
 #  matter as long as we name the arguments
 teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
                       main = paste0("Distribution of Year of Birth\n",
                                     "Among Wisconsin Teachers"))]
-```
-```{r wisc_age_hist_axes_inv, echo = FALSE}
-invisible(
-  teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
-                        main = paste0("Distribution of Year of Birth\n",
-                                      "Among Wisconsin Teachers"))]
-)
 ```
 
 #### Colors
@@ -2596,7 +2575,7 @@ There are 657 color names understood by this argument. You can see all of them b
 
 ![Thanks Tian Zhang!](http://i.imgur.com/iwnA8hD.png "Thanks Tian Zhang!")
 
-```{r wisc_age_hist_col, eval = FALSE}
+```{r wisc_age_hist_col, results = "hide"}
 #something plain
 teachers_wisc[ , hist(birth_year, xlab = "Year of Birth", col = "red",
                       main = paste0("Distribution of Year of Birth\n",
@@ -2608,17 +2587,6 @@ teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
                       main = paste0("Distribution of Year of Birth\n",
                                     "Among Wisconsin Teachers"))]
 ```
-```{r wisc_age_hist_col_inv, echo = FALSE}
-invisible({
-teachers_wisc[ , hist(birth_year, xlab = "Year of Birth", col = "red",
-                      main = paste0("Distribution of Year of Birth\n",
-                                    "Among Wisconsin Teachers"))]
-teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
-                      col = "darkslateblue",
-                      main = paste0("Distribution of Year of Birth\n",
-                                    "Among Wisconsin Teachers"))]
-})
-```
 
 #### More Histogram Bells & Whistles
 
@@ -2628,20 +2596,12 @@ There are a bunch of other ways we can spruce up plots, but we'll save those for
 
 Histograms can be used to represent either frequency or probability. Basically, frequencies are raw numbers, but when plotted as probabilities, we force the total area of the histogram to be 1 (just like every random variable). We can switch to probabilities by setting the argument `freq` to `FALSE`:
 
-```{r wisc_age_hist_freq, eval = FALSE}
+```{r wisc_age_hist_freq, results = "hide"}
 #note the different y axis
 teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
                       col = "darkslateblue", freq = FALSE,
                       main = paste0("Distribution of Year of Birth\n",
                                     "Among Wisconsin Teachers"))]
-```
-```{r wisc_age_hist_freq_inv, echo = FALSE}
-invisible(
-teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
-                      col = "darkslateblue", freq = FALSE,
-                      main = paste0("Distribution of Year of Birth\n",
-                                    "Among Wisconsin Teachers"))]
-)
 ```
 
 ##### Customized Bins/Breaks
@@ -2652,7 +2612,7 @@ By default, R uses Sturges' formula (based on the range of the data)for determin
 
 We can also do send some other things to `breaks` -- most commonly, a single number (meaning the number of bins to be used), but also a vector (specifying the endpoints of the bins) and some other more obscure options (see `?hist` for more). Let's test these out:
 
-```{r wisc_hist_age_breaks, eval = FALSE}
+```{r wisc_hist_age_breaks_inv, results = "hide", fig.keep = "all"}
 #Same as above, for comparison without scrolling
 teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
                       col = "darkslateblue", freq = FALSE,
@@ -2672,26 +2632,6 @@ teachers_wisc[ , hist(birth_year, xlab = "Year of Birth", breaks = 20,
                       main = paste0("Distribution of Year of Birth\n",
                                     "Among Wisconsin Teachers"))]
 ```
-```{r wisc_hist_age_breaks_inv, echo = FALSE, fig.keep = "all"}
-invisible({
-  cat("Default (Sturges)\n")
-teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
-                      col = "darkslateblue", freq = FALSE,
-                      main = paste0("Distribution of Year of Birth\n",
-                                    "Among Wisconsin Teachers"))]
-cat("Choosing Endpoints\n")
-teachers_wisc[ , hist(birth_year, xlab = "Year of Birth",
-                      breaks = min(birth_year):max(birth_year),
-                      col = "darkslateblue", freq = FALSE,
-                      main = paste0("Distribution of Year of Birth\n",
-                                    "Among Wisconsin Teachers"))]
-cat("Choosing # Bins\n")
-teachers_wisc[ , hist(birth_year, xlab = "Year of Birth", breaks = 20,
-                      col = "darkslateblue", freq = FALSE,
-                      main = paste0("Distribution of Year of Birth\n",
-                                    "Among Wisconsin Teachers"))]
-})
-```
 
 ### Kernel Density Plots
 
@@ -2701,15 +2641,9 @@ A kernel density plot is simply the continuous version of a histogram. Rather th
 
 These are handled in R with the `density` function (_c.f._ `kdensity` in Stata). Unlike `hist`, the `density` function does not itself plot the kernel density. Instead, we have to send the output of `density` to the _main_ plotting function in R `plot`. `plot` accepts all of the same arguments that we sent to `hist` as plot-style bells and whistles.
 
-```{r wisc_dens_age, eval = FALSE}
+```{r wisc_dens_age, results = "hide"}
 teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
                       xlab = "$", col = "darkgreen")]
-```
-```{r wisc_dens_age_inv, echo = FALSE}
-invisible(
-teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
-                      xlab = "$", col = "darkgreen")]
-)
 ```
 
 A few things about this basic plot jump out to me and highlight some new things we can add to our toolbelt to improve the readability of this plot.
@@ -2723,15 +2657,9 @@ After handling each of these, we'll turn to addressing some `density`-specific p
 
 Line width is handled by the `lwd` parameter. This is specified as a number; the default is 1. I usually specify `lwd = 3` in presentation-ready plots. As we draw more and more complicated plots, this is something we can use to distinguish certain parts of our plot.
 
-```{r wisc_dens_age_lwd, eval = FALSE}
+```{r wisc_dens_age_lwd, results = "hide"}
 teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
                       xlab = "$", col = "darkgreen", lwd = 3)]
-```
-```{r wisc_dens_age_lwd_inv, echo = FALSE}
-invisible(
-teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
-                      xlab = "$", col = "darkgreen", lwd = 3)]
-)
 ```
 
 #### Axis Labels
@@ -2740,43 +2668,30 @@ R does its best to come up with nice, round, easy-on-the-eyes axis labels, but s
 
 When we specify custome axis labels, we probably want to shut off the automatic axis creation done by the original plot; we can do this by specifying `xaxt = "n"` (or similarly for `yaxt`). Let's first demonstrate the effect of this:
 
-```{r wisc_dens_age_no_x, eval = FALSE}
+```{r wisc_dens_age_no_x, results = "hide"}
 teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
                       xlab = "$", col = "darkgreen", lwd = 3,
                       xaxt = "n")]
-```
-```{r wisc_dens_age_no_x_inv, echo = FALSE}
-invisible(
-teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
-                      xlab = "$", col = "darkgreen", lwd = 3,
-                      xaxt = "n")]
-)
 ```
 
 If we follow a `plot` call with a call to `axis`, it will add the axis we specify to the "current" plot. Basically, the "current" plot is the one drawn the most recent time we ran `plot` (with some exceptions we won't get into today). So let's add an axis:
 
-```{r wisc_dens_add_axis}
+```{r wisc_dens_add_axis_inv, echo = -1, results = "hide"}
+teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
+                      xlab = "$", col = "darkgreen", lwd = 3,
+                      xaxt = "n")]
 axis(side = 1, at = seq(0, 90000, by = 10000),
      labels = paste0("$", seq(0, 90, by = 10), "k"))
 ```
 
 You'll also notice the numbers on the y axis are hard to read. To be honest, I don't think those numbers tell us much of anything, so I'm generally fine excluding the y axis on a density plot entirely:
 
-```{r wisc_dens_no_y, eval = FALSE}
+```{r wisc_dens_no_y, results = "hide"}
 teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
                       xlab = "$", col = "darkgreen", lwd = 3,
                       xaxt = "n", yaxt = "n")]
 axis(side = 1, at = seq(0, 90000, by = 10000),
      labels = paste0("$", seq(0, 90, by = 10), "k"))
-```
-```{r wisc_dens_no_y_inv, echo = FALSE}
-invisible({
-  teachers_wisc[ , plot(density(salary), main = "Density of Salaries",
-                        xlab = "$", col = "darkgreen", lwd = 3,
-                        xaxt = "n", yaxt = "n")]
-  axis(side = 1, at = seq(0, 90000, by = 10000),
-       labels = paste0("$", seq(0, 90, by = 10), "k"))
-})
 ```
 
 #### Density Parameters
@@ -2803,43 +2718,27 @@ english <- teachers_wisc[area == 300]
 
 Scatterplots are handled through the `plot` function. If we pass two vectors and say nothing else, `plot` assumes we want a scatterplot and treats the first vector as the "x" variable, and the second as the "y" variable. Other than that, business as usual, per above:
 
-```{r scatter, eval = FALSE}
+```{r scatter, results = "hide"}
 english[ , plot(salary, fringe, xlab = "Salary ($)",
                 ylab = "Fringe Benefits ($)",
                 main = "Fringe Benefits vs. Salary",
                 col = "darkblue")]
-```
-```{r scatter_inv, echo = FALSE}
-invisible(
-english[ , plot(salary, fringe, xlab = "Salary ($)",
-                ylab = "Fringe Benefits ($)",
-                main = "Fringe Benefits vs. Salary",
-                col = "darkblue")]
-)
 ```
 
 Immediately, we can see that some outliers are going to be tainting any naive analysis we may perform on the data. After fixing this, we'll learn one more general plotting trick, and one scatterplot-specific trick.
 
-```{r scatter_out, eval = FALSE}
+```{r scatter_out, results = "hide"}
 english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
                          ylab = "Fringe Benefits ($)",
                          main = "Fringe Benefits vs. Salary",
                          col = "darkblue")]
-```
-```{r scatter_out_inv, echo = FALSE}
-invisible(
-english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
-                         ylab = "Fringe Benefits ($)",
-                         main = "Fringe Benefits vs. Salary",
-                         col = "darkblue")]
-)
 ```
 
 #### Axis Label Orientation
 
 In some plots, having the y axis labels parallel to the y axis makes it harder to read. There is a parameter that controls the orientation of axis labels relative to each axis -- `las`. It can take 4 possible values -- the default, `0`, means "always parallel"; `1` means "always horizontal"; `2` means "always perpendicular"; and `3` means "always vertical". These numbers don't really correspond to anything, so far as I can tell -- in a given situation, I usually just plug in one or two of the options to see what works best. Here, we want `las = 1`:
 
-```{r scatter_las, eval = FALSE}
+```{r scatter_las, results = "hide"}
 english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
                          ylab = "Fringe Benefits ($)",
                          main = "Fringe Benefits vs. Salary",
@@ -2861,66 +2760,434 @@ english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
 axis(side = 2, at = 5000*(0:5), las = 1,
      labels = paste0("$", 5*(0:5), "k"))
 ```
-```{r scatter_las_inv, echo = FALSE}
-invisible({
-  english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
-                           ylab = "Fringe Benefits ($)",
-                           main = "Fringe Benefits vs. Salary",
-                           col = "darkblue", las = 1)]
-  english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
-                           ylab = "Fringe Benefits ($)",
-                           main = "Fringe Benefits vs. Salary",
-                           col = "darkblue", yaxt = "n")]
-  axis(side = 2, at = 5000*(0:5), las = 1,
-       labels = paste0("$", 5*(0:5), "k"))
-})
-```
 
 #### Conditional Coloring
 
 One awesome thing about scatterplots is that we can set the color of each point to be different if we so choose. We can do this by supplying a _vector_ to `col` that is equal in length to our data. This is rare, but it _is_ common to set the color of each point according to some condition. The easiest way to do this is with `ifelse` (this is [inefficient](http://stackoverflow.com/questions/16275149/does-ifelse-really-calculate-both-of-its-vectors-every-time-is-it-slow), and I hate `ifelse`, but will suffice for today). Let's color the points by the degree that a teacher has.
 
-```{r scatter_color, eval = FALSE}
+```{r scatter_color, results = "hide"}
 english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
                          ylab = "Fringe Benefits ($)",
-                         main = "Fringe Benefits vs. Salary", yaxt = "n"
+                         main = "Fringe Benefits vs. Salary", yaxt = "n",
                          col = ifelse(highest_degree == 4, "darkred", "darkblue"))]
 axis(side = 2, at = 5000*(0:5), las = 1,
      labels = paste0("$", 5*(0:5), "k"))
-```
-```{r scatter_color_inv, echo = FALSE}
-invisible({
-english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
-                         ylab = "Fringe Benefits ($)",
-                         main = "Fringe Benefits vs. Salary", yaxt = "n"
-                         col = ifelse(highest_degree == 4, "darkred", "darkblue"))]
-axis(side = 2, at = 5000*(0:5), las = 1,
-     labels = paste0("$", 5*(0:5), "k"))
-})
 ```
 
 #### Legends
 
 The above plot clearly demonstrates that there is a strong correlation between the degree you have, the fringe benefits you receive, and your salary. But it's not at all clear to a casual observer what the difference is between red and blue dots (Republican vs. Democrat?). To elucidate this, we'll add a legend. You guessed right -- the function we need is `legend`. `legend`, like `axis`, is a plotting function that will add its output to the "current" plot. `legend` takes a bunch of parameters. The first (or first and second) specifies the position (either relative position -- e.g. `"top"` or `"bottomright"`, or, when specifying x and y, the exact coordinates of the box). The `legend` argument tells the labels in the legend.
 
-```{r scatter_legend}
-legend("topleft",
+In our case, we also need the `pch` argument, which tells the **p**oint **ch**aracter to associate with each entry (since we're making a legend about _points_ and not _lines_). The default (open circles) is `pch = 1`. Here is a chart of all the possible _numeric_ values of `pch` and their associted plotting symbol (we can also set `pch` to any single character, e.g., `pch = "x"` or `pch = "$"`):
+
+![pch](http://i.imgur.com/X1DH6Ai.png "pch")
+
+```{r scatter_legend_inv, echo = -(1:2)}
+invisible(
+  english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
+                         ylab = "Fringe Benefits ($)",
+                         main = "Fringe Benefits vs. Salary", yaxt = "n",
+                         col = ifelse(highest_degree == 4, "darkred", "darkblue"))]
+)
+axis(side = 2, at = 5000*(0:5), las = 1,
+     labels = paste0("$", 5*(0:5), "k"))
+legend("topleft", pch = 1,
        legend = c("Bachelor's", "Master's"), 
        #make sure to make the first color
        #  correspond to the first item in legend, etc.
        col = c("darkred", "darkblue"))
 ```
 
-
 ### Line Plots
+
+The next very common plot type is line plots. Most often I use these for time series. Line plots are also created with `plot`, but with a different option activated -- we have to set `type = "l"`.
+
+We'll look at how pay changes with experience. I'll also introduce a new option for inside `[]` in `data.table`: `keyby`. `keyby` is just like `by` -- it tells `data.table` how to group the operation you ask for in `j`, with the added bonus that the resultant output is _sorted by the column(s) in `by`_. We require this for creating a line plot because, when plotting lines, R considers successive elements of the input to `plot` as endpoints of a line segment -- so if the input has the "x" values out of order, the result will jump all over the screen. Let's demonstrate:
+
+```{r mean_salary_by_exp}
+#Create the average pay by experience level
+teachers_wisc[ , mean(salary), by = total_exp]
+```
+```{r line_plot_whoops, results = "hide"}
+#We then build on this output with a plot
+teachers_wisc[ , mean(salary), by = total_exp
+               ][ , plot(total_exp, V1, type = "l")]
+```
+
+A total mess! Because `total_exp` was out of order. Let's fix that with `keyby`:
+
+```{r line_plot_keyby, results = "hide"}
+teachers_wisc[ , mean(salary), keyby = total_exp
+               ][ , plot(total_exp, V1, type = "l", 
+                         ylab = "Salary ($)", col = "blue",
+                         xlab = "Total Experience", lwd = 3,
+                         main = "Evolution of Pay with Experience")]
+```
+
+Looking much better. I don't like those jumps. I assume it's due to some fractional values of experience, which may have a smaller sample size. To fix this, we might force experience to be an integer; let's use the floor, for example:
+
+```{r line_plot_floor, results = "hide"}
+teachers_wisc[ , mean(salary), keyby = .(exp = floor(total_exp))
+               ][ , plot(exp, V1, type = "l", ylab = "Salary ($)", 
+                         col = "blue", xlab = "Total Experience", lwd = 3,
+                         main = "Evolution of Pay with Experience")]
+```
+
+I suspect the remaining jitters are due to most teachers retiring by 30 years' experience (so the selection effects become powerful enough to distort experience effects).
+
+One more thing we can introduce which you might want to change about plots in general is the axis limits. These are controlled by the `xlim` and `ylim` parameters, and are automatically chosen to bracket the range of your data. However, we might want to force the y axis to include 0, for example. Both `xlim` and `ylim` take a length-two numeric vector -- the first element being the minimum of the axis, the second being the maximum.
+
+```{r line_ylim, results = "hide"}
+#force 0 at the bottom, then set the top
+#  to be the highest average salary
+teachers_wisc[ , mean(salary), keyby = .(exp = floor(total_exp))
+               ][ , plot(exp, V1, type = "l", ylab = "Salary ($)", 
+                         col = "blue", xlab = "Total Experience", 
+                         lwd = 3, ylim = c(0, max(V1)),
+                         main = "Evolution of Pay with Experience")]
+```
+
+We'll get into some more facets of line plotting later.
 
 ### Bar Plots
 
+Bar plots a few common uses. Their simplest use is to demonstrate the relationship between a discrete variable and a moment (a mean, an average, a count) of a continuous variable. Let's start by showing the average pay by CESA. A CESA (Cooperative Educational Service Agency) is basically an administrative unit of school districts between the state level and the district level. Here's a map of the 12 CESAs of Wisconsin:
+
+![CESA Map](http://i.imgur.com/NPie6OC.gif "CESA Map")
+
+#### Categorical Bar Plot (1D)
+
+The function used to create a bar plot (R is full of surprises) is `barplot`. It can be pretty confusing to use (as we'll see below), but for this example will be simple. We need to supply a vector to the first argument, `height`, which will be used as plot heights. We can also supply a `character` vector to `names.arg` which will help us distinguish the bars from one another. That should suffice for now:
+
+```{r cesa_barplot, results = "hide"}
+teachers_wisc[ , mean(salary), keyby = cesa
+               ][ , barplot(V1, names.arg = cesa, 
+                            col = "cornflowerblue",
+                            main = "Average Pay in Each CESA")]
+```
+
+We could also associate colors to each CESA, as was done on the map:
+
+```{r cesa_colors, results = "hide"}
+cols <- c("01" = "khaki", "02" = "darkred",
+          "03" = "darkgreen", "04" = "goldenrod",
+          "05" = "cornflowerblue", "06" = "magenta",
+          "07" = "navy", "08" = "salmon",
+          "09" = "steelblue4", "10" = "lavender",
+          "11" = "tomato", "12" = "wheat")
+teachers_wisc[ , mean(salary), keyby = cesa
+               ][ , barplot(V1, names.arg = cesa, col = cols[cesa],
+                            main = "Average Pay in Each CESA")]
+```
+
+If you're going to be analyzing things by CESA consistently in your paper, you probably want to create a color scheme for consistency throughout your paper -- `cols` as used here is a great approach.
+
+#### Categorical Bar Plot (2D)
+
+Another highly-useful but somewhat-more-complicated version of the barplot is [like](http://www.eanalytica.com/blog/why-i-hate-pie-charts/) [the](http://dutchdatadude.com/i-hate-pie-charts-and-so-should-you/) [much](http://www.storytellingwithdata.com/blog/2011/07/death-to-pie-charts)-[hated](http://www.businessinsider.com/pie-charts-are-the-worst-2013-6) [pie](https://www.quora.com/How-and-why-are-pie-charts-considered-evil-by-data-visualization-experts) [chart](https://www.entrepreneur.com/article/239932).
+
+Basically, we want to show the breakdown of some variable within each of several categories. Let's stick with CESA as our category, and see what Masters' certification rates are like in each.
+
+In this case, we need to supply a `matrix` to height. Each column of the matrix will represent one bar. The values _within each column_ will correspond to (cumulative) _heights within each bar_. To create this matrix, we'll use `rbind`, which **bind**s vectors together as **r**ows (there's also `cbind` for columns). Let's demonstrate:
+
+```{r barplot_2d_setup}
+#We want to know the prevalence of
+#  masters' certification within each CESA
+teachers_wisc[ , .(bach = mean(highest_degree == 4)), keyby = cesa]
+```
+```{r barplot_2d, results = "hide"}
+teachers_wisc[ , .(bach = mean(highest_degree == 4)), 
+               keyby = cesa
+               #1-bach is the masters' incidence,
+               #  since there are only two degree
+               #  types in our subsetted data
+               ][ , barplot(rbind(1-bach, bach), names.arg = cesa,
+                            col = c("red", "blue"), las = 1,
+                            ylab = "Proportion",
+                            main = "Certification Rates by CESA")]
+```
+
+In this case, `col` can only be specified within each bar. Since each column has two rows, we can only specify two colors. This is somewhat unfortunate; see [this](http://stackoverflow.com/questions/31840378/how-to-avoid-recycling-of-colors-in-barplot-to-achieve-different-colors-within-e) rather intricate approach for a way to get around this problem. 
+
+#### Side-by-Side Bar Plot
+
+As common as comparing breakdown within a category is to do so with side-by-side bars. This is almost identical to the previous case, except we add the argument `beside = TRUE`. Let's use this to see ethnicity by CESA. We'll have to take a slightly more complicated approach here, since not every ethnicity is represented in every CESA.
+
+We'll also need a new function -- `as.matrix` -- which can be used to convert an object into a matrix. In particular, if we use `as.matrix` on a `data.table`, it will convert each column of the `data.table` into a column of the resulting matrix. If there are conflicts in data types within the `data.table`, they'll all be coerced, since a `matrix` can only store one type of data. Typically this means that if there's a `character` column, everything will be converted to `character`. 
+
+```{r ethnicity_barplot_setup}
+#First, count by CESA & ethnicity;
+#  note that in, e.g., CESA 12, there are
+#  no black teachers
+teachers_wisc[ , .N, keyby = .(cesa, ethnicity)]
+
+#We'll now reshape the result of this wide so that
+#  the columns are CESAs, since that's how we'll
+#  plot it afterwards
+dcast(teachers_wisc[ , .N, keyby = .(cesa, ethnicity)],
+      ethnicity ~ cesa, value.var = "N")
+
+#Uh-oh! NAs are no good. We'll need a new argument for
+#  dcast -- fill, which tells dcast what to do
+#  when a certain combination is missing:
+dcast(teachers_wisc[ , .N, keyby = .(cesa, ethnicity)],
+      ethnicity ~ cesa, value.var = "N", fill = 0)
+```
+```{r ethnicity_barplot, results = "hide"}
+#Now we've got a format we can work with, that
+#  barplot understands
+dcast(teachers_wisc[ , .N, keyby = .(cesa, ethnicity)],
+      ethnicity ~ cesa, value.var = "N", fill = 0
+      )[ , barplot(as.matrix(.SD[ , -1, with = FALSE]),
+                   main = "Ethnicity of Teachers by CESA",
+                   beside = TRUE, names.arg = names(.SD)[-1],
+                   col = c("blue", "red", "darkgreen",
+                           "orange", "purple"))]
+#Add a legend for clarity
+legend("topright", legend = c("Asian", "Black", "Hispanic",
+                              "Indian", "White"),
+       #pch 15 is a solid block
+       pch = 15, col = c("blue", "red", "darkgreen",
+                           "orange", "purple"))
+```
+
+(Wisconsin isn't very ethnically diverse...)
+
 ### Box and Whisker Plots
 
+Box and whisker plots provide a graphical version of the five-number summary for a distribution. This is especially useful for comparing the distribution of a continuous variable with respect to a discrete variable. Above, we looked at _average_ salary and how it changes by CESA. But this might be obscuring some more interesting action going on underneath the surface. Are the different averages being driven by skewing in one direction or the other in some CESAs? A boxplot will evince this for us graphically.
+
+In a typical show of originality, a boxplot is generated by the `boxplot` command. There are a few ways to specify your boxplot; I find the approach using a formula to be most intuitive. `boxplot` _can_ be deployed within the `j` argument to `data.table`, as above, but doing so is somewhat troublesome for reasons I don't really want to get into. Instead we'll use the `data` argument to `boxplot`; this tells `boxplot` where to find the `salary` and `cesa` variables we specify in our formula:
+
+```{r salary_boxplot}
+boxplot(salary ~ cesa, data = teachers_wisc,
+        main = "Distribution of Wages by CESA",
+        xlab = "CESA", ylab = "Salary ($)", col = cols)
+```
+
+`boxplot` automatically singles out the outliers in the data. However, I am unsatisfied with this plot. I don't like the orientation, and there is a simple argument we can add to make it much more informative.
+
+I think this plot is much easier to read if the bars are stacked vertically. To do this, we use the `horizontal` argument:
+
+```{r salary_boxplot_horiz}
+boxplot(salary ~ cesa, data = teachers_wisc,
+        main = "Distribution of Wages by CESA",
+        horizontal = TRUE, las = 1, ylab = "CESA",
+        #note we have to switch to xlab and ylab
+        xlab = "Salary ($)", col = cols)
+```
+
+`boxplot` also comes with a handy argument for displaying confidence intervals around the sample medians -- `notch`. Observe:
+
+```{r salary_boxplot_notch}
+boxplot(salary ~ cesa, data = teachers_wisc,
+        main = "Distribution of Wages by CESA",
+        horizontal = TRUE, las = 1, ylab = "CESA",
+        xlab = "Salary ($)", col = cols, notch = TRUE)
+```
+ 
 ### Multiple Plots
 
-`matplot`
+Often we need to combine more than one plot at once to concisely present more information. This comes in two basic flavors -- adding more points/plots/lines to a single set of axes, and creating multiple sets of axes with different plots in the same output. The former is easier to handle (it's basically a matter of learning a few new functions and managing not to create a new plot window by accident).
+
+#### More Information on the Same Axes
+
+Let's return to the wage-tenure curve highlighted above:
+
+```{r wage_tenure_redux, results = "hide"}
+<<line_ylim>>
+```
+
+This shows the _mean_ wage at each experience level. It could also be instructive to include lines denoting some quantiles of the wage distribution at experience level, say the 25th and 75th percentile. We'll show two ways to do this.
+
+##### `lines`
+
+The first is a minor step beyond what we did above. This entails adding lines to the existing plot using the `lines` function. `lines` cannot be called to _start_ a plot -- it can only be called to _add to_ an existing plot. And it can only draw lines.
+
+We'll also demonstrate here the use of curly braces `{}` within `j`. When we surround our statements in `j` with curly braces, it allows us to execute more than one line of code there. Basically, when we uses braces, `j` is considered to be all of the lines between the braces.
+
+```{r lines_wage_tenure, results = "hide"}
+teachers_wisc[ , .(avg = mean(salary), 
+                   #include the other quantities of interest
+                   q25 = quantile(salary, .25),
+                   q75 = quantile(salary, .75)), 
+               keyby = .(exp = floor(total_exp))
+               ][ , {#start the braces. The first statement is to plot
+                 plot(exp, avg, type = "l", ylab = "Salary ($)", 
+                      col = "blue", xlab = "Total Experience", 
+                      #also need to adjust the y limits since
+                      #  the high quantile is likely to
+                      #  exceed the average
+                      lwd = 3, ylim = c(0, max(q75)),
+                      main = "Evolution of Pay with Experience")
+                 #now we can start our second statement within j
+                 lines(exp, q25)
+                 lines(exp, q75)
+               }]
+```
+
+This looks OK, but I'm not satisfied with the quantile lines. I'd prefer them not to be solid, but _dashed_ lines. We can do this with a new argument -- `lty`. `lty` specifies the **l**ine **ty**pe. Like `pch`, it for the most part takes integer arguments. Here are the possibilities illustrated:
+
+![lty](http://i.imgur.com/82vrkh1.png "lty")
+
+```{r lines_wage_tenure, results = "hide"}
+teachers_wisc[ , .(avg = mean(salary),
+                   q25 = quantile(salary, .25),
+                   q75 = quantile(salary, .75)), 
+               keyby = .(exp = floor(total_exp))
+               ][ , {
+                 plot(exp, avg, type = "l", ylab = "Salary ($)", 
+                      col = "blue", xlab = "Total Experience",
+                      lwd = 3, ylim = c(0, max(q75)),
+                      main = "Evolution of Pay with Experience")
+                 lines(exp, q25, lwd = 3, col = "blue", lty = 2)
+                 lines(exp, q75, lwd = 3, col = "blue", lty = 2)
+               }]
+```
+
+##### `matplot`
+
+The other approach introduces a new function, `matplot`. This operates like `barplot` in that it accepts a `matrix` argument and turns each column into a new plot object. The main advantage of this over using `lines` is conciseness and extensibility. If we wanted to add 15 lines to a plot, it would be nightmarish to repetitively type `lines` over and over (yes, there is a way to do this in a `for` loop, but that will necessarily be ugly and hard to wrangle with). `matplot` allows us to plot all of the lines at once. Let's see it in action:
+
+```{r matplot_wage_tenure, results = "hide"}
+teachers_wisc[ , .(avg = mean(salary),
+                   q25 = quantile(salary, .25),
+                   q75 = quantile(salary, .75)), 
+               keyby = .(exp = floor(total_exp))
+               #the [ , !"col", with = FALSE] syntax
+               #  tells data.table to drop the column "col"
+               ][ , matplot(exp, .SD[ , !"exp", with = FALSE],
+                            type = "l", xlab = "Total Experience",
+                            #we have to specify one lty for each
+                            #  line we add (order matters)
+                            ylab = "Salary ($)", lty = c(1, 2, 2), 
+                            lwd = 3, col = "blue",
+                            main = "Evolution of Pay with Experience")]
+#Specify top-to-bottom order so it jives with what we see in the plot
+legend("topleft", legend = c("Q75", "Mean", "Q25"),
+       lty = c(2, 1, 2), lwd = 3, col = "blue")
+```
+
+##### Adding Vertical/Horizontal/Trend Lines
+
+There is one more function that is worth mentioning since it comes up so often -- `abline` (so named because it's designed to add lines of the form `a + b*x`, i.e., in slope-intercept form). Primarily, I use this to add vertical, horizontal, and trend lines to a plot. Let's return to our scatterplot from before, plotting fringe benefits vs. salary. Let's decorate this plot with some extra lines. Like `lines`, `points`, `legend`, and `axis`, `abline` adds objects to the current plot. 
+
+```{r salary_fringe_abline, results = "hide"}
+english[fringe<3e4, plot(salary, fringe, xlab = "Salary ($)",
+                         ylab = "Fringe Benefits ($)",
+                         main = "Fringe Benefits vs. Salary",
+                         col = "darkblue", yaxt = "n")]
+axis(side = 2, at = 5000*(0:5), las = 1,
+     labels = paste0("$", 5*(0:5), "k"))
+#add a vertical line at the average salary
+english[fringe<3e4, abline(v = mean(salary),
+                           #and a horizontal line at average fringe
+                           h = mean(fringe),
+                           #and a trend line as determined by the results
+                           #  of the regression of fringe on salary
+                           reg = lm(fringe ~ salary),
+                           #emphasize the trend line
+                           lwd = c(3, 1, 1))]
+```
+
+#### Multiple Axis Sets
+
+Plotting in one figure on more than one pair of axes can get very messy and involved, if perfection is what you're after. The basic approach basically consists of specifying an option before plotting. 
+
+First, a quick aside to talk about plotting metaparameters. Every time we create a plot, R draws from a list of 72 (yes, SEVENTY-TWO) parameters dictating subtle things about how the plot is presented, from the x:y ratio to the current plot limits to the font and scaling of the axes. If you have a few hours on your hand, try and pore through `?par`. To this day, I'm only familiar with about 30% of these parameters.
+
+That said, there are a few that are crucial to be aware of if you want to create more fine-tuned, perfectionist plots in your research. The first involve the figure's margins. In all of the plots we used above, we implicitly allowed the default plot margins to reign supreme. This created somewhat of an issue when we ran into the issue of the y axis label smushing up next to the y axis ticks. Rather than abbreviating the axis ticks, we could have given more space to the left-hand-side margin. Earl Glynn has provided this [excellent page](http://research.stowers-institute.org/efg/R/Graphics/Basics/mar-oma/) with a few graphics that I have stared at time and time again (pro tip: Google "oma r" and it's the first result). Here's the one explicating margins in simple plots:
+
+![oma](http://i.imgur.com/BUD8AOs.gif "oma")
+
+Both `oma` and `mar` are specified as four numbers, each representing one side of the plot. By default, `oma` is 0 on all sides; it's only really useful for tiling plots. `mar`, on the other hand, has the cryptic defaults of `c(5.1, 4.1, 4.1, 2.1)`. I got nothing as far as an explanation goes -- this is just something I've committed to memory. As with `axis`, they proceed clockwise starting from the bottom. So if we wanted to give some extra space to the margin next to the y axis, we would probably use `par(mar = c(5.1, 5.1, 4.1, 2.1))`.
+
+The next most common to adjust is `mfcol`. This stands for "**m**ultiple **f**igures, **col**umn-wise" (see [this site](https://www.stat.auckland.ac.nz/~paul/R/parMemnonics.html) of mnemonics created by Paul Murrell for an attempt to create mnemonics for all of the `par` parameters). It is a length-two vector specifying how many rows (first element) and columns (second element) the total figure to plot will have. If `mfcol = c(2, 2)`, we will fill the figure by making four calls to `plot`. The first will go in the upper-left; the second in the lower-left; the third in the upper-right; and the fourth in the lower right. Earl Glynn's site is again handy:
+
+![mfcol](http://i.imgur.com/V0sNBsX.gif "mfcol")
+
+Let's make a wage-tenure scatter plot overlaid with per-experience average wages for four Wisconsin districts: Milwaukee, Madison, Green Bay, and Manitowoc. Here's a first pass:
+
+```{r wage_tenurex4, results = "hide"}
+#set main plot parameter to create 2x2 figure
+par(mfcol = c(2, 2))
+#first plot: Milwaukee scatter
+teachers_wisc[agency_name == "Milwaukee Sch Dist",
+              plot(total_exp, salary, main = "Milwaukee")]
+#add by-tenure average using lines
+teachers_wisc[agency_name == "Milwaukee Sch Dist",
+              mean(salary), keyby = .(exp = floor(total_exp))
+              ][ , lines(exp, V1, lwd = 3)]
+#now repeat for the other districts
+teachers_wisc[agency_name == "Madison Metropolitan Sch Dist",
+              plot(total_exp, salary, main = "Madison")]
+teachers_wisc[agency_name == "Madison Metropolitan Sch Dist",
+              mean(salary), keyby = .(exp = floor(total_exp))
+              ][ , lines(exp, V1, lwd = 3)]
+
+teachers_wisc[agency_name == "Green Bay Area Sch Dist",
+              plot(total_exp, salary, main = "Green Bay")]
+teachers_wisc[agency_name == "Green Bay Area Sch Dist",
+              mean(salary), keyby = .(exp = floor(total_exp))
+              ][ , lines(exp, V1, lwd = 3)]
+
+teachers_wisc[agency_name == "Manitowoc Sch Dist",
+              plot(total_exp, salary, main = "Manitowoc")]
+teachers_wisc[agency_name == "Manitowoc Sch Dist",
+              mean(salary), keyby = .(exp = floor(total_exp))
+              ][ , lines(exp, V1, lwd = 3)]
+```
+
+This is fine, but it leaves something to be desired. First, the plots are hard to compare since they're on different scales. Second, we had to spend a lot of time writing repetitive code. We should be able to generate this plot with a `for` loop. Third, look at all the wasted white space! The plot makes inefficient use of the space allotted. Fourth, in a similar vane, we don't need all of these axes. Once we fix the same scale on all four plots, we can infer the axes of plots from those to the left/right or above/below.
+
+All of these are somewhat simple to take care of, but it'll probably look intimidating at a first pass. The idea is to crush the margins of each individual figure to save on white space, and to put all of the relevant information in the outer margins. We'll also add some bonus information to each sub-plot -- the number of teachers at each district, prettily formatted.
+
+```{r wage_tenurex4_improved, results = "hide"}
+dists <- c("Milwaukee", "Madison Metropolitan",
+           "Green Bay Area", "Manitowoc")
+#get full range of salaries to use as axis limits:
+yl <- teachers_wisc[ , range(salary)]
+par(mfcol = c(2, 2), 
+    mar = c(0, 0, 0, 0),
+    oma = c(5.1, 4.1, 4.1, 2.1))
+#seq_along dists is the same as 1:length(dists)
+for (ii in seq_along(dists)){
+  #get the name of the current district
+  dd <- dists[ii]
+  teachers_wisc[agency_name == paste(dd, "Sch Dist"),
+                plot(total_exp, salary,
+                     #we'll use the title function to 
+                     #  add the main title; also
+                     #  set the ylimits so they're common
+                     #  across charts
+                     main = "", ylim = yl,
+                     #exclude x axes from plots 1 & 3
+                     xaxt = if (ii %% 2 == 0) "s" else "n",
+                     #exclude y axes from plots 3 & 4
+                     yaxt = if (ii <= 2) "s" else "n")]
+  teachers_wisc[agency_name == paste(dd, "Sch Dist"),
+                mean(salary), keyby = .(exp = floor(total_exp))
+                ][ , lines(exp, V1, lwd = 3)]
+  
+  #count teachers
+  N_teach <- teachers_wisc[agency_name == paste(dd, "Sch Dist"), .N]
+  
+  #line = -1 forces the title to come down closer to the x axis
+  #prettyNum prettifies numbers, in particular adding
+  #  comma-separation (1000 -> 1,000)
+  title(paste0(dd, " (", prettyNum(N_teach, big.mark = ","),
+               " teachers)"), line = -1)
+}
+
+#Now for some bonus fun! Adding margin text and a main title
+#  we specify outer = TRUE to make sure that we mean to use
+#  the OUTER margin instead of the CURRENT FIGURE's margins.
+#  line controls how far away from the main plot body the
+#  text is written
+mtext(side = 1, text = "Total Experience", outer = TRUE, line = 3)
+mtext(side = 2, text = "Salary ($)", outer = TRUE, line = 2.5)
+title(main = "Wage-Tenure Profiles in Wisconsin Districts", outer = TRUE)
+```
 
 ## `ggplot`
 
@@ -2931,9 +3198,11 @@ I don't know how to use it really, but many of my R-using friends _swear_ by `gg
 
 There are whole textbooks dedicated to how to use `ggplot`. Search around on Google for some examples and see if you like the aesthetic (I don't), in which case it may be worth exploring and investing some time in learning how to use it. [This](http://www.amazon.com/ggplot2-Elegant-Graphics-Data-Analysis/dp/0387981403) book was written by the package author (Hadley Wickham, who in fact used this package as a substantial portion of his PhD thesis), and there's a free chapter on graphs of [Winston Chang's R Cookbook](http://www.cookbook-r.com/Graphs/).
 
-## Descriptive Tables
+## LaTeX Tables: `texreg`/`xtable`/`stargazer`
 
-## Regression Tables: `texreg`/`xtable`
+I don't think we'll have time today to get into LaTeX tables, especially since I don't think much of the audience has ever heard of LaTeX (for those who haven't -- look it up when you get a chance, it's awesome). There are three main packages -- `texreg` (for the output of regression models), `xtable` (for other tables), and `stargazer` (I've honestly never used it).
+
+For the TeX-savvy, see [this Q&A](http://stackoverflow.com/questions/5465314/tools-for-making-latex-tables-in-r).
 
 # Web Scraping: `rvest` (1:30 PM - 2:30 PM)
 
