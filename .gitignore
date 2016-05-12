@@ -1,3 +1,7 @@
 .~lock*
 .Rhistory
 *.pdf
+
+#Caching folders created by knitr
+iesrtutorial_cache
+iesrtutorial_files
