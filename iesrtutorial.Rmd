@@ -3692,7 +3692,7 @@ install.packages("ggmap")
 
 The `geocode` function takes a `source` argument which allows us to choose the service used to look up the addresses. I find that Google is the most robust, so I usually stick with `source = "google"`. You can read more in `?ggmap`. Now we've got all we need to do the geocoding:
 
-```{r geocoding, cache = TRUE, message = FALSE, warning = FALSE}
+```{r geocoding, cache = TRUE, message = FALSE, warning = FALSE, echo = -1}
 #cache here to avoid running the geocoding too often
 library(ggmap)
 #the output of geocode comes back as a 
