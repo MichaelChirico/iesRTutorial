@@ -3030,7 +3030,7 @@ This looks OK, but I'm not satisfied with the quantile lines. I'd prefer them no
 
 ![lty](http://i.imgur.com/82vrkh1.png "lty")
 
-```{r lines_wage_tenure, results = "hide"}
+```{r lines_wage_tenure_lty, results = "hide"}
 teachers_wisc[ , .(avg = mean(salary),
                    q25 = quantile(salary, .25),
                    q75 = quantile(salary, .75)), 
@@ -3117,25 +3117,25 @@ teachers_wisc[agency_name == "Milwaukee Sch Dist",
 #add by-tenure average using lines
 teachers_wisc[agency_name == "Milwaukee Sch Dist",
               mean(salary), keyby = .(exp = floor(total_exp))
-              ][ , lines(exp, V1, lwd = 3)]
+              ][ , lines(exp, V1, lwd = 3, col = "red")]
 #now repeat for the other districts
 teachers_wisc[agency_name == "Madison Metropolitan Sch Dist",
               plot(total_exp, salary, main = "Madison")]
 teachers_wisc[agency_name == "Madison Metropolitan Sch Dist",
               mean(salary), keyby = .(exp = floor(total_exp))
-              ][ , lines(exp, V1, lwd = 3)]
+              ][ , lines(exp, V1, lwd = 3, col = "red")]
 
 teachers_wisc[agency_name == "Green Bay Area Sch Dist",
               plot(total_exp, salary, main = "Green Bay")]
 teachers_wisc[agency_name == "Green Bay Area Sch Dist",
               mean(salary), keyby = .(exp = floor(total_exp))
-              ][ , lines(exp, V1, lwd = 3)]
+              ][ , lines(exp, V1, lwd = 3, col = "red")]
 
 teachers_wisc[agency_name == "Manitowoc Sch Dist",
               plot(total_exp, salary, main = "Manitowoc")]
 teachers_wisc[agency_name == "Manitowoc Sch Dist",
               mean(salary), keyby = .(exp = floor(total_exp))
-              ][ , lines(exp, V1, lwd = 3)]
+              ][ , lines(exp, V1, lwd = 3, col = "red")]
 ```
 
 This is fine, but it leaves something to be desired. First, the plots are hard to compare since they're on different scales. Second, we had to spend a lot of time writing repetitive code. We should be able to generate this plot with a `for` loop. Third, look at all the wasted white space! The plot makes inefficient use of the space allotted. Fourth, in a similar vane, we don't need all of these axes. Once we fix the same scale on all four plots, we can infer the axes of plots from those to the left/right or above/below.
@@ -3167,7 +3167,7 @@ for (ii in seq_along(dists)){
                      yaxt = if (ii <= 2) "s" else "n")]
   teachers_wisc[agency_name == paste(dd, "Sch Dist"),
                 mean(salary), keyby = .(exp = floor(total_exp))
-                ][ , lines(exp, V1, lwd = 3)]
+                ][ , lines(exp, V1, lwd = 3, col = "red")]
   
   #count teachers
   N_teach <- teachers_wisc[agency_name == paste(dd, "Sch Dist"), .N]
@@ -3204,9 +3204,331 @@ I don't think we'll have time today to get into LaTeX tables, especially since I
 
 For the TeX-savvy, see [this Q&A](http://stackoverflow.com/questions/5465314/tools-for-making-latex-tables-in-r).
 
+```{r clear_all_after_morning, echo = FALSE}
+#let's wipe everything clean to free up some
+#  room in the namespace for the afternoon
+rm(list = ls(all = TRUE))
+```
+
+
 # Web Scraping: `rvest` (1:30 PM - 2:30 PM)
 
-`xpath`
+A lot of data that we find is seemingly locked out of our grasp -- we find it on a website, ripe for absorbing, but we're estopped from reaping the fruits of those sweet sweet raw data seeds by a lack of access to the raw data in a readily-handled format. Tables on sites like Wikipedia, the Census Bureau, ESPN, you name it, all tantalize the data analyst who hasn't added the tools of web scraping to their belt. 
+
+Web scraping is basically the process of extracting data from websites. I have mainly used this for toy side projects -- scraping data about baseball statistics, Supreme Court judges, swing states, etc.
+
+Scraping in R is done almost entirely through the `rvest` package. If I'm being honest, it's not very fully-flushed out, since it's still quite a young package, but I've been able to make it work in every situation I've come to so far. Python-ers are blessed with having methods for web scraping which are mature and robust -- though to be honest I found them much harder to use/pick up on than `rvest`. Installing `rvest`:
+
+```{r install_rvest, eval = FALSE}
+install.packages("rvest")
+```
+
+
+_**CAVEAT SCRAPER**_: It's not always legal to scrape a website. Amazon, for example, includes in its terms of service that using automated scrapers is against policy. Something to be aware of.
+
+Also, too much scraping can get your IP address banned and/or throttled. This means that you'll be denied access to a website, perhaps permanently, if you generate too much traffic.
+
+The proper approach for longer-term, more intense scraping operations is thus to download the HTML file associated with each web page, then read from that file, rather than loading the page over and over again, which causes undue stress on companies'/organizations' servers (i.e., you want to avoid anything looking like a [DDoS attack](https://en.wikipedia.org/wiki/Denial-of-service_attack)).
+
+All that said, web scraping is powerful and (to me) fun. This is basically what's being done when you hear people talking about a sentiment analysis of Facebook or Twitter.
+
+All web scraping starts with finding a page with data on it.
+
+Let's try and glean some data from U.S. News & World Report's [National Universities Rankings](http://colleges.usnews.rankingsandreviews.com/best-colleges/rankings/national-universities/data). Again we have to give R a moment's rest.
+
+`<<R sips coffee>>`
+
+Web scraping illustrates one of the best features about Google Chrome -- the Inspect view for trying to target information about key elements of web pages.
+
+We're targeting the main table of information, so right-click it, and hit "Inspect". This will bring up the Inspection Toolbar which gives a surfeit of information about the HTML tree of the current web page. 
+
+If you hover over an HTML element in the inspection view, the output on the web page that it corresponds to is highlighted. You can expand/contract nodes of the HTML tree by clicking the arrows next to the ones visible. Clicking an arrow pointing down will collapse its "children"; clicking an arrow pointing right will expand its "children".
+
+After hovering around a bit, we see that the following item, when we hover over it, appears to encompass the entire table of interest:
+
+`<table class="ranking-data table table-lighthead table-packed ranking-data-free  ">`
+
+It's no coincidence that this item is a `<table>`. The `<table>` tag in HTML will come up almost constantly in your quests to scrape the web, so make note. 
+
+## `xpath` and Selectors
+
+It's great that we foud the correct node, but this is often of little use _per se_. We need a way to tell an HTML parser (which is basically what all web scraping is -- parsing HTML) how to find the node we're interested in.
+
+There are two sort-of languages used for specifying HTML/XML nodes. The first is `xpath`. If you've got time, it's really worth investing some time in learning the [`xpath` syntax](http://www.w3schools.com/xsl/xpath_syntax.asp), which will really open the door to becoming a web scraping wizard (I to date have only a facile mastery of the subject).
+
+Happily, we don't really need to know anything about how `xpath` works, because Google Chrome is awesome. We can simply right click the XML element in the Inspection sidebar and hit `Copy` -> `Copy XPath`, and the `xpath` associated with that element is copied to our clipboard. For example, the `xpath` of our table is: `//*[@id="article"]/table`, which basically says that this `<table>` tag is the _child_ of another tag (of any sort -- `*`) which has the HTML attribute `id` equal to `"article"`. Indeed, scanning up the HTML tree, we see: `<div id="article" class="article">`. These two characteristics (being a `<table>` and being the child of a tag with `id="article"`) are enough to uniquely identify our object of interest in this page.
+
+An alternative to `xpath` is CSS Selectors. They're generally very similar to `xpath` -- which you use is a matter of persona preference, and I prefer `xpath`, so we'll stick with that for today. See [this](http://www.w3schools.com/cssref/css_selectors.asp) page for more on CSS selectors.
+
+## Scraping U.S. News
+
+OK, enough front-end lead-up, where's the payoff?
+
+We've now got all the ingredients necessary to scrape this page successfully. Before we do that, I want to introduce one more thing -- the infamous pipe of R: `%>%`.
+
+`%>%` is originally found in the `magrittr` package, but has permeated throughout the hadleyverse, and is particularly in fashion in code associated with `rvest`. The pipe sends the output of the thing to the left of `%>%` to the function on the right of it. In particular, it's sent as the first argument to that function unless we specify otherwise. Some quick examples to show what I mean:
+
+```{r piping}
+#the pipe is one of the functions
+#  exported by rvest, so we need to 
+#  load it first
+library(rvest)
+
+#convoluted version of cbind(1:3, 4:6)
+1:3 %>% cbind(4:6)
+
+#we can also be explicit about where to send
+#  the output but using its alias on the RHS, .
+1:3 %>% cbind(., 4:6)
+1:3 %>% cbind(4:6, .)
+
+#something slightly more interesting;
+#  note we have to open and close
+#  the parentheses for it to work
+rnorm(10) %>% sort()
+```
+
+OK, enough build-up. Let's scrape!
+
+```{r scrape_us}
+#I always store the page URL
+#  as its own variable
+URL <- paste0("http://colleges.usnews.rankingsandreviews.com/",
+              "best-colleges/rankings/national-universities/data")
+
+#now we break out the rvest weapons
+#  read_html takes to the web and 
+#  retrieves the web page at the
+#  address you give it (i.e., it's
+#  doing the first part of what
+#  Chrome does when you enter a URL
+#  in your browser search bar).
+#  It returns the XML tree of the page.
+pg <- read_html(URL)
+
+#Now that we've got the XML tree, we
+#  have to find the node we were after
+#  from before. To do this, we use
+#  the html_node function, which
+#  has an xpath option, to which
+#  we can supply the xpath from above --
+#  making sure that we're careful
+#  about quotation marks.
+xp <- '//*[@id="article"]/table'
+pg %>% html_node(xpath = xp)
+
+#This has returned an `xml_node` corresponding
+#  to our table. We just need one more function 
+#  and we'll really be cooking -- html_table.
+#  html_table tries to parse an table from
+#  HTML form into a data.frame so that we can
+#  start dealing with it like we would other
+#  objects read from CSV, Excel, etc.
+pg %>% html_node(xpath = xp) %>%
+  html_table()
+
+#Now that we know it works, we can assign it to
+#  an object by repeating the code and also 
+#  sending it to setDT so we have a data.table
+usnews <- pg %>% html_node(xpath = xp) %>%
+  html_table() %>% setDT()
+
+#First, the last two columns are only available
+#  to paid subscribers, let's just drop them:
+usnews[ , (ncol(usnews) - 1):ncol(usnews) := NULL]
+
+#The table is a bit of a mess; we'll start
+#  by assigning more manageable names:
+setnames(usnews, c("rank", "name", "tuition_fees",
+                   "enrollment", "acceptance_2014", 
+                   "retention_freshman", "grad_rate_6_yr"))[]
+
+#There's still some mess to be cleaned up. Time to 
+#  break out the regex skills from this morning:
+usnews[ , score := 
+          gsub(".*Overall Score: ([0-9]*) out of.*", "\\1", rank)]
+usnews[ , rank := gsub("#([0-9]*).*", "\\1", rank)]
+usnews[ , name := gsub("\n.*", "", name)]
+usnews[ , enrollment := 
+          as.integer(gsub(",", "", enrollment, fixed = TRUE))]
+usnews[ , acceptance_2014 := 
+          as.numeric(gsub("%", "", acceptance_2014, fixed = TRUE))]
+usnews[ , retention_freshman := 
+          as.numeric(gsub("%", "", retention_freshman, fixed = TRUE))]
+usnews[ , grad_rate_6_yr := 
+          as.numeric(gsub("%", "", grad_rate_6_yr, fixed = TRUE))]
+
+#What remains is the issue of tuition_fees:
+usnews[]
+
+#We have to account for the fact that tuition is 
+#  sometimes listed as in- and sometimes as 
+#  out-of-state. We have three options that I see:
+#  1) Pick one or the other and delete the other
+#  2) Average the two
+#  3) Create two columns -- in- and out-of-state tuition
+#  We'll go with number 3.
+
+#We'll have to introduce some new tricks to get this to work.
+#  Let's do this step by step, then go all at once.
+
+## Get _only_ the tuition_fees values which differentiate
+##   between in- and out-of-state tuition:
+in_out <- usnews[grepl("in-state", tuition_fees), tuition_fees]
+in_out
+
+## Now, split each element of this string into pieces.
+##   We can do this with the strsplit function, which
+##   takes a character vector and an argument split.
+##   split is a regular expression saying where to
+##   split each element of the string. In our current
+##   case, we'll split at the colon following in-state
+##   and the out-of-state, as well as the comma preceding
+##   out-of-state. We can't just split on commas, though,
+##   since the tuition values themselves still have these.
+##   What distinguishes the comma we want (and, as luck
+##   would have it, the colons as well) is that they're
+##   followed by a space, which we'll leverage to split it:
+in_out_split <- strsplit(in_out, split = "[,:] ")
+in_out_split
+
+## Next, we want to extract only the numbers from this split.
+##   To do this, extract only the 2nd and 4th element, and then
+##   (as above) remove the dollar sign and comma. We want to
+##   return a list since the right hand side of := has to be a list.
+in_out_num_l <- lapply(in_out_split, function(io)
+  as.integer(gsub("[$,]", "", io[c(2, 4)])))
+in_out_num_l
+
+## Finally, one more trick to do. := expects to find each 
+##   _element_ of the list it receives corresponding to one 
+##   _column_. Right now, this is messed up (it would be more 
+##   obvious if the list wasn't 2x2...), since the first element
+##   has one in-state and one out-of-state value (and same
+##   for the second element). What we need is for the first
+##   element to have BOTH in-state values, and the second
+##   element to have BOTH out-of-state values. data.table
+##   has a tool designed for just such a situation:
+##   transpose. Basically, transpose flips the order of
+##   a list. Right now, the list has the list elements
+##   corresponding to different ROWS and the elements
+##   WITHIN a list element corresponding to different COLUMNS
+##   If we transpose this, we'll get list elements
+##   corresponding to different COLUMNS and the elements
+##   WITHIN a list element corresponding to different ROWS,
+##   which is just what we want.
+transpose(in_out_num_l)
+
+##Now, we can do all of that at once like so:
+usnews[grepl("in-state", tuition_fees),
+       paste0("tuition_", c("in", "out"), "_state") :=
+       transpose(lapply(strsplit(tuition_fees, split = "[:,] "),
+               function(io) as.integer(gsub("[$,]", "", io[c(2, 4)]))))]
+
+#And to finish off, we assign the same value to in- and 
+#  out-of-state tuition for those (private) universities which
+#  don't make a distinction:
+usnews[is.na(tuition_in_state), 
+       paste0("tuition_", c("in", "out"), "_state") :=
+         #since we haven't quite fixed the punctuation in
+         #  the other rows yet, we do so here as an 
+         #  intermediate step
+       {x <- as.integer(gsub("[$,]", "", tuition_fees))
+         .(x, x)}][]
+
+#And now we can delete the old column
+usnews[ , tuition_fees := NULL][]
+```
+
+That wasn't so bad, was it?
+
+Well, we're not quite done yet. Observe the following:
+
+```{r stupid_nbsp}
+print(usnews, quote = TRUE)
+
+#See that space after name? It's gonna be a bugbear.
+#Observe:
+gsub("\\s", "", usnews$name)
+
+#The problem is, that space at the end isn't just
+#  any space. It's the dreaded NON-BREAKING SPACE
+#  (you'll sometimes see this on website or in
+#   newspapers: &nbsp;). The \\s token in 
+#  reges doesn't recognize it as blank space.
+#  We have to do something really ugly to get
+#  rid of the non-breaking space. First, the magic:
+
+usnews[ , name := gsub(intToUtf8(160), "", name)][]
+```
+
+So the space is gone, but what happened? It turns out that we can create the `&nbsp;` character from _basically_ binary code. It turns out that 160 is the code corresponding in UTF-8 encoding to the `&nbsp;`. So `intToUtf8(160)` outputs the `&nbsp;` as a character understood by R and `gsub`, after which point we can delete it like we would any other character.
+
+### Extending
+
+All that work for very little payoff, right?
+
+Well, sort of. We got 9*25 = 225 data points from this scraping operation... which is not many, admittedly.
+
+However, we can now re-use this code to scrape _other_ pages of data from the U.S. News Site, since the format is basically the same (crucially, we'll be able to re-use the same `xpath` to get the table on all the other pages). We can then stitch together the table we get from each page into a much bigger data set. The additional footwork required to go from scraping the first page to scraping _all_ the pages is typically not much (unless there are major differences in format from one page to the next).
+
+Let's demonstrate:
+
+```{r scrape_all}
+#Only the first 8 pages contain
+#  universities that are
+#  actually ranked. We could have
+#  determined this programmatically
+#  (useful in case the paradigm later
+#   changes, for example),
+#  but I didn't see the point for today
+URLS <- paste0(URL, "/page+", 1:8)
+
+usnews <- 
+  #rbindlist compiles a list of data.tables
+  #  into a single data.table. This is particularly
+  #  useful for situations where we create a bunch of
+  #  tables in a loop, as is happening here
+  rbindlist(lapply(URLS, function(uu){
+    #for each page uu, repeat the above...
+    usn <- read_html(uu) %>% html_node(xpath = xp) %>%
+      html_table() %>% setDT()
+    usn[ , (ncol(usn) - 1):ncol(usn) := NULL]
+    setnames(usn, c("rank", "name", "tuition_fees",
+                    "enrollment", "acceptance_2014", 
+                    "retention_freshman", "grad_rate_6_yr"))
+    usn[ , score := 
+           gsub(".*Overall Score: ([0-9]*) out of.*", "\\1", rank)]
+    usn[ , rank := gsub("#([0-9]*).*", "\\1", rank)]
+    usn[ , name := gsub("\n.*", "", name)]
+    usn[ , enrollment := 
+           as.integer(gsub(",", "", enrollment, fixed = TRUE))]
+    usn[ , acceptance_2014 := 
+           as.numeric(gsub("%", "", acceptance_2014, fixed = TRUE))]
+    #Well, slight adjustment here. There are some colleges where
+    #  these fields have a footnote because it's calculated
+    #  idiosyncratically. Everything follows the percent sign,
+    #  so it's only a minor adjustment.
+    usn[ , retention_freshman := 
+           as.numeric(gsub("%.*", "", retention_freshman))]
+    usn[ , grad_rate_6_yr := 
+           as.numeric(gsub("%.*", "", grad_rate_6_yr))]
+    usn[grepl("in-state", tuition_fees),
+        paste0("tuition_", c("in", "out"), "_state") :=
+          transpose(lapply(strsplit(tuition_fees, split = "[:,] "),
+                           function(io) 
+                             as.integer(gsub("[$,]", "", io[c(2, 4)]))))]
+    usn[is.na(tuition_in_state), 
+        paste0("tuition_", c("in", "out"), "_state") :=
+        {x <- as.integer(gsub("[$,]", "", tuition_fees))
+        .(x, x)}]
+    usn[ , tuition_fees := NULL]
+    usn[ , name := gsub(intToUtf8(160), "", name)]}))
+    
+#just like that! All done. Just some clean-up:
+usnews <- usnews[!grepl("Rank Not", score)]
+usnews
+```
 
 # Geospatial Tools (2:30 PM - 3:30 PM)
 
@@ -3215,6 +3537,8 @@ For the TeX-savvy, see [this Q&A](http://stackoverflow.com/questions/5465314/too
 # Automatic Presentations/Papers: `knitr` (3:30 PM - 4:30 PM)
 
 # Dynamic/Interactive Output: `shiny` (4:30 PM - 5:30 PM)
+
+See [here](http://shiny.rstudio.com/tutorial/).
 
 # Appendix
 
