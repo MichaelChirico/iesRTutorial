@@ -3532,9 +3532,268 @@ usnews
 
 # Geospatial Tools (2:30 PM - 3:30 PM)
 
-`S4` methods/`@`slots, `CRS`
+You could spend a whole semester learning about geospatial analysis, so this will necessarily be a shallow overview. 
+
+Geospatial analysis basically consists of incorporating geographic information into your approach to understand a problem. Is college dropout related to how far a student lives from their school? Are there geographic discontinuitites that we can leverage to find quasi-experimental results (boundary-induced exogeneities)? Is there geographic heterogeneity in the treatment effect of your RCT?
+
+Answering all of these questions requires some familiarity/facility with the tools of geospatial analysis, only a smattering of which we'll cover today. Let's dive right in by briefly covering the main file type associated with GIS: the shapefile (.shp).
+
+## Shapefiles
+
+A shapefile basically encapsulates a variety of information about a geography of interest -- maybe the counties of Pennsylvania, maybe the school district boundaries in Iowa, maybe the rivers and lakes of Utah.
+
+Shapefiles basically come in three varieties:
+
+ 1. Points: Consist of zero-dimensional spatial objects, like markers for cities, towns, places of interest, etc.
+ 2. Lines: Consist of one-dimensional spatial objects, like markers for rivers, roads, sewage lines, etc.
+ 3. Polygons: Consist of two-dimensional spatial objects, like catchment areas, oceans, country borders, etc.
+ 
+The third are by far the most common/useful, though the first can also be helpful for enhancing plots. I've never used the second (they're probably most useful to people doing research in the life sciences).
+
+In addition to limning every detail of the boundaries of certain objects, point-by-point, .shp files are also typically accompanied by a .dbf file which associates to each polygon some data -- the population of that city, the number of students in that catchment area, etc.
+
+### Coordinate Reference Systems
+
+One thing that's very important for dealing empirically with shapefiles is to have at least a rudimentary understanding of what coordinate reference systems (CRSs) are, what the most common ones are, and how to tell what the CRS is of a shapefile you've got your hands on.
+
+A CRS is basically an approximation of the three-dimensional surface of the Earth. When we first learn the shape of the Earth, we're told it's a sphere. And indeed approximating the surface of the Earth by a sphere isn't a terrible idea. But if you measure the distance between the two points on the approximating sphere, depending on where on the Earth they are, your measure could be horribly wrong. For most purposes of concern to us, this makes no matter. But if you want to launch a rocket into space, for example, or fly a plane at high velocity halfway around the world, such inaccuracies could be dangerous, or at the very least costly. 
+
+As you advanced in school, perhaps you learned that the Earth is not a sphere, but an oblate spheroid -- basically like a football, compressed at the poles and stretched at the equator, ever-so-slightly distinct from a sphere.
+
+This, too, is only an approximation. Actually there's no nice, neat shape that can be used to describe the surface of the Earth. That said, we only gain very minimally in accuracy beyond a certain point, while we trade off dearly in computational cost.
+
+So instead of using an exact model of the Earth's surface, typically what is done is to use either the most common CRS (the one used by Google Maps, for example), or to use an approximation of the Earth's surface that is pristinely accurate _for a small part of the Earth's surface_. This latter is typically done, for example, by States' GIS Departments -- most maps of Philadelphia I've seen, for example, use a CRS that is most accurate in Southeastern Pennsylvania -- a tiny fraction of the Earth's surface.
+
+We'll return to this once we have some actual data in hand.
+
+## Loading PA District Boundaries
+
+The library we need to read .shp files is `maptools`:
+
+```{r install_maptools, eval = FALSE}
+install.packages("maptools")
+```
+
+This package has three main reading functions -- `readShapePoints`, `readShapeLines`, and `readShapePoly`. As you can imagine, the last is the most useful, and it's what we must use to read in a .shp file with polygons:
+
+```{r pa_districts}
+library(maptools)
+
+pa_districts <- readShapePoly("data/pennsylvania_districts.shp")
+
+#what have we got here?
+class(pa_districts)
+
+#beautifully, we can just use the same
+#  plot function we've been using thus
+#  far and still get what we expect
+plot(pa_districts, main = "PA School Districts",
+     col = "seagreen")
+
+#set max level because 
+#  SpatialPolygonsDataFrame objects
+#  are typically massive and it
+#  would take about 10,000 lines to print
+#  the full str for this one
+str(pa_districts, max.level = 2)
+```
+
+Something's new here -- something we haven't seen before: `@`.
+
+### S4 objects/methods
+
+A `SpatialPolygonsDataFrame` is slightly different from the things we've seen so far. It's an S4 object. The things we've been using up through now have been S3 objects. The difference is unlikely to make a difference to you any time soon.
+
+Practically speaking, the difference between an S4 object and an S3 object is that we use `@` to extract components instead of `$`. Let's experiment a bit with `pa_districts`:
+
+```{r testing_slots}
+#proj4string is where information about
+#  our polygons' CRS would (SHOULD) be
+pa_districts@proj4string
+
+#we'll deal with this being a data.frame
+#  a bit later on...
+class(pa_districts@data)
+head(pa_districts@data)
+
+#Unlike with a list, names doesn't return the
+#  names of the slots. There's a new
+#  function for that:
+names(pa_districts)
+slotNames(pa_districts)
+
+#bbox is for Bounding BOX, it tells the 
+#  extremes of the coordinates (very
+#  useful for plotting our polygons);
+#  the units here also give a hint as
+#  to what the CRS being used is!
+pa_districts@bbox
+```
+
+### Setting the CRS with Reading
+
+Typically, a .shp file is accompanied by several other data files. The most important right now is the .prj file, which should contain some information about the projection associated with the file. Let's examine the one we have:
+
+```{r read_prj, warning = FALSE}
+cat(readLines("data/pennsylvania_districts.prj"))
+```
+
+I just discovered a website which can help us turn the information from a .prj file into something we can use. There are a number of other ways to do this, but all are a bit too involved for today's purposes (basically, they involve loading them in free GIS software like QGIS or SAGA, which have built-in automatic interpreters for these types of things that are pretty good).
+
+Plugging the contents of our .prj file into [prj2epsg.org](http://prj2epsg.org/search), we find that our projection is equivalent to `EPSG:4269`. I've found that getting things in `EPSG` standard index form is the simplest way to handle defining a CRS in R. With this in hand, we can repeat our reading in exercise:
+
+```{r read_districts_with_crs}
+#the CRS function converts an EPSG
+#  specification into something
+#  understood by proj4string
+pa_districts <- 
+  readShapePoly("data/pennsylvania_districts.shp",
+                proj4string = CRS("+init=epsg:4269"))
+
+#it's the same as before, basically:
+plot(pa_districts, main = "PA School Districts",
+     col = "seagreen")
+
+#but now comes more complete:
+pa_districts@proj4string
+```
+
+### Reprojection of CRS
+
+You'll often find that one shapefile is set in one CRS, and another shapefile you need for your analysis is stored in another CRS. Thankfully, R has simple functionalities for transforming polygons from CRS to CRS.
+
+Let's try that out here quickly. The most common CRS I've come across is known concisely as `WGS84`, but more coloquially as Web Mercator. For example this is the projection used by Google Maps. Let's convert our `pa_districts` into `WGS84`:
+
+```{r reproject}
+pa_districts <-
+  spTransform(pa_districts, CRS("+proj=longlat +datum=WGS84"))
+
+pa_districts@proj4string
+```
+
+## Geocoding
+
+Geocoding is the process of converting street addresses (like `"3700 Walnut Street, Philadelphia, PA 19104"`) into spatial coordinates. This is actually a very expensive operation, computationally. As evidence of this, consider that this is one of the only services I know of that Google doesn't offer on a massive scale for free -- there is a daily limit of a somewhat small number of queries. And other firms typically charge quite high amounts to geocode your data for you. As a minor plug, I managed to come across a firm called [SmartyStreets](https://smartystreets.com/) which offers unlimited free geocoding to students (basically in the hope that you'll become a subscriber upon graduating to a job with real income).
+
+For smaller-scale jobs (on the order of a few hundred queries), using Google Maps' service should be just fine. And in fact there is an R function that handles most of the heavy lifting under the hood to make geocoding as simple as possible. So let's get to it!
+
+We'll be finding coordinates for all of the (traditional) public schools in Philadelphia (from 2013-14, per the [Common Core](https://nces.ed.gov/ccd/pubschuniv.asp); I pre-condensed the data file to save space here). Let's read in the file quickly:
+
+```{r load_schools}
+phila_addr <- fread("data/phila_school_addr.csv")
+phila_addr
+```
+
+As you can see, we have inherently geospatial data, but without a deep knowledge of the street system of Philadelphia, the data is basically useless in its current form as such. Geocoding will bridge the gap between textual geospatial data and numeric geospatial data. The `ggmap` library provides a `geocode` function which is perfect for the data at hand:
+
+```{r install_ggmap, eval = FALSE}
+install.packages("ggmap")
+```
+
+The `geocode` function takes a `source` argument which allows us to choose the service used to look up the addresses. I find that Google is the most robust, so I usually stick with `source = "google"`. You can read more in `?ggmap`. Now we've got all we need to do the geocoding:
+
+```{r geocoding, cache = TRUE, message = FALSE, warning = FALSE}
+#cache here to avoid running the geocoding too often
+library(ggmap)
+#the output of geocode comes back as a 
+#  data.frame with two columns --
+#  lon and lat. We'll add these columns
+#  to our data.table
+phila_addr[ , c("longitude","latitude") := 
+              geocode(paste(LSTREE, LCITY, LSTATE, LZIP),
+                      source = "google")]
+phila_addr[]
+#It's common for some addresses to be poorly formatted, 
+#  in which case the entry for that place would be missing
+phila_addr[is.na(longitude)]
+```
+
+## Spatial Joins
+
+One of the most important tasks of GIS is the spatial join -- basically cross-referencing information from different shapefiles and combining them based on shared spatial characteristics.
+
+This comes in several forms (partial overlap of polygons, containment of lines, etc.), but for today I think it will suffice to consider the simplest form of spatial join, namely, overlapping points to polygons.
+
+Specifically, we're going to find out the neighborhood in Philadelphia where each of our schools is found.
+
+First we'll need to load the polygons associated with these neighborhoods. Philadelphia is blessed to have a local GIS firm, [Azavea Inc.](http://www.azavea.com/), which has taken it upon themselves to partition Philadelphia into coloquially-known neighborhoods (Fishtown, Point Breeze, Society Hill), which sounds like a pretty daunting task if you ask me -- particularly deciding on definitive borders for something that is defined socially, not politically. Anyway, you can download their shapefile through [OpenDataPhilly](https://www.opendataphilly.org/), which is, by the way, an excellent source for all sorts of free data about Philadelphia, [here](https://www.opendataphilly.org/dataset/philadelphia-neighborhoods).
+
+```{r read_azavea}
+#This file is stored in the ever-famous
+#  NAD 1983 State Plane Pennsylvania South.
+#  This is used by basically ever government
+#  map made in Philly. This was again
+#  determined by checking out the EPSG
+#  returned by prj2epsg.org.
+azavea <- readShapePoly("data/Neighborhoods_Philadelphia.shp",
+                        proj4string = CRS("+init=epsg:2272"))
+
+plot(azavea, main = "Azavea Neighborhoods in Philadelphia",
+     col = "darkblue", lwd = 3)
+```
+
+Next, we have to convert our coordinates that we retrieved into a `SpatialPointsDataFrame`, since this is the type of object for which we have methods to perform a spatial join.
+
+```{r create_spatial_points}
+#Remembering that we got our points in WGS84 above,
+#  we'll also take this opportunity to convert
+#  them to the coordinates used in the 
+#  neighborhood map
+school_points <- 
+  spTransform(SpatialPointsDataFrame(
+    coords = with(phila_addr, cbind(longitude, latitude)),
+    data = phila_addr,
+    proj4string = CRS("+proj=longlat +datum=WGS84")),
+    CRS("+init=epsg:2272"))
+
+#To see what we're after, let's overlay the points
+#  to the neighborhood map by using the add = TRUE
+#  parameter to plot, which prevents plot from
+#  creating a new figure upon being called
+plot(azavea, main = "Azavea Neighborhoods in Philadelphia",
+     col = "darkblue", lwd = 3)
+plot(school_points, pch = 8, add = TRUE, col = "red")
+```
+
+Spatial joins, once we have the pieces arranged nicely (all in the right CRS, most crucially), are actually pretty simple. The hardest part is dealing with the output, since it's a `data.frame`. The crux of the operation is using the `%over%` infix operator, which returns, for each object on its left, the data attributes (i.e., the rows) of the object spatially associated with that object from the right-hand side.
+
+In our example, the left will be the schools, and the right will be the neighborhood. We'll find the neighborhood that is spatially associated with each school (here, that simply means the neighborhood in whose boundary the school is located), and return the attributes of that neighborhood.
+
+Typically, we then add those returned attributes to our data, either adding it to the original `data.table`, `phila_addr`, or adding it to the derived `SpatialPointsDataFrame`, `school_points`. We'll do the latter here since it demonstrates a bit of dealing with `data.frames`, an unfortunate reality that chases all those who would dare do geospatial analysis (`data.table`s unfortunately don't play very nicely with GIS in R, _yet_).
+
+Without further ado:
+
+```{r spatial_join}
+#simple join, no assignment yet
+head(school_points %over% azavea)
+
+#We only care about the MAPNAME,
+#  which is the abbreviation of the
+#  neighborhood name which is most
+#  mapping-friendly. We can extract
+#  only that column like so (note 
+#  the subtle difference vis-a-vis data.table)
+head((school_points %over% azavea)["MAPNAME"])
+
+#Now we can formally complete the join.
+#  Assigning to a data.frame means
+#  doing the following:
+school_points@data$azavea <-
+  (school_points %over% azavea)["MAPNAME"]
+
+head(school_points@data)
+```
+
+## Polygon Aggregation/Dissolution
+
+Polygon aggregation, the fusion of neighboring polygons into single polygons, is done primarily through the `unionSpatialPolygons` function. See `unionSpatialPolygons`.
+
+Polygon dissolution is a bit more complicated, depending on what exactly it is you have in mind, but you should start with the `gIntersection` and `gDifference` functions from the `rgeos` library, see [this Q&A](http://stackoverflow.com/questions/5726297/cut-polygons-using-contour-line-beneath-the-polygon-layers). 
 
 # Automatic Presentations/Papers: `knitr` (3:30 PM - 4:30 PM)
+
+`knitr` is what was used to make this gigantic presentation/workshop today!
+
 
 # Dynamic/Interactive Output: `shiny` (4:30 PM - 5:30 PM)
 
